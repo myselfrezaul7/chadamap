@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>চাঁদা-ম্যাপ | Waze-এর মতো চাঁদাবাজ ট্র্যাকার</title>
+    <meta name="description" content="বাংলাদেশের নেক্সট বিলিয়ন ডলার স্টার্টআপ — রিয়েল-টাইম চাঁদাবাজি ট্র্যাকার ম্যাপ">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>">
+</head>
+
+<body>
+
+    <!-- ===== NAVIGATION ===== -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-inner">
+            <a href="#" class="nav-logo">
+                <span class="logo-icon">📍</span>
+                চাঁদা-ম্যাপ
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#hero">লাইভ ম্যাপ</a></li>
+                <li><a href="#report">স্পট রিপোর্ট করুন</a></li>
+                <li><a href="#features">ফিচারসমূহ</a></li>
+                <li><a href="#enterprise">এন্টারপ্রাইজ</a></li>
+            </ul>
+            <button class="nav-cta" id="downloadBtn">📲 অ্যাপ নামান</button>
+            <button class="hamburger" id="hamburger">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ===== HERO SECTION ===== -->
+    <section class="hero" id="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">🔴 লাইভ — ঢাকায় ১৭৮টি চেকপোস্ট এখন অ্যাক্টিভ</div>
+                <h1 class="hero-title">
+                    <span class="highlight-green">Waze</span>-এর মতো চাঁদাবাজ ট্র্যাকার অ্যাপ! <br>
+                    বাংলাদেশের নেক্সট <span class="highlight-red">বিলিয়ন ডলার</span> স্টার্টআপ?
+                </h1>
+                <p class="hero-subtitle">
+                    রাস্তায় বের হলেই পকেট ফাঁকা? এখন আর আন্দাজে নয়। পলিটিক্যাল স্পট, ট্রাফিক পুলিশ আর লোকাল
+                    সিন্ডিকেটের লাইভ আপডেট পান আমাদের ক্রাউডসোর্সড ম্যাপে।
+                </p>
+                <div class="hero-actions">
+                    <button class="btn-primary"
+                        onclick="document.getElementById('report').scrollIntoView({behavior:'smooth'})">🗺️ লাইভ ম্যাপ
+                        দেখুন</button>
+                    <button class="btn-secondary"
+                        onclick="document.getElementById('report').scrollIntoView({behavior:'smooth'})">🚨 স্পট রিপোর্ট
+                        করুন</button>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="stat-value" data-count="12847">০</div>
+                        <div class="stat-label">রিপোর্টেড স্পট</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="stat-value" data-count="54312">০</div>
+                        <div class="stat-label">অ্যাক্টিভ ইউজার</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="stat-value" data-count="178">০</div>
+                        <div class="stat-label">লাইভ চেকপোস্ট</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-image-wrapper">
+                    <img src="hero-map.png" alt="ঢাকার রাস্তায় চাঁদাবাজি স্পট ম্যাপ — 3D ইসোমেট্রিক ভিউ" id="heroImg">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FEATURES SECTION ===== -->
+    <section class="features" id="features">
+        <div class="container">
+            <span class="section-tag">🚀 প্রিমিয়াম ফিচারসমূহ</span>
+            <h2 class="section-title">চাঁদা-ম্যাপের <span class="glow-text-green">সুপারপাওয়ার</span></h2>
+            <p class="section-desc" style="margin:0 auto">আমাদের AI-পাওয়ারড ফিচারগুলো আপনাকে রাস্তায় সারভাইভ করতে
+                সাহায্য করবে।</p>
+
+            <div class="features-grid">
+                <!-- Feature 1 -->
+                <div class="feature-card">
+                    <div class="feature-icon green">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                        </svg>
+                    </div>
+                    <h3>রিয়েল-টাইম চাঁদা এস্টিমেশন</h3>
+                    <p>গন্তব্য সেট করুন আর জেনে নিন সম্ভাব্য খরচ। AI অ্যালগোরিদম দিয়ে রুটের প্রতিটি স্পটের চাঁদার হিসাব
+                        পাবেন।</p>
+                    <div class="feature-example">"মিরপুর থেকে কারওয়ান বাজার: ৩টা পলিটিক্যাল স্পট। আজকের সম্ভাব্য চাঁদা:
+                        ১,২০০ টাকা।"</div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-card">
+                    <div class="feature-icon yellow">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                            <line x1="9" y1="9" x2="9.01" y2="9" />
+                            <line x1="15" y1="9" x2="15.01" y2="9" />
+                        </svg>
+                    </div>
+                    <h3>চাঁদাবাজদের 'মুড' অ্যানালাইসিস</h3>
+                    <p>ইউজারদের ফিডব্যাকের ওপর লাইভ মুড আপডেট! জানুন তারা আজকে কতটা 'কড়া' নাকি 'নরম'।</p>
+                    <div class="feature-example">'রেড অ্যালার্ট' — বউয়ের সাথে ঝগড়া করে আসছে, ১০০% উসুল করবে! 'গ্রিন
+                        সিগন্যাল' — আজকে কালেকশন ভালো, ৫০ টাকা দিলেই খালাস।</div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-card">
+                    <div class="feature-icon red">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                            <line x1="12" y1="9" x2="12" y2="13" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
+                    </div>
+                    <h3>লাইভ ডেঞ্জার জোন</h3>
+                    <p>ডিরেক্ট পুশ নোটিফিকেশন পাবেন যখনই নতুন চেকপোস্ট বসবে। জলদি বিকল্প রাস্তা ধরুন!</p>
+                    <div class="feature-example">"⚠️ সামনে নতুন পার্টির লোকেরা নামছে, জলদি বিকল্প রাস্তা ধরুন!"</div>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="feature-card">
+                    <div class="feature-icon green">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                    </div>
+                    <h3>দ্য ভিআইপি 'মামা' বাটন</h3>
+                    <p>বিপদে পড়লে এই ফিচারে ক্লিক করুন। অ্যাপ বলে দেবে ওই স্পটে ঠিক কোন নেতার নাম ভাঙালে বিনা ভাড়ায়
+                        পার পাওয়া যাবে।</p>
+                    <div class="feature-example">"🤙 বড় ভাইয়ের নাম নিন — ১০০% ফ্রি পাস!"</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== REPORT FORM SECTION ===== -->
+    <section class="report-section" id="report">
+        <div class="container">
+            <span class="section-tag">📝 ক্রাউডসোর্সিং ইঞ্জিন</span>
+            <h2 class="section-title">আপনিও অবদান রাখুন: <span class="glow-text-red">স্পট রিপোর্ট করুন</span></h2>
+            <p class="section-desc">
+                কেউ কি মাত্রই চাঁদা দাবি করল? অন্যদের সতর্ক করুন। লাইভ ম্যাপে অ্যাড করার জন্য ডিটেইলস পাঠান।
+            </p>
+
+            <div class="report-form-wrapper">
+                <form id="reportForm">
+                    <div class="form-group">
+                        <label for="location">📍 লোকেশন</label>
+                        <input type="text" id="location" placeholder="যেমনঃ মিরপুর ১০ নম্বর গোলচত্বর" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="collectorType">👤 চাঁদাবাজের ধরন</label>
+                        <select id="collectorType" required>
+                            <option value="" disabled selected>— ধরন সিলেক্ট করুন —</option>
+                            <option value="traffic_police">🚔 ট্রাফিক পুলিশ</option>
+                            <option value="political_cadre">🏛️ পলিটিক্যাল ক্যাডার</option>
+                            <option value="local_syndicate">💀 লোকাল সিন্ডিকেট</option>
+                            <option value="random_goons">🥊 পাতি মাস্তান</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="currentRate">💰 বর্তমান রেট / ডিমান্ড (BDT)</label>
+                        <input type="number" id="currentRate" placeholder="যেমনঃ ৫০০" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>😤 চাঁদাবাজের মুড</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="mood" id="moodGreen" value="green" required>
+                                <label for="moodGreen" class="mood-green">🟢 গ্রিন সিগন্যাল</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="mood" id="moodYellow" value="yellow">
+                                <label for="moodYellow" class="mood-yellow">🟡 ইয়েলো — সমঝোতা সম্ভব</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="mood" id="moodRed" value="red">
+                                <label for="moodRed" class="mood-red">🔴 রেড অ্যালার্ট</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vipCode">🤝 ভিআইপি রেফারেন্স কোড (ঐচ্ছিক)</label>
+                        <input type="text" id="vipCode" placeholder='যেমনঃ "বড় ভাইয়ের নাম নিন"'>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="submitBtn">📤 ভেরিফিকেশনের জন্য অ্যাডমিনকে
+                        পাঠান</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== ENTERPRISE SECTION ===== -->
+    <section class="enterprise" id="enterprise">
+        <div class="container">
+            <span class="section-tag"
+                style="background:var(--danger-red-dim);color:var(--danger-red);border-color:rgba(255,45,45,.15)">💼
+                এন্টারপ্রাইজ ভার্সন</span>
+            <div class="enterprise-content">
+                <h2 class="section-title">চাঁদাবাজ ভাইদের জন্য <span class="glow-text-red">এন্টারপ্রাইজ ভার্সন!</span>
+                </h2>
+                <p class="section-desc">
+                    আপনি কি সিন্ডিকেট লিডার? মালবাহী ট্রাক কোন রাস্তায় বেশি যাচ্ছে তা আর আন্দাজ করতে হবে না। আমাদের
+                    প্রিমিয়াম সাবস্ক্রিপশন কিনে লাইভ ট্রাক ট্র্যাক করুন এবং সেখানেই নতুন চেকপোস্ট বসান।
+                </p>
+            </div>
+
+            <div class="pricing-card">
+                <span class="pricing-badge">🔥 সবচেয়ে জনপ্রিয়</span>
+                <h3>সিন্ডিকেট প্রো প্ল্যান</h3>
+                <div class="price">৯,৯৯৯ ৳ <span>/ মাসিক</span></div>
+                <ul class="pricing-features">
+                    <li><span class="check">✓</span> ধনী যাত্রীদের রুটের হিটম্যাপ</li>
+                    <li><span class="check">✓</span> প্রতিদ্বন্দ্বী সিন্ডিকেটের চেকপোস্ট ট্র্যাকিং</li>
+                    <li><span class="check">✓</span> মালবাহী ট্রাকের রিয়েল-টাইম GPS ডেটা</li>
+                    <li><span class="check">✓</span> ট্রাফিক পুলিশের শিফট চেঞ্জ অ্যালার্ট</li>
+                    <li><span class="check">✓</span> "সার্জ প্রাইসিং" — ঈদের সময় রেট বাড়ানোর AI ক্যালকুলেটর</li>
+                    <li><span class="check">✓</span> ২৪/৭ ডেডিকেটেড "মামা" সাপোর্ট লাইন</li>
+                </ul>
+                <button class="btn-enterprise">🚀 সিন্ডিকেট প্রো প্ল্যান কিনুন</button>
+            </div>
+            <p class="enterprise-tagline">💰 সাবস্ক্রিপশন বেচে আপনি হবেন কোটিপতি।</p>
+        </div>
+    </section>
+
+    <!-- ===== ADMIN DASHBOARD ===== -->
+    <section class="dashboard-section" id="dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <span class="section-tag">🖥️ অ্যাডমিন প্যানেল</span>
+                <h2 class="section-title">অ্যাডমিন <span class="glow-text-green">ড্যাশবোর্ড</span> — কমান্ড সেন্টার</h2>
+                <p class="section-desc" style="margin:0 auto">রিয়েল-টাইম ডেটা মনিটরিং, রিপোর্ট ভেরিফিকেশন, এবং
+                    সিন্ডিকেট অ্যানালিটিক্স — সব এক জায়গায়।</p>
+            </div>
+
+            <!-- Admin Auth Gate -->
+            <div id="adminAuthOverlay" class="admin-auth-overlay">
+                <div class="admin-auth-card">
+                    <div class="admin-auth-icon">🔒</div>
+                    <h3>অ্যাডমিন অ্যাক্সেস প্রয়োজন</h3>
+                    <p>এই ড্যাশবোর্ড শুধুমাত্র অনুমোদিত অ্যাডমিনদের জন্য।</p>
+                    <div class="admin-auth-form">
+                        <input type="password" id="adminPassword" placeholder="অ্যাডমিন পাসওয়ার্ড দিন"
+                            autocomplete="off">
+                        <button id="adminLoginBtn" class="btn-primary"
+                            style="width:100%;justify-content:center;margin-top:12px">🔓 লগইন করুন</button>
+                    </div>
+                    <p id="adminAuthError" style="color:var(--danger-red);font-size:.8rem;margin-top:12px;display:none">
+                        ❌ ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।</p>
+                </div>
+            </div>
+
+            <div class="dashboard-layout">
+                <!-- Sidebar -->
+                <aside class="dash-sidebar">
+                    <div class="dash-sidebar-header">
+                        <h4>চাঁদা-ম্যাপ</h4>
+                        <p>অ্যাডমিন কন্ট্রোল v2.0</p>
+                    </div>
+                    <ul class="sidebar-nav">
+                        <li><a href="#" class="active"><span class="nav-icon">📡</span> লাইভ রাডার</a></li>
+                        <li><a href="#"><span class="nav-icon">📋</span> অ্যাপ্রুভাল কিউ</a></li>
+                        <li><a href="#"><span class="nav-icon">📊</span> সিন্ডিকেট অ্যানালিটিক্স</a></li>
+                        <li><a href="#"><span class="nav-icon">⚙️</span> সেটিংস</a></li>
+                    </ul>
+                </aside>
+
+                <!-- Main Dashboard -->
+                <main class="dash-main">
+                    <!-- KPI Cards -->
+                    <div class="kpi-grid">
+                        <div class="kpi-card green">
+                            <div class="kpi-label">আজকের মোট চাঁদা রিপোর্ট (BDT)</div>
+                            <div class="kpi-value" data-count="847500">৳ ০</div>
+                            <div class="kpi-change">↑ ২৩% গতকালের থেকে বেশি</div>
+                        </div>
+                        <div class="kpi-card red">
+                            <div class="kpi-label">অ্যাক্টিভ চেকপোস্ট</div>
+                            <div class="kpi-value" data-count="178">০</div>
+                            <div class="kpi-change">↑ ১২টা নতুন আজকে</div>
+                        </div>
+                        <div class="kpi-card yellow">
+                            <div class="kpi-label">সবচেয়ে হট ডেঞ্জার জোন</div>
+                            <div class="kpi-value" style="font-size:1.2rem">মিরপুর ১০</div>
+                            <div class="kpi-change">🔥 ৩৪টি রিপোর্ট শেষ ২ ঘণ্টায়</div>
+                        </div>
+                    </div>
+
+                    <!-- Data Table -->
+                    <div class="dash-table-wrapper">
+                        <div class="dash-table-header">
+                            <h3>📋 পেন্ডিং চাঁদা রিপোর্ট</h3>
+                            <span class="badge">৭টি পেন্ডিং</span>
+                        </div>
+                        <table class="dash-table">
+                            <thead>
+                                <tr>
+                                    <th>সময়</th>
+                                    <th>লোকেশন</th>
+                                    <th>ধরন</th>
+                                    <th>ডিমান্ড</th>
+                                    <th>মুড</th>
+                                    <th>অ্যাকশন</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>১১:৪২ AM</td>
+                                    <td>মিরপুর ১০ গোলচত্বর</td>
+                                    <td>পলিটিক্যাল ক্যাডার</td>
+                                    <td>৳ ৫০০</td>
+                                    <td><span class="mood-badge red">🔴 রেড</span></td>
+                                    <td class="table-actions">
+                                        <button class="btn-verify">✅ ভেরিফাই</button>
+                                        <button class="btn-reject">❌ ফেক</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>১১:২৮ AM</td>
+                                    <td>ফার্মগেট সিগনাল</td>
+                                    <td>ট্রাফিক পুলিশ</td>
+                                    <td>৳ ২০০</td>
+                                    <td><span class="mood-badge yellow">🟡 ইয়েলো</span></td>
+                                    <td class="table-actions">
+                                        <button class="btn-verify">✅ ভেরিফাই</button>
+                                        <button class="btn-reject">❌ ফেক</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>১১:১৫ AM</td>
+                                    <td>গুলিস্তান শিশু পার্ক</td>
+                                    <td>লোকাল সিন্ডিকেট</td>
+                                    <td>৳ ১,৫০০</td>
+                                    <td><span class="mood-badge red">🔴 রেড</span></td>
+                                    <td class="table-actions">
+                                        <button class="btn-verify">✅ ভেরিফাই</button>
+                                        <button class="btn-reject">❌ ফেক</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>১০:৫৫ AM</td>
+                                    <td>মতিঝিল শাপলা চত্বর</td>
+                                    <td>পাতি মাস্তান</td>
+                                    <td>৳ ১০০</td>
+                                    <td><span class="mood-badge green">🟢 গ্রিন</span></td>
+                                    <td class="table-actions">
+                                        <button class="btn-verify">✅ ভেরিফাই</button>
+                                        <button class="btn-reject">❌ ফেক</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>১০:৩০ AM</td>
+                                    <td>উত্তরা সেক্টর ৭</td>
+                                    <td>পলিটিক্যাল ক্যাডার</td>
+                                    <td>৳ ৮০০</td>
+                                    <td><span class="mood-badge red">🔴 রেড</span></td>
+                                    <td class="table-actions">
+                                        <button class="btn-verify">✅ ভেরিফাই</button>
+                                        <button class="btn-reject">❌ ফেক</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Heatmap -->
+                    <div class="heatmap-wrapper">
+                        <div class="heatmap-header">
+                            <h3>🗺️ এন্টারপ্রাইজ হিটম্যাপ অ্যানালিটিক্স</h3>
+                            <div class="toggle-wrapper">
+                                <span class="toggle-label">প্রিমিয়াম সিন্ডিকেটদের সাথে ডেটা শেয়ার</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="syndicateToggle">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="heatmap-placeholder">
+                            <span class="heatmap-label">[ লাইভ ট্রাক রুট হিটম্যাপ লোড হচ্ছে... ]</span>
+                        </div>
+                    </div>
+                </main>
+
+                <!-- Right Sidebar: God Mode -->
+                <aside class="dash-right">
+                    <div class="god-mode-header">গড মোড কন্ট্রোল</div>
+                    <button class="god-btn police" id="btnPolice">🚔 পুলিশ রেইড অ্যালার্ট ট্রিগার</button>
+                    <button class="god-btn surge" id="btnSurge">📈 সার্জ প্রাইসিং ব্রডকাস্ট</button>
+                    <button class="god-btn vip" id="btnVip">👑 ভিআইপি মামা ওভাররাইড</button>
+
+                    <div
+                        style="margin-top:32px;padding:16px;background:rgba(0,0,0,.3);border-radius:var(--radius-md);border:1px solid var(--border-color)">
+                        <div
+                            style="font-family:var(--font-display);font-size:.6rem;letter-spacing:2px;color:var(--text-muted);margin-bottom:12px">
+                            সিস্টেম স্ট্যাটাস</div>
+                        <div style="font-size:.8rem;color:var(--neon-green);margin-bottom:6px">● সার্ভার: অনলাইন</div>
+                        <div style="font-size:.8rem;color:var(--neon-green);margin-bottom:6px">● ম্যাপ API: স্বাভাবিক
+                        </div>
+                        <div style="font-size:.8rem;color:var(--warning-yellow);margin-bottom:6px">● চাঁদাবাজ ডেটাবেস:
+                            আপডেটিং...</div>
+                        <div style="font-size:.8rem;color:var(--danger-red)">● রেইড ইঞ্জিন: স্ট্যান্ডবাই</div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="site-footer" id="footer">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <div class="footer-logo">📍 চাঁদা-ম্যাপ</div>
+                    <p>বাংলাদেশের প্রথম ও একমাত্র ক্রাউডসোর্সড চাঁদাবাজি ট্র্যাকিং প্ল্যাটফর্ম। আমরা শুধু ম্যাপ দেখাই,
+                        সিস্টেম ঠিক করি না।</p>
+                </div>
+                <div class="footer-col">
+                    <h4>নেভিগেশন</h4>
+                    <ul>
+                        <li><a href="#hero">লাইভ ম্যাপ</a></li>
+                        <li><a href="#features">ফিচারসমূহ</a></li>
+                        <li><a href="#report">স্পট রিপোর্ট করুন</a></li>
+                        <li><a href="#enterprise">এন্টারপ্রাইজ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>কোম্পানি</h4>
+                    <ul>
+                        <li><a href="#">অ্যাডমিনকে যোগাযোগ</a></li>
+                        <li><a href="#">প্রাইভেসি পলিসি</a></li>
+                        <li><a href="#">ক্যারিয়ার — আমরা হায়ার করছি!</a></li>
+                        <li><a href="#">ইনভেস্টর রিলেশন্স</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>সোশ্যাল মিডিয়া</h4>
+                    <ul>
+                        <li><a href="#">📘 ফেসবুক</a></li>
+                        <li><a href="#">📸 ইনস্টাগ্রাম</a></li>
+                        <li><a href="#">🐦 টুইটার / X</a></li>
+                        <li><a href="#">💼 লিংকড-ইন</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Legal Terms -->
+            <div class="legal-section">
+                <h4>📜 শর্তাবলী ও আইনি বিষয়াবলি</h4>
+                <div class="legal-terms">
+                    <div class="legal-item">
+                        <h5>১. বাস্তবতা মেনে নিন</h5>
+                        <p>রাস্তায় বের হলে 'চা-নাস্তা'র বিল দিতেই হবে, এটা মেনে নিয়েই অ্যাপ ব্যবহার করুন। আমরা শুধু
+                            ম্যাপ দেখাই, সিস্টেম ঠিক করি না।</p>
+                    </div>
+                    <div class="legal-item">
+                        <h5>২. দ্য স্নইচ ক্লজ</h5>
+                        <p>সব রিপোর্ট সঠিক হতে হবে। আপনার রিপোর্টের কারণে কোনো সিন্ডিকেটের কালেকশন টার্গেট মিস হলে,
+                            চাঁদা-ম্যাপ কর্তৃপক্ষ দায়ী থাকবে না।</p>
+                    </div>
+                    <div class="legal-item">
+                        <h5>৩. মার্কেট রেট ভোলাটিলিটি</h5>
+                        <p>চাঁদাবাজদের রেট বাজারের ওপর নির্ভরশীল এবং ঈদ বা উৎসব আসলে রেট বাড়বে। প্রিডিক্টিভ কস্টিং শুধু
+                            একটা ধারণা দেয়। রাস্তায় ক্যাশ শেষ হয়ে গেলে আমরা দায়ী নই।</p>
+                    </div>
+                    <div class="legal-item">
+                        <h5>৪. এন্টারপ্রাইজ ডিসক্লেইমার</h5>
+                        <p>ভুল ট্রাক বা সাংবাদিকদের গাড়ি আটকে বিপদে পড়লে সাবস্ক্রিপশনের টাকা ফেরত দেওয়া হবে না।</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="footer-disclaimer"><strong>সতর্কতা:</strong> চাঁদা-ম্যাপ একটি স্যাটায়ার কনসেপ্ট। দয়া করে নিজ
+                    দায়িত্বে চাঁদা প্রদান করুন। 😉</p>
+                <p class="footer-copy">© ২০২৬ চাঁদা-ম্যাপ — সর্বস্বত্ব সংরক্ষিত (আইনগতভাবে নয়, নৈতিকভাবেও নয়)</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">✅</span>
+        <span class="toast-msg" id="toastMsg">রিপোর্ট সফলভাবে পাঠানো হয়েছে!</span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
