@@ -66,6 +66,20 @@
         <div class="scroll-progress-bar" id="scrollProgress"></div>
     </div>
 
+    <!-- ===== SATIRE POPUP ("Masud") ===== -->
+    <div class="satire-popup-overlay" id="satirePopup">
+        <div class="satire-popup-card">
+            <div class="satire-emoji">😒</div>
+            <h3>হাহাহা...</h3>
+            <p>"তুই কি আর ভালো হবি না মাসুদ?"</p>
+            <p
+                style="font-size: 13px; color: var(--text-tertiary); margin-top: 10px; font-weight: 400; font-style: normal;">
+                (চাঁদাবাজি প্রো-ম্যাক্স ভার্সন এখনো ডেভেলপমেন্টে আছে)</p>
+            <button class="btn-secondary" onclick="hideSatirePopup()"
+                style="margin-top: 20px; width: 100%; justify-content: center;">আচ্ছা ভাই, কান ধরছি 🥺</button>
+        </div>
+    </div>
+
     <!-- ===== NAVIGATION ===== -->
     <nav class="navbar" id="navbar">
         <div class="nav-inner">
@@ -332,7 +346,7 @@
                     <li><span class="check">✓</span> "সার্জ প্রাইসিং" — ঈদের সময় রেট বাড়ানোর AI</li>
                     <li><span class="check">✓</span> ২৪/৭ ডেডিকেটেড "মামা" সাপোর্ট লাইন</li>
                 </ul>
-                <button class="btn-enterprise">🚀 সিন্ডিকেট প্রো কিনুন</button>
+                <button class="btn-enterprise" onclick="showSatirePopup()">🚀 সিন্ডিকেট প্রো কিনুন</button>
             </div>
         </div>
     </section>
@@ -484,6 +498,13 @@
             </div>
         </div>
     </footer>
+    <!-- Go To Top Button -->
+    <button class="go-top-btn" id="goTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="উপরে যান">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M12 19V5M5 12l7-7 7 7" />
+        </svg>
+    </button>
 
     <!-- Toast -->
     <div class="toast" id="toast"><span class="toast-icon">✅</span><span class="toast-msg" id="toastMsg"></span></div>

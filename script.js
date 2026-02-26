@@ -404,3 +404,33 @@ window.calculateChanda = function () {
         res.innerHTML = `৳ ${cur.toLocaleString('bn-BD')}`;
     }, 30);
 };
+
+// ===== SATIRE POPUP ("Masud") =====
+window.showSatirePopup = function () {
+    const popup = document.getElementById('satirePopup');
+    popup.style.display = 'flex';
+    // Force reflow
+    void popup.offsetWidth;
+    popup.classList.add('show');
+};
+
+window.hideSatirePopup = function () {
+    const popup = document.getElementById('satirePopup');
+    popup.classList.remove('show');
+    // Wait for transition to finish
+    setTimeout(() => {
+        popup.style.display = 'none';
+    }, 300);
+};
+
+// ===== GO TO TOP BUTTON =====
+const goTopBtn = document.getElementById('goTopBtn');
+if (goTopBtn) {
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            goTopBtn.classList.add('show');
+        } else {
+            goTopBtn.classList.remove('show');
+        }
+    }, { passive: true });
+}

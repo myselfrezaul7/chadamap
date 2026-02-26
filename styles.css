@@ -2610,3 +2610,133 @@ html[data-theme="light"] .navbar.scrolled {
         padding: 40px 0;
     }
 }
+
+/* ===== SATIRE POPUP ===== */
+.satire-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.satire-popup-overlay.show {
+    display: flex;
+    opacity: 1;
+}
+
+.satire-popup-card {
+    background: var(--bg-card);
+    border: 1px solid var(--danger-red);
+    border-radius: var(--radius-xl);
+    padding: 40px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 0 50px rgba(255, 45, 45, 0.2);
+    transform: scale(0.8) translateY(20px);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.satire-popup-overlay.show .satire-popup-card {
+    transform: scale(1) translateY(0);
+}
+
+.satire-emoji {
+    font-size: 48px;
+    margin-bottom: 16px;
+    animation: headShake 2s infinite;
+}
+
+@keyframes headShake {
+    0% {
+        transform: translateX(0);
+    }
+
+    6.5% {
+        transform: translateX(-6px) rotateY(-9deg);
+    }
+
+    18.5% {
+        transform: translateX(5px) rotateY(7deg);
+    }
+
+    31.5% {
+        transform: translateX(-3px) rotateY(-5deg);
+    }
+
+    43.5% {
+        transform: translateX(2px) rotateY(3deg);
+    }
+
+    50% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+.satire-popup-card h3 {
+    font-size: 20px;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.satire-popup-card p {
+    font-size: 16px;
+    color: var(--danger-red);
+    font-weight: 600;
+    font-style: italic;
+}
+
+/* ===== GO TO TOP BUTTON ===== */
+.go-top-btn {
+    position: fixed;
+    bottom: 80px;
+    right: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    cursor: pointer;
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 9998;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.go-top-btn.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.go-top-btn:hover {
+    background: var(--bg-card-hover);
+    color: var(--accent);
+    transform: translateY(-4px);
+    border-color: var(--accent);
+}
+
+.go-top-btn svg {
+    width: 20px;
+    height: 20px;
+}
