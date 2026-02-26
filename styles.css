@@ -958,7 +958,8 @@ html[data-theme="light"] .navbar.scrolled {
 
 .form-group input[type="text"],
 .form-group input[type="number"],
-.form-group select {
+.form-group select,
+.form-group textarea {
     width: 100%;
     padding: 12px 16px;
     background: var(--bg-tertiary);
@@ -968,11 +969,13 @@ html[data-theme="light"] .navbar.scrolled {
     font-family: var(--font-body);
     font-size: 15px;
     transition: all var(--transition);
-    outline: none
+    outline: none;
+    resize: vertical
 }
 
 .form-group input:focus,
-.form-group select:focus {
+.form-group select:focus,
+.form-group textarea:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-dim);
     background: var(--bg-secondary)
@@ -1898,6 +1901,11 @@ html[data-theme="light"] .navbar.scrolled {
     .map-search-bar {
         flex-direction: column;
         gap: 12px;
+    }
+
+    .map-search-bar::before {
+        top: 23px;
+        /* Centers the icon inside the input field horizontally when stacked vertically */
     }
 
     .map-search-bar button {

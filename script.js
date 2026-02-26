@@ -227,7 +227,7 @@ document.querySelectorAll('[data-count]').forEach(el => {
 });
 
 // ===== FORM → FIRESTORE =====
-function sanitize(s) { return s.replace(/[<>]/g, '').trim().slice(0, 200); }
+function sanitize(s) { return s.replace(/[<>]/g, '').trim().slice(0, 500); }
 document.getElementById('reportForm').addEventListener('submit', async e => {
     e.preventDefault();
     const location = sanitize(document.getElementById('location').value);
@@ -235,11 +235,12 @@ document.getElementById('reportForm').addEventListener('submit', async e => {
     const currentRate = Math.min(Math.max(parseInt(document.getElementById('currentRate').value) || 0, 0), 999999);
     const mood = document.querySelector('input[name="mood"]:checked');
     const vipCode = sanitize(document.getElementById('vipCode').value);
+    const description = sanitize(document.getElementById('description').value);
     if (!location || !collectorType || !currentRate || !mood) { showToast('⚠️ সব ফিল্ড পূরণ করুন!', true); return; }
     const btn = document.getElementById('submitBtn');
     btn.textContent = '⏳ পাঠানো হচ্ছে...'; btn.disabled = true;
     try {
-        await db.collection('reports').add({ location, collectorType, currentRate, mood: mood.value, vipCode: vipCode || '', status: 'pending', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        await db.collection('reports').add({ location, collectorType, currentRate, mood: mood.value, vipCode: vipCode || '', description: description || '', status: 'pending', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
         document.getElementById('reportForm').style.display = 'none';
         document.getElementById('formSuccessMsg').style.display = 'block';
         document.getElementById('reportForm').reset();

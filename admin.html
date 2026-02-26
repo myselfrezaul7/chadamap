@@ -120,6 +120,7 @@
                                     <th>লোকেশন</th>
                                     <th>ধরন</th>
                                     <th>ডিমান্ড</th>
+                                    <th>বিবরণ</th>
                                     <th>মুড</th>
                                     <th>স্ট্যাটাস</th>
                                     <th>অ্যাকশন</th>
@@ -127,7 +128,7 @@
                             </thead>
                             <tbody id="reportsBody">
                                 <tr>
-                                    <td colspan="7" style="text-align:center;padding:40px;color:var(--text-tertiary)">
+                                    <td colspan="8" style="text-align:center;padding:40px;color:var(--text-tertiary)">
                                         ডেটা লোড হচ্ছে...</td>
                                 </tr>
                             </tbody>
@@ -158,6 +159,7 @@
                 </div>
                 <div class="form-group"><label>💰 ডিমান্ড (BDT)</label><input type="number" id="editRate" min="0"
                         required></div>
+                <div class="form-group"><label>📝 বিবরণ</label><textarea id="editDescription" rows="2"></textarea></div>
                 <div class="form-group"><label>😤 মুড</label>
                     <select id="editMood" required>
                         <option value="green">🟢 গ্রিন</option>
