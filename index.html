@@ -278,6 +278,134 @@
             </div>
         </div>
     </section>
+    <!-- ===== VAI LEADERBOARD ===== -->
+    <section class="vai-leaderboard-section" id="leaderboard">
+        <div class="container">
+            <div class="reveal">
+                <span class="section-tag">🏆 ভাই লিডারবোর্ড</span>
+                <h2 class="section-title">এই সপ্তাহের <span class="text-gradient">সেরা বিনিয়োগকারী</span></h2>
+                <p class="section-desc" style="margin:0 auto">সবচেয়ে বেশি "রোড ট্যাক্স" দিয়ে কারা চ্যাম্পিয়ন?
+                    সম্মানের সাথে তাদের নাম ঘোষণা করা হচ্ছে।</p>
+            </div>
+            <div class="leaderboard-wrapper reveal reveal-delay-1">
+                <div class="leaderboard-header">
+                    <span>🥇 র‍্যাংক</span><span>নাম</span><span>এলাকা</span><span>মোট "বিনিয়োগ"</span>
+                </div>
+                <div class="leaderboard-row gold">
+                    <span class="rank">🥇</span><span>মোঃ কপাল ভাঙা মিয়া</span><span>মিরপুর ১০</span><span>৳
+                        ১২,৪৫০</span>
+                </div>
+                <div class="leaderboard-row silver">
+                    <span class="rank">🥈</span><span>আবুল বাশার (দুর্ভাগা)</span><span>গুলিস্তান</span><span>৳
+                        ৯,৮০০</span>
+                </div>
+                <div class="leaderboard-row bronze">
+                    <span class="rank">🥉</span><span>রিকশাওয়ালা করিম</span><span>ফার্মগেট</span><span>৳ ৭,২০০</span>
+                </div>
+                <div class="leaderboard-row">
+                    <span class="rank">4</span><span>ট্রাক ড্রাইভার হাবিব</span><span>টঙ্গী</span><span>৳ ৬,৫০০</span>
+                </div>
+                <div class="leaderboard-row">
+                    <span class="rank">5</span><span>CNG চালক সেলিম</span><span>উত্তরা</span><span>৳ ৫,১০০</span>
+                </div>
+                <div class="leaderboard-disclaimer">⚠️ ফেইক ডেটা — কোনো রিয়েল পার্সনের সাথে মিল পাওয়া গেলে সেটা
+                    সম্পূর্ণ কাকতালীয়।</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== AI EXCUSE GENERATOR ===== -->
+    <section class="excuse-generator-section" id="excuse">
+        <div class="container">
+            <div class="reveal">
+                <span class="section-tag">🤖 AI ইঞ্জিন</span>
+                <h2 class="section-title">AI <span class="text-gradient">"বাঁচার অজুহাত"</span> জেনারেটর</h2>
+                <p class="section-desc" style="margin:0 auto">চাঁদাবাজ সামনে? প্যানিক করবেন না। আমাদের বিশ্বমানের AI
+                    আপনার জন্য পারফেক্ট অজুহাত তৈরি করবে।</p>
+            </div>
+            <div class="excuse-card reveal reveal-delay-1">
+                <div class="excuse-display" id="excuseDisplay">
+                    <span class="excuse-emoji">🎲</span>
+                    <p class="excuse-text" id="excuseText">বাটনে ক্লিক করুন... জীবন বাঁচান!</p>
+                </div>
+                <button class="btn-primary excuse-btn" id="generateExcuseBtn" onclick="generateExcuse()">
+                    🎰 অজুহাত জেনারেট করুন
+                </button>
+                <div class="excuse-stats">
+                    <span>✅ সাকসেস রেট: <strong>৭৩%</strong></span>
+                    <span>🔄 আজকে ব্যবহার: <strong id="excuseCount">০</strong> বার</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SHIFT CHANGE TRACKER ===== -->
+    <section class="shift-tracker-section" id="shift">
+        <div class="container">
+            <div class="reveal">
+                <span class="section-tag" style="color:var(--danger-red);background:var(--danger-red-dim)">⏰ শিফট
+                    ট্র্যাকার</span>
+                <h2 class="section-title">লাইভ <span class="glow-text-red">"পুলিশ শিফট চেঞ্জ"</span> ট্র্যাকার</h2>
+                <p class="section-desc" style="margin:0 auto">শিফট চেঞ্জের সময় রেট বাড়ে নাকি কমে? রিয়েল-টাইম
+                    প্রোগ্রেস বার দেখে সিদ্ধান্ত নিন।</p>
+            </div>
+            <div class="shift-card reveal reveal-delay-1">
+                <div class="shift-info-row">
+                    <div class="shift-block current-shift">
+                        <span class="shift-label">বর্তমান শিফট</span>
+                        <span class="shift-name" id="currentShiftName">🌅 সকাল শিফট</span>
+                        <span class="shift-detail" id="currentShiftRate">রেট: স্বাভাবিক</span>
+                    </div>
+                    <div class="shift-block next-shift">
+                        <span class="shift-label">পরবর্তী শিফট</span>
+                        <span class="shift-name" id="nextShiftName">🌇 বিকেল শিফট</span>
+                        <span class="shift-detail" id="nextShiftRate">রেট: +৫০% সার্জ!</span>
+                    </div>
+                </div>
+                <div class="shift-progress-wrapper">
+                    <div class="shift-progress-bar">
+                        <div class="shift-progress-fill" id="shiftProgressFill" style="width:0%"></div>
+                    </div>
+                    <p class="shift-countdown" id="shiftCountdown">শিফট চেঞ্জ হতে বাকি: গণনা হচ্ছে...</p>
+                </div>
+                <div class="shift-warning" id="shiftWarning">⚡ সার্জ প্রাইসিং শুরু হতে পারে — এখনই পালান!</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== PANIC BUTTON ===== -->
+    <section class="panic-section" id="panic">
+        <div class="container">
+            <div class="reveal">
+                <span class="section-tag" style="color:#ff4444;background:rgba(255,68,68,0.1)">🚨 প্যানিক মোড</span>
+                <h2 class="section-title">প্যানিক বাটন: <span class="glow-text-red">এস্কেপ রুট</span></h2>
+                <p class="section-desc" style="margin:0 auto">৳২০০ চাঁদা বাঁচাতে ৩ ঘণ্টার ঘুরপথ? — হ্যাঁ, সেটাই আমাদের
+                    প্রস্তাব।</p>
+            </div>
+            <div class="panic-card reveal reveal-delay-1">
+                <div class="panic-route-info" id="panicRouteInfo" style="display:none;">
+                    <div class="panic-route-header">🗺️ বিকল্প "নিরাপদ" রুট জেনারেটেড!</div>
+                    <div class="panic-route-details">
+                        <div class="route-stat"><span class="route-label">আসল দূরত্ব</span><span class="route-value"
+                                id="panicOrigDist">২.৫ কিমি</span></div>
+                        <div class="route-stat"><span class="route-label">নতুন দূরত্ব</span><span
+                                class="route-value danger" id="panicNewDist">৩৮ কিমি</span></div>
+                        <div class="route-stat"><span class="route-label">সময় লাগবে</span><span
+                                class="route-value danger" id="panicTime">৩ ঘণ্টা ১৫ মিনিট</span></div>
+                        <div class="route-stat"><span class="route-label">জ্বালানি খরচ</span><span
+                                class="route-value danger" id="panicFuel">৳ ৪৫০</span></div>
+                        <div class="route-stat highlight"><span class="route-label">চাঁদা সেভ করবেন</span><span
+                                class="route-value save" id="panicSave">৳ ২০০</span></div>
+                    </div>
+                    <p class="panic-verdict" id="panicVerdict">🤡 মোট ক্ষতি: ৳ ২৫০ এবং ৩ ঘণ্টা জীবন। কিন্তু "আত্মসম্মান"
+                        বাঁচবে!</p>
+                </div>
+                <button class="btn-panic" id="panicBtn" onclick="activatePanic()">
+                    🚨 প্যানিক বাটন — এস্কেপ রুট বের করুন!
+                </button>
+            </div>
+        </div>
+    </section>
 
     <!-- ===== ENTERPRISE ===== -->
     <section class="enterprise" id="enterprise">

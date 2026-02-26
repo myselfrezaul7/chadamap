@@ -260,4 +260,89 @@ function showToast(msg, err = false) {
     t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 4000);
 }
 
-// ===== MISC =====
+// ===== AI EXCUSE GENERATOR =====
+const excuses = [
+    { emoji: '👮', text: '"ভাই আমার মামা DIG, ফোন করব?" — ৯৫% সাকসেস রেট' },
+    { emoji: '🤕', text: '"দুই রাস্তা আগে পকেটমার লইয়া গেছে, ভাই খালি পকেট!" — ৬৮% সাকসেস' },
+    { emoji: '🤰', text: '"বউ লেবারে, এখনই হসপিটাল যাইতে হবে!" — ৮৮% সাকসেস রেট' },
+    { emoji: '📱', text: '"ভাই ক্যামেরা চালু আছে, লাইভে আছি!" — ৭৫% সাকসেস রেট' },
+    { emoji: '🪪', text: '"আমি সাংবাদিক, প্রেস কার্ড দেখাই?" — ৬২% সাকসেস রেট' },
+    { emoji: '😭', text: '"গতকাল চাকরি গেছে ভাই, বাচ্চার দুধের টাকাও নাই!" — ৭৯% সাকসেস রেট' },
+    { emoji: '🤝', text: '"জামাল ভাইয়ের লোক আমি, চিনেন না?" — ৫৫% সাকসেস রেট (ভুল জামাল হলে 0%)' },
+    { emoji: '🔧', text: '"গাড়ি খারাপ, টো করতেছি, ভাই একটু সহানুভূতি!" — ৪৫% সাকসেস রেট' },
+    { emoji: '🤒', text: '"ভাই আমার জ্বর ১০৪, ডেঙ্গু হইতে পারে, কাছে আইসেন না!" — ৯২% সাকসেস রেট' },
+    { emoji: '📞', text: '"থানায় ফোন করব? নাকি আমরা ভদ্রভাবে সমাধান করি?" — ৩৫% সাকসেস রেট (ব্যাকফায়ার ঝুঁকি)' },
+    { emoji: '🎓', text: '"আমি মাদ্রাসার হুজুর, চাঁদা নিলে গুনাহ হবে ভাই!" — ৮৫% সাকসেস রেট' },
+    { emoji: '🚑', text: '"অ্যাম্বুলেন্স পিছনে আসতেছে, রাস্তা ছাড়েন!" — ৭০% সাকসেস রেট' }
+];
+let excuseCounter = 0;
+window.generateExcuse = function () {
+    const display = document.getElementById('excuseDisplay');
+    display.classList.add('animating');
+    setTimeout(() => {
+        const e = excuses[Math.floor(Math.random() * excuses.length)];
+        document.getElementById('excuseText').textContent = e.text;
+        document.querySelector('.excuse-emoji').textContent = e.emoji;
+        excuseCounter++;
+        document.getElementById('excuseCount').textContent = excuseCounter.toLocaleString('bn-BD');
+        display.classList.remove('animating');
+    }, 400);
+};
+
+// ===== SHIFT CHANGE TRACKER =====
+const shifts = [
+    { name: '🌙 রাত শিফট', rate: 'রেট: লো (ঘুমাচ্ছে)', start: 0, end: 6 },
+    { name: '🌅 সকাল শিফট', rate: 'রেট: স্বাভাবিক', start: 6, end: 12 },
+    { name: '🌇 বিকেল শিফট', rate: 'রেট: +৫০% সার্জ!', start: 12, end: 18 },
+    { name: '🌃 সন্ধ্যা শিফট', rate: 'রেট: +৮০% পিক আওয়ার!', start: 18, end: 24 }
+];
+function updateShiftTracker() {
+    const now = new Date();
+    const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+    let ci = shifts.findIndex(sh => h >= sh.start && h < sh.end);
+    if (ci === -1) ci = 0;
+    const ni = (ci + 1) % shifts.length;
+    const cur = shifts[ci], nxt = shifts[ni];
+    document.getElementById('currentShiftName').textContent = cur.name;
+    document.getElementById('currentShiftRate').textContent = cur.rate;
+    document.getElementById('nextShiftName').textContent = nxt.name;
+    document.getElementById('nextShiftRate').textContent = nxt.rate;
+    const shiftDur = (cur.end - cur.start) * 3600;
+    const elapsed = (h - cur.start) * 3600 + m * 60 + s;
+    const pct = Math.min((elapsed / shiftDur) * 100, 100);
+    document.getElementById('shiftProgressFill').style.width = pct + '%';
+    const remain = shiftDur - elapsed;
+    const rh = Math.floor(remain / 3600), rm = Math.floor((remain % 3600) / 60), rs = remain % 60;
+    document.getElementById('shiftCountdown').textContent =
+        `শিফট চেঞ্জ হতে বাকি: ${rh} ঘণ্টা ${rm} মিনিট ${rs} সেকেন্ড`;
+    const w = document.getElementById('shiftWarning');
+    if (pct > 80) { w.style.display = 'block'; w.textContent = '⚡ সার্জ প্রাইসিং শুরু হতে পারে — এখনই পালান!'; }
+    else { w.style.display = 'none'; }
+}
+updateShiftTracker();
+setInterval(updateShiftTracker, 1000);
+
+// ===== PANIC BUTTON =====
+const panicRoutes = [
+    { orig: '২.৫ কিমি', dist: '৩৮ কিমি', time: '৩ ঘণ্টা ১৫ মিনিট', fuel: '৳ ৪৫০', save: '৳ ২০০', verdict: '🤡 মোট ক্ষতি: ৳ ২৫০ এবং ৩ ঘণ্টা জীবন। কিন্তু "আত্মসম্মান" বাঁচবে!' },
+    { orig: '৪ কিমি', dist: '৫৬ কিমি', time: '৪ ঘণ্টা ৪০ মিনিট', fuel: '৳ ৭২০', save: '৳ ৩০০', verdict: '🤡 ৳৪২০ বেশি খরচ + ৪ ঘণ্টা সময়! কিন্তু চাঁদাবাজের মুখটা দেখতে হয়নি।' },
+    { orig: '১.২ কিমি', dist: '২৭ কিমি', time: '২ ঘণ্টা ১০ মিনিট', fuel: '৳ ৩৫০', save: '৳ ১০০', verdict: '🤡 ৳২৫০ লস করে ৳১০০ সেভ! ম্যাথ চ্যাম্পিয়ন।' },
+    { orig: '৬ কিমি', dist: '৭৮ কিমি', time: '৫ ঘণ্টা', fuel: '৳ ১,১০০', save: '৳ ৫০০', verdict: '🤡 ইউটার্ন মেরে গাজীপুর ঘুরে রাজশাহী হয়ে ফিরবেন — আত্মার শান্তি!' }
+];
+window.activatePanic = function () {
+    const btn = document.getElementById('panicBtn');
+    btn.textContent = '⏳ এস্কেপ রুট ক্যালকুলেট হচ্ছে...';
+    btn.disabled = true;
+    setTimeout(() => {
+        const r = panicRoutes[Math.floor(Math.random() * panicRoutes.length)];
+        document.getElementById('panicOrigDist').textContent = r.orig;
+        document.getElementById('panicNewDist').textContent = r.dist;
+        document.getElementById('panicTime').textContent = r.time;
+        document.getElementById('panicFuel').textContent = r.fuel;
+        document.getElementById('panicSave').textContent = r.save;
+        document.getElementById('panicVerdict').textContent = r.verdict;
+        document.getElementById('panicRouteInfo').style.display = 'block';
+        btn.textContent = '🔄 আবার ট্রাই করুন — অন্য রুট';
+        btn.disabled = false;
+    }, 1500);
+};
