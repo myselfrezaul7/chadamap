@@ -124,7 +124,13 @@ const dhakaAreaCoords = {
     'পুরান ঢাকা': { lat: 23.7104, lng: 90.4074 }, 'old dhaka': { lat: 23.7104, lng: 90.4074 }, 'puran dhaka': { lat: 23.7104, lng: 90.4074 },
     'টঙ্গী': { lat: 23.8932, lng: 90.3989 }, 'tongi': { lat: 23.8932, lng: 90.3989 },
     'কাঁচপুর': { lat: 23.7032, lng: 90.5218 }, 'kanchpur': { lat: 23.7032, lng: 90.5218 },
-    'নারায়ণগঞ্জ': { lat: 23.7032, lng: 90.5218 }, 'narayanganj': { lat: 23.7032, lng: 90.5218 },
+    'নারায়ণগঞ্জ': { lat: 23.6238, lng: 90.5000 }, 'narayanganj': { lat: 23.6238, lng: 90.5000 },
+    'মুন্সিগঞ্জ': { lat: 23.5422, lng: 90.5305 }, 'munshiganj': { lat: 23.5422, lng: 90.5305 },
+    'গাজীপুর': { lat: 23.9999, lng: 90.4203 }, 'gazipur': { lat: 23.9999, lng: 90.4203 },
+    'সাভার': { lat: 23.8583, lng: 90.2667 }, 'savar': { lat: 23.8583, lng: 90.2667 },
+    'কেরানীগঞ্জ': { lat: 23.6800, lng: 90.3200 }, 'keraniganj': { lat: 23.6800, lng: 90.3200 },
+    'মানিকগঞ্জ': { lat: 23.8644, lng: 90.0047 }, 'manikganj': { lat: 23.8644, lng: 90.0047 },
+    'নরসিংদী': { lat: 23.9193, lng: 90.7176 }, 'narsingdi': { lat: 23.9193, lng: 90.7176 },
     'কক্সবাজার': { lat: 21.9497, lng: 92.1466 }, 'coxs bazar': { lat: 21.9497, lng: 92.1466 }, "cox's bazar": { lat: 21.9497, lng: 92.1466 }
 };
 
@@ -155,7 +161,7 @@ db.collection('reports').where('status', '==', 'approved').onSnapshot(snapshot =
             type: r.collectorType || '—',
             rate: '৳ ' + (r.currentRate || 0).toLocaleString('bn-BD'),
             mood: r.mood || 'green',
-            note: r.vipCode || '',
+            note: [r.description, r.vipCode].filter(Boolean).join(' — ') || '',
             source: 'firestore'
         };
         allMapSpots.push(spot);
