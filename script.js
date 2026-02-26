@@ -51,14 +51,14 @@ function makeIcon(color, size = 16) {
 
 // Static hardcoded spots
 const chandaSpots = [
-    { lat: 23.7245, lng: 90.4135, name: 'গুলিস্তান', type: 'লোকাল সিন্ডিকেট', rate: '৳ ১,৫০০', mood: 'red', note: 'শিশু পার্ক এলাকায় সক্রিয়' },
-    { lat: 23.7381, lng: 90.3958, name: 'শাহবাগ', type: 'পলিটিক্যাল ক্যাডার', rate: '৳ ৮০০', mood: 'red', note: 'মোড়ে স্থায়ী চেকপোস্ট' },
-    { lat: 23.7330, lng: 90.4187, name: 'মতিঝিল', type: 'পাতি মাস্তান', rate: '৳ ১০০', mood: 'green', note: 'শাপলা চত্বরে, কম রেট' },
-    { lat: 23.8067, lng: 90.3686, name: 'মিরপুর ১০', type: 'পলিটিক্যাল ক্যাডার', rate: '৳ ৫০০', mood: 'red', note: '🔥 সবচেয়ে হট ডেঞ্জার জোন' },
-    { lat: 23.7572, lng: 90.3880, name: 'ফার্মগেট', type: 'ট্রাফিক পুলিশ', rate: '৳ ২০০', mood: 'yellow', note: '"লাইসেন্স দেখান" গেম' },
-    { lat: 23.8759, lng: 90.3795, name: 'উত্তরা', type: 'পলিটিক্যাল ক্যাডার', rate: '৳ ৮০০', mood: 'red', note: 'সেক্টর ৭ এ নতুন চেকপোস্ট' },
-    { lat: 23.7507, lng: 90.3916, name: 'কারওয়ান বাজার', type: 'লোকাল সিন্ডিকেট', rate: '৳ ৩০০', mood: 'yellow', note: 'মিডিয়া অফিস এলাকা' },
-    { lat: 23.7509, lng: 90.4009, name: 'তেজগাঁও', type: 'পাতি মাস্তান', rate: '৳ ১৫০', mood: 'green', note: 'ইন্ডাস্ট্রিয়াল এলাকা' }
+    { lat: 23.7245, lng: 90.4135, name: 'গুলিস্তান', nameEn: 'gulistan', type: 'লোকাল সিন্ডিকেট', rate: '৳ ১,৫০০', mood: 'red', note: 'শিশু পার্ক এলাকায় সক্রিয়' },
+    { lat: 23.7381, lng: 90.3958, name: 'শাহবাগ', nameEn: 'shahbag', type: 'পলিটিক্যাল ক্যাডার', rate: '৳ ৮০০', mood: 'red', note: 'মোড়ে স্থায়ী চেকপোস্ট' },
+    { lat: 23.7330, lng: 90.4187, name: 'মতিঝিল', nameEn: 'motijheel', type: 'পাতি মাস্তান', rate: '৳ ১০০', mood: 'green', note: 'শাপলা চত্বরে, কম রেট' },
+    { lat: 23.8067, lng: 90.3686, name: 'মিরপুর ১০', nameEn: 'mirpur 10', type: 'পলিটিক্যাল ক্যাডার', rate: '৳ ৫০০', mood: 'red', note: '🔥 সবচেয়ে হট ডেঞ্জার জোন' },
+    { lat: 23.7572, lng: 90.3880, name: 'ফার্মগেট', nameEn: 'farmgate', type: 'ট্রাফিক পুলিশ', rate: '৳ ২০০', mood: 'yellow', note: '"লাইসেন্স দেখান" গেম' },
+    { lat: 23.8759, lng: 90.3795, name: 'উত্তরা', nameEn: 'uttara', type: 'পলিটিক্যাল ক্যাডার', rate: '৳ ৮০০', mood: 'red', note: 'সেক্টর ৭ এ নতুন চেকপোস্ট' },
+    { lat: 23.7507, lng: 90.3916, name: 'কারওয়ান বাজার', nameEn: 'karwan bazar', type: 'লোকাল সিন্ডিকেট', rate: '৳ ৩০০', mood: 'yellow', note: 'মিডিয়া অফিস এলাকা' },
+    { lat: 23.7509, lng: 90.4009, name: 'তেজগাঁও', nameEn: 'tejgaon', type: 'পাতি মাস্তান', rate: '৳ ১৫০', mood: 'green', note: 'ইন্ডাস্ট্রিয়াল এলাকা' }
 ];
 
 // All spots for search (static + dynamic)
@@ -100,28 +100,32 @@ updateHeatmap();
 // ===== DYNAMIC FIRESTORE MARKERS (approved reports) =====
 // Dhaka area coordinates for placing user reports
 const dhakaAreaCoords = {
-    'গুলিস্তান': { lat: 23.7245, lng: 90.4135 },
-    'শাহবাগ': { lat: 23.7381, lng: 90.3958 },
-    'মতিঝিল': { lat: 23.7330, lng: 90.4187 },
-    'মিরপুর': { lat: 23.8067, lng: 90.3686 },
-    'ফার্মগেট': { lat: 23.7572, lng: 90.3880 },
-    'উত্তরা': { lat: 23.8759, lng: 90.3795 },
-    'কারওয়ান বাজার': { lat: 23.7507, lng: 90.3916 },
-    'তেজগাঁও': { lat: 23.7509, lng: 90.4009 },
-    'ধানমন্ডি': { lat: 23.7461, lng: 90.3742 },
-    'মোহাম্মদপুর': { lat: 23.7662, lng: 90.3587 },
-    'বনানী': { lat: 23.7937, lng: 90.4066 },
-    'গুলশান': { lat: 23.7925, lng: 90.4135 },
-    'মালিবাগ': { lat: 23.7478, lng: 90.4128 },
-    'যাত্রাবাড়ী': { lat: 23.7106, lng: 90.4347 },
-    'সদরঘাট': { lat: 23.7063, lng: 90.4075 },
-    'মিরপুর ১০': { lat: 23.8067, lng: 90.3686 },
-    'বাড্ডা': { lat: 23.7836, lng: 90.4273 },
-    'রামপুরা': { lat: 23.7637, lng: 90.4236 },
-    'খিলগাঁও': { lat: 23.7532, lng: 90.4342 },
-    'শ্যামলী': { lat: 23.7730, lng: 90.3636 },
-    'নিউমার্কেট': { lat: 23.7337, lng: 90.3846 },
-    'পুরান ঢাকা': { lat: 23.7104, lng: 90.4074 }
+    'গুলিস্তান': { lat: 23.7245, lng: 90.4135 }, 'gulistan': { lat: 23.7245, lng: 90.4135 },
+    'শাহবাগ': { lat: 23.7381, lng: 90.3958 }, 'shahbag': { lat: 23.7381, lng: 90.3958 },
+    'মতিঝিল': { lat: 23.7330, lng: 90.4187 }, 'motijheel': { lat: 23.7330, lng: 90.4187 },
+    'মিরপুর': { lat: 23.8067, lng: 90.3686 }, 'mirpur': { lat: 23.8067, lng: 90.3686 },
+    'ফার্মগেট': { lat: 23.7572, lng: 90.3880 }, 'farmgate': { lat: 23.7572, lng: 90.3880 },
+    'উত্তরা': { lat: 23.8759, lng: 90.3795 }, 'uttara': { lat: 23.8759, lng: 90.3795 },
+    'কারওয়ান বাজার': { lat: 23.7507, lng: 90.3916 }, 'karwan bazar': { lat: 23.7507, lng: 90.3916 }, 'kawran bazar': { lat: 23.7507, lng: 90.3916 },
+    'তেজগাঁও': { lat: 23.7509, lng: 90.4009 }, 'tejgaon': { lat: 23.7509, lng: 90.4009 },
+    'ধানমন্ডি': { lat: 23.7461, lng: 90.3742 }, 'dhanmondi': { lat: 23.7461, lng: 90.3742 },
+    'মোহাম্মদপুর': { lat: 23.7662, lng: 90.3587 }, 'mohammadpur': { lat: 23.7662, lng: 90.3587 },
+    'বনানী': { lat: 23.7937, lng: 90.4066 }, 'banani': { lat: 23.7937, lng: 90.4066 },
+    'গুলশান': { lat: 23.7925, lng: 90.4135 }, 'gulshan': { lat: 23.7925, lng: 90.4135 },
+    'মালিবাগ': { lat: 23.7478, lng: 90.4128 }, 'malibagh': { lat: 23.7478, lng: 90.4128 },
+    'যাত্রাবাড়ী': { lat: 23.7106, lng: 90.4347 }, 'jatrabari': { lat: 23.7106, lng: 90.4347 },
+    'সদরঘাট': { lat: 23.7063, lng: 90.4075 }, 'sadarghat': { lat: 23.7063, lng: 90.4075 },
+    'মিরপুর ১০': { lat: 23.8067, lng: 90.3686 }, 'mirpur 10': { lat: 23.8067, lng: 90.3686 },
+    'বাড্ডা': { lat: 23.7836, lng: 90.4273 }, 'badda': { lat: 23.7836, lng: 90.4273 },
+    'রামপুরা': { lat: 23.7637, lng: 90.4236 }, 'rampura': { lat: 23.7637, lng: 90.4236 },
+    'খিলগাঁও': { lat: 23.7532, lng: 90.4342 }, 'khilgaon': { lat: 23.7532, lng: 90.4342 },
+    'শ্যামলী': { lat: 23.7730, lng: 90.3636 }, 'shyamoli': { lat: 23.7730, lng: 90.3636 },
+    'নিউমার্কেট': { lat: 23.7337, lng: 90.3846 }, 'new market': { lat: 23.7337, lng: 90.3846 }, 'newmarket': { lat: 23.7337, lng: 90.3846 },
+    'পুরান ঢাকা': { lat: 23.7104, lng: 90.4074 }, 'old dhaka': { lat: 23.7104, lng: 90.4074 }, 'puran dhaka': { lat: 23.7104, lng: 90.4074 },
+    'টঙ্গী': { lat: 23.8932, lng: 90.3989 }, 'tongi': { lat: 23.8932, lng: 90.3989 },
+    'কাঁচপুর': { lat: 23.7032, lng: 90.5218 }, 'kanchpur': { lat: 23.7032, lng: 90.5218 },
+    'নারায়ণগঞ্জ': { lat: 23.7032, lng: 90.5218 }, 'narayanganj': { lat: 23.7032, lng: 90.5218 },
+    'কক্সবাজার': { lat: 21.9497, lng: 92.1466 }, 'coxs bazar': { lat: 21.9497, lng: 92.1466 }, "cox's bazar": { lat: 21.9497, lng: 92.1466 }
 };
 
 function findCoords(location) {
@@ -176,7 +180,7 @@ searchInput.addEventListener('input', () => {
     if (q.length < 2) { searchResults.classList.remove('show'); searchResults.innerHTML = ''; return; }
 
     const matches = allMapSpots.filter(s =>
-        s.name.toLowerCase().includes(q) || s.type.toLowerCase().includes(q)
+        s.name.toLowerCase().includes(q) || s.type.toLowerCase().includes(q) || (s.nameEn && s.nameEn.toLowerCase().includes(q))
     );
 
     if (matches.length === 0) {
@@ -198,7 +202,7 @@ document.addEventListener('click', e => { if (!e.target.closest('.map-search-bar
 function searchLocation() {
     const q = searchInput.value.trim().toLowerCase();
     if (!q) return;
-    const match = allMapSpots.find(s => s.name.toLowerCase().includes(q));
+    const match = allMapSpots.find(s => s.name.toLowerCase().includes(q) || (s.nameEn && s.nameEn.toLowerCase().includes(q)));
     if (match) {
         flyToSpot(match.lat, match.lng, match.name);
     } else {
