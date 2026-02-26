@@ -322,27 +322,4 @@ function updateShiftTracker() {
 updateShiftTracker();
 setInterval(updateShiftTracker, 1000);
 
-// ===== PANIC BUTTON =====
-const panicRoutes = [
-    { orig: '২.৫ কিমি', dist: '৩৮ কিমি', time: '৩ ঘণ্টা ১৫ মিনিট', fuel: '৳ ৪৫০', save: '৳ ২০০', verdict: '🤡 মোট ক্ষতি: ৳ ২৫০ এবং ৩ ঘণ্টা জীবন। কিন্তু "আত্মসম্মান" বাঁচবে!' },
-    { orig: '৪ কিমি', dist: '৫৬ কিমি', time: '৪ ঘণ্টা ৪০ মিনিট', fuel: '৳ ৭২০', save: '৳ ৩০০', verdict: '🤡 ৳৪২০ বেশি খরচ + ৪ ঘণ্টা সময়! কিন্তু চাঁদাবাজের মুখটা দেখতে হয়নি।' },
-    { orig: '১.২ কিমি', dist: '২৭ কিমি', time: '২ ঘণ্টা ১০ মিনিট', fuel: '৳ ৩৫০', save: '৳ ১০০', verdict: '🤡 ৳২৫০ লস করে ৳১০০ সেভ! ম্যাথ চ্যাম্পিয়ন।' },
-    { orig: '৬ কিমি', dist: '৭৮ কিমি', time: '৫ ঘণ্টা', fuel: '৳ ১,১০০', save: '৳ ৫০০', verdict: '🤡 ইউটার্ন মেরে গাজীপুর ঘুরে রাজশাহী হয়ে ফিরবেন — আত্মার শান্তি!' }
-];
-window.activatePanic = function () {
-    const btn = document.getElementById('panicBtn');
-    btn.textContent = '⏳ এস্কেপ রুট ক্যালকুলেট হচ্ছে...';
-    btn.disabled = true;
-    setTimeout(() => {
-        const r = panicRoutes[Math.floor(Math.random() * panicRoutes.length)];
-        document.getElementById('panicOrigDist').textContent = r.orig;
-        document.getElementById('panicNewDist').textContent = r.dist;
-        document.getElementById('panicTime').textContent = r.time;
-        document.getElementById('panicFuel').textContent = r.fuel;
-        document.getElementById('panicSave').textContent = r.save;
-        document.getElementById('panicVerdict').textContent = r.verdict;
-        document.getElementById('panicRouteInfo').style.display = 'block';
-        btn.textContent = '🔄 আবার ট্রাই করুন — অন্য রুট';
-        btn.disabled = false;
-    }, 1500);
-};
+

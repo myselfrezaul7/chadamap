@@ -373,40 +373,6 @@
         </div>
     </section>
 
-    <!-- ===== PANIC BUTTON ===== -->
-    <section class="panic-section" id="panic">
-        <div class="container">
-            <div class="reveal">
-                <span class="section-tag" style="color:#ff4444;background:rgba(255,68,68,0.1)">🚨 প্যানিক মোড</span>
-                <h2 class="section-title">প্যানিক বাটন: <span class="glow-text-red">এস্কেপ রুট</span></h2>
-                <p class="section-desc" style="margin:0 auto">৳২০০ চাঁদা বাঁচাতে ৩ ঘণ্টার ঘুরপথ? — হ্যাঁ, সেটাই আমাদের
-                    প্রস্তাব।</p>
-            </div>
-            <div class="panic-card reveal reveal-delay-1">
-                <div class="panic-route-info" id="panicRouteInfo" style="display:none;">
-                    <div class="panic-route-header">🗺️ বিকল্প "নিরাপদ" রুট জেনারেটেড!</div>
-                    <div class="panic-route-details">
-                        <div class="route-stat"><span class="route-label">আসল দূরত্ব</span><span class="route-value"
-                                id="panicOrigDist">২.৫ কিমি</span></div>
-                        <div class="route-stat"><span class="route-label">নতুন দূরত্ব</span><span
-                                class="route-value danger" id="panicNewDist">৩৮ কিমি</span></div>
-                        <div class="route-stat"><span class="route-label">সময় লাগবে</span><span
-                                class="route-value danger" id="panicTime">৩ ঘণ্টা ১৫ মিনিট</span></div>
-                        <div class="route-stat"><span class="route-label">জ্বালানি খরচ</span><span
-                                class="route-value danger" id="panicFuel">৳ ৪৫০</span></div>
-                        <div class="route-stat highlight"><span class="route-label">চাঁদা সেভ করবেন</span><span
-                                class="route-value save" id="panicSave">৳ ২০০</span></div>
-                    </div>
-                    <p class="panic-verdict" id="panicVerdict">🤡 মোট ক্ষতি: ৳ ২৫০ এবং ৩ ঘণ্টা জীবন। কিন্তু "আত্মসম্মান"
-                        বাঁচবে!</p>
-                </div>
-                <button class="btn-panic" id="panicBtn" onclick="activatePanic()">
-                    🚨 প্যানিক বাটন — এস্কেপ রুট বের করুন!
-                </button>
-            </div>
-        </div>
-    </section>
-
     <!-- ===== ENTERPRISE ===== -->
     <section class="enterprise" id="enterprise">
         <div class="container">
@@ -494,6 +460,7 @@
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
