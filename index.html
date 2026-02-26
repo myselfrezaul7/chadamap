@@ -61,6 +61,10 @@
 </head>
 
 <body>
+    <!-- ===== SCROLL PROGRESS ===== -->
+    <div class="scroll-progress-container">
+        <div class="scroll-progress-bar" id="scrollProgress"></div>
+    </div>
 
     <!-- ===== NAVIGATION ===== -->
     <nav class="navbar" id="navbar">
@@ -120,6 +124,28 @@
                     <button class="btn-secondary"
                         onclick="document.getElementById('report').scrollIntoView({behavior:'smooth'})">🚨 স্পট রিপোর্ট
                         করুন</button>
+                </div>
+
+                <div class="calculator-card reveal reveal-delay-2">
+                    <h3>🧮 কুইক চাঁদা এস্টিমেট</h3>
+                    <div class="calc-row">
+                        <div class="calc-group">
+                            <select id="calcVehicle">
+                                <option value="bus">বাস</option>
+                                <option value="truck">পণ্যবাহী ট্রাক</option>
+                                <option value="cng">সিএনজি/অটো</option>
+                            </select>
+                        </div>
+                        <div class="calc-group">
+                            <select id="calcRoute">
+                                <option value="city">ঢাকা সিটি (লোকাল)</option>
+                                <option value="highway">মহাসড়ক (আউট অব সিটি)</option>
+                                <option value="bridge">সেতু / বড় টার্মিনাল</option>
+                            </select>
+                        </div>
+                        <button class="btn-primary calc-btn" onclick="calculateChanda()">হিসাব করুন</button>
+                    </div>
+                    <div class="calc-result" id="calcResult">সম্ভাব্য চাঁদা: <span>৳ ---</span> / ট্রিপ</div>
                 </div>
                 <div class="hero-stats">
                     <div class="hero-stat">

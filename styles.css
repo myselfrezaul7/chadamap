@@ -5,8 +5,8 @@
     --bg-primary: #0a0a0a;
     --bg-secondary: #111111;
     --bg-tertiary: #1a1a1a;
-    --bg-card: #161616;
-    --bg-card-hover: #1e1e1e;
+    --bg-card: rgba(22, 22, 22, 0.7);
+    --bg-card-hover: rgba(30, 30, 30, 0.85);
     --text-primary: #ffffff;
     --text-secondary: #a3a3a3;
     --text-tertiary: #737373;
@@ -15,6 +15,7 @@
     --accent-dim: rgba(74, 155, 155, 0.15);
     --border: #262626;
     --border-hover: #404040;
+    --glass-border: rgba(255, 255, 255, 0.05);
     --gradient-primary: linear-gradient(135deg, #4a9b9b 0%, #3d8585 100%);
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -38,8 +39,8 @@ html[data-theme="light"] {
     --bg-primary: #f0f0f0;
     --bg-secondary: #e8e8e8;
     --bg-tertiary: #e0e0e0;
-    --bg-card: #ffffff;
-    --bg-card-hover: #f5f5f5;
+    --bg-card: rgba(255, 255, 255, 0.7);
+    --bg-card-hover: rgba(245, 245, 245, 0.85);
     --text-primary: #1a1a1a;
     --text-secondary: #4a4a4a;
     --text-tertiary: #6b6b6b;
@@ -48,6 +49,7 @@ html[data-theme="light"] {
     --accent-dim: rgba(26, 26, 26, 0.08);
     --border: #d0d0d0;
     --border-hover: #b0b0b0;
+    --glass-border: rgba(0, 0, 0, 0.05);
     --gradient-primary: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -160,7 +162,7 @@ img {
 .reveal {
     opacity: 0;
     transform: translateY(30px);
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)
+    transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1)
 }
 
 .reveal.revealed {
@@ -182,6 +184,45 @@ img {
 
 .reveal-delay-4 {
     transition-delay: 0.6s
+}
+
+/* ===== SCROLL PROGRESS BAR ===== */
+.scroll-progress-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    z-index: 9999;
+    background: transparent;
+}
+
+.scroll-progress-bar {
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    box-shadow: 0 0 10px var(--accent);
+    transition: width 0.1s ease-out;
+}
+
+/* ===== PULSAR ANIMATION FOR RED MARKERS ===== */
+@keyframes pulseMarker {
+    0% {
+        box-shadow: 0 0 0 0 var(--danger-red-dim);
+    }
+
+    70% {
+        box-shadow: 0 0 0 15px rgba(255, 45, 45, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 45, 45, 0);
+    }
+}
+
+.pulse-marker {
+    animation: pulseMarker 2s infinite cubic-bezier(0.66, 0, 0, 1);
+    border-radius: 50%;
 }
 
 /* ===== UTILITY ===== */
@@ -540,6 +581,92 @@ html[data-theme="light"] .navbar.scrolled {
     flex-wrap: wrap
 }
 
+/* ===== CALCULATOR WIDGET ===== */
+.calculator-card {
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-top: 32px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: var(--shadow-md);
+}
+
+.calculator-card h3 {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.calc-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.calc-group {
+    flex: 1;
+    min-width: 140px;
+}
+
+.calc-group select {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%239898a8' viewBox='0 0 16 16'%3E%3Cpath d='M1.5 5.5l6.5 6.5 6.5-6.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    transition: all var(--transition);
+}
+
+.calc-group select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.calc-group select option {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.calc-btn {
+    padding: 10px 20px;
+    font-size: 13px;
+    border-radius: var(--radius-md);
+    white-space: nowrap;
+}
+
+.calc-result {
+    margin-top: 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+    padding: 12px;
+    border-radius: var(--radius-md);
+    text-align: center;
+    border: 1px dashed var(--border);
+    transition: all var(--transition);
+}
+
+.calc-result span {
+    color: var(--danger-red);
+    font-size: 18px;
+    font-weight: 700;
+}
+
 .btn-primary {
     display: inline-flex;
     align-items: center;
@@ -708,7 +835,9 @@ html[data-theme="light"] .navbar.scrolled {
     font-family: var(--font-body);
     font-size: 14px;
     outline: none;
-    transition: all var(--transition)
+    transition: all var(--transition);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px)
 }
 
 .map-search-bar input:focus {
@@ -757,7 +886,9 @@ html[data-theme="light"] .navbar.scrolled {
     overflow-y: auto;
     display: none;
     z-index: 1000;
-    box-shadow: var(--shadow-lg)
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px)
 }
 
 .search-results.show {
@@ -860,13 +991,15 @@ html[data-theme="light"] .navbar.scrolled {
 
 .feature-card {
     background: var(--bg-card);
-    border: 1px solid var(--border);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     padding: 28px 20px;
     text-align: left;
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
-    overflow: hidden
+    overflow: hidden;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px)
 }
 
 .feature-card::before {
@@ -959,12 +1092,14 @@ html[data-theme="light"] .navbar.scrolled {
 .report-form-wrapper {
     margin-top: 40px;
     background: var(--bg-card);
-    border: 1px solid var(--border);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-xl);
     padding: 40px;
     position: relative;
     overflow: hidden;
-    transition: box-shadow var(--transition)
+    transition: box-shadow var(--transition);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px)
 }
 
 .report-form-wrapper:hover {
@@ -1002,14 +1137,16 @@ html[data-theme="light"] .navbar.scrolled {
     width: 100%;
     padding: 12px 16px;
     background: var(--bg-tertiary);
-    border: 1px solid var(--border);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-md);
     color: var(--text-primary);
     font-family: var(--font-body);
     font-size: 15px;
     transition: all var(--transition);
     outline: none;
-    resize: vertical
+    resize: vertical;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px)
 }
 
 .form-group input:focus,
@@ -1151,12 +1288,14 @@ html[data-theme="light"] .navbar.scrolled {
     max-width: 440px;
     margin: 0 auto;
     background: var(--bg-card);
-    border: 1px solid var(--danger-red);
+    border: 1px solid var(--danger-red-dim);
     border-radius: var(--radius-xl);
     padding: 36px 32px;
     position: relative;
     overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1)
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px)
 }
 
 .pricing-card:hover {
@@ -1830,10 +1969,12 @@ html[data-theme="light"] .navbar.scrolled {
     max-width: 700px;
     margin: 32px auto 0;
     background: var(--bg-card);
-    border: 1px solid var(--border);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     overflow: hidden;
     box-shadow: var(--shadow-md);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px)
 }
 
 .leaderboard-header {
@@ -1855,12 +1996,16 @@ html[data-theme="light"] .navbar.scrolled {
     border-top: 1px solid var(--border);
     font-size: 14px;
     color: var(--text-primary);
-    transition: background 0.2s;
+    transition: all var(--transition);
     align-items: center;
 }
 
 .leaderboard-row:hover {
-    background: var(--bg-tertiary);
+    background: var(--bg-card-hover);
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: var(--shadow-md);
+    z-index: 10;
+    position: relative;
 }
 
 .leaderboard-row.gold {
@@ -1900,13 +2045,15 @@ html[data-theme="light"] .navbar.scrolled {
     max-width: 550px;
     margin: 32px auto 0;
     background: var(--bg-card);
-    border: 1px solid var(--border);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     padding: 40px 30px;
     text-align: center;
     box-shadow: var(--shadow-md);
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px)
 }
 
 .excuse-card::before {
@@ -1995,10 +2142,12 @@ html[data-theme="light"] .navbar.scrolled {
     max-width: 600px;
     margin: 32px auto 0;
     background: var(--bg-card);
-    border: 1px solid var(--border);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     padding: 30px;
     box-shadow: var(--shadow-md);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px)
 }
 
 .shift-info-row {

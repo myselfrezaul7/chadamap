@@ -42,9 +42,12 @@ new MutationObserver(setMapTiles).observe(html, { attributes: true, attributeFil
 const moodColors = { red: '#ff2d2d', yellow: '#ffc107', green: '#39ff14' };
 const moodLabels = { red: '🔴 রেড', yellow: '🟡 ইয়েলো', green: '🟢 গ্রিন' };
 function makeIcon(color, size = 16) {
+    const isRed = color === '#ff2d2d';
+    const extraClass = isRed ? ' pulse-marker' : '';
+    const shadow = isRed ? '' : 'box-shadow:0 2px 8px rgba(0,0,0,0.4);';
     return L.divIcon({
         className: 'map-marker',
-        html: `<div style="width:${size}px;height:${size}px;background:${color};border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4)"></div>`,
+        html: `<div class="${extraClass}" style="width:${size}px;height:${size}px;background:${color};border-radius:50%;border:3px solid white;${shadow}"></div>`,
         iconSize: [size, size], iconAnchor: [size / 2, size / 2]
     });
 }
@@ -280,8 +283,18 @@ document.getElementById('reportForm').addEventListener('submit', async e => {
         document.getElementById('formSuccessMsg').style.display = 'block';
         document.getElementById('reportForm').reset();
     } catch (err) { showToast('❌ ত্রুটি: ' + err.message, true); }
-    btn.textContent = '📤 রিপোর্ট জমা দিন'; btn.disabled = false;
+    e.target.disabled = false;
+    e.target.innerHTML = 'রিপোর্ট করুন 🚀';
 });
+
+// ===== SCROLL PROGRESS BAR =====
+window.addEventListener('scroll', () => {
+    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    if (height > 0) {
+        document.getElementById('scrollProgress').style.width = (winScroll / height) * 100 + '%';
+    }
+}, { passive: true });
 
 window.resetFormView = function () {
     document.getElementById('formSuccessMsg').style.display = 'none';
@@ -357,4 +370,36 @@ function updateShiftTracker() {
 updateShiftTracker();
 setInterval(updateShiftTracker, 1000);
 
+// ===== CHANDA CALCULATOR =====
+window.calculateChanda = function () {
+    const v = document.getElementById('calcVehicle').value;
+    const r = document.getElementById('calcRoute').value;
+    const res = document.getElementById('calcResult').querySelector('span');
 
+    let base = 0;
+    if (v === 'bus') base = 500;
+    if (v === 'truck') base = 800;
+    if (v === 'cng') base = 100;
+
+    let multiplier = 1;
+    if (r === 'city') multiplier = 1;
+    if (r === 'highway') multiplier = 1.5;
+    if (r === 'bridge') multiplier = 2.5;
+
+    let total = Math.floor(base * multiplier);
+
+    let cur = 0;
+    const step = Math.max(10, Math.floor(total / 20));
+
+    // Animate the result number
+    const int = setInterval(() => {
+        cur += step;
+        if (cur >= total) {
+            cur = total;
+            clearInterval(int);
+            res.style.transform = 'scale(1.1)';
+            setTimeout(() => res.style.transform = 'scale(1)', 200);
+        }
+        res.innerHTML = `৳ ${cur.toLocaleString('bn-BD')}`;
+    }, 30);
+};
