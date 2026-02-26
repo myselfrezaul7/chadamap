@@ -1,262 +1,55 @@
-// ===== THEME TOGGLE =====
+// ===== SCROLL REVEAL =====
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) { entry.target.classList.add('revealed'); revealObserver.unobserve(entry.target); }
+    });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// ===== THEME =====
 const themeToggle = document.getElementById('themeToggle');
 const html = document.documentElement;
-function setTheme(theme) {
-    html.setAttribute('data-theme', theme);
-    themeToggle.textContent = theme === 'dark' ? '🌙' : '☀️';
-    localStorage.setItem('chandamap-theme', theme);
-}
+function setTheme(t) { html.setAttribute('data-theme', t); themeToggle.textContent = t === 'dark' ? '🌙' : '☀️'; localStorage.setItem('chandamap-theme', t); }
 setTheme(localStorage.getItem('chandamap-theme') || 'dark');
-themeToggle.addEventListener('click', () => {
-    setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-});
+themeToggle.addEventListener('click', () => setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
 
 // ===== NAVBAR =====
 const navbar = document.getElementById('navbar');
-window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 50));
+window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 50), { passive: true });
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('navLinks');
 hamburger.addEventListener('click', () => { hamburger.classList.toggle('active'); navLinks.classList.toggle('open'); });
-navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', () => { hamburger.classList.remove('active'); navLinks.classList.remove('open'); }));
+navLinks.querySelectorAll('a').forEach(l => l.addEventListener('click', () => { hamburger.classList.remove('active'); navLinks.classList.remove('open'); }));
 
-// ===== FIREBASE AUTH =====
-const overlay = document.getElementById('adminAuthOverlay');
-const dashLayout = document.getElementById('dashboardLayout');
-const loginBtn = document.getElementById('googleLoginBtn');
-const logoutBtn = document.getElementById('adminLogoutBtn');
-const authError = document.getElementById('adminAuthError');
-
-let currentUser = null;
-let unsubReports = null;
-
-auth.onAuthStateChanged(user => {
-    if (user && isAdmin(user)) {
-        currentUser = user;
-        overlay.classList.add('authenticated');
-        dashLayout.classList.remove('locked');
-        document.getElementById('adminAvatar').src = user.photoURL || '';
-        document.getElementById('adminName').textContent = user.displayName || user.email;
-        loadReports();
-    } else {
-        currentUser = null;
-        overlay.classList.remove('authenticated');
-        dashLayout.classList.add('locked');
-        if (unsubReports) { unsubReports(); unsubReports = null; }
-        if (user && !isAdmin(user)) {
-            auth.signOut();
-            authError.textContent = '❌ এই অ্যাকাউন্টের অ্যাডমিন অ্যাক্সেস নেই। শুধুমাত্র chadamap7@gmail.com ব্যবহার করুন।';
-            authError.style.display = 'block';
-        }
-    }
-});
-
-loginBtn.addEventListener('click', async () => {
-    authError.style.display = 'none';
-    try {
-        await auth.signInWithPopup(googleProvider);
-    } catch (err) {
-        authError.textContent = '❌ লগইন ব্যর্থ: ' + err.message;
-        authError.style.display = 'block';
-    }
-});
-
-logoutBtn.addEventListener('click', () => {
-    auth.signOut();
-    showToast('🚪 লগআউট সফল!');
-});
-
-// ===== FIRESTORE: FORM SUBMISSION =====
-const reportForm = document.getElementById('reportForm');
-reportForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const location = document.getElementById('location').value.trim();
-    const collectorType = document.getElementById('collectorType').value;
-    const currentRate = parseInt(document.getElementById('currentRate').value);
-    const mood = document.querySelector('input[name="mood"]:checked');
-    const vipCode = document.getElementById('vipCode').value.trim();
-
-    if (!location || !collectorType || !currentRate || !mood) {
-        showToast('⚠️ সব ফিল্ড পূরণ করুন!', true);
-        return;
-    }
-
-    const btn = document.getElementById('submitBtn');
-    btn.textContent = '⏳ পাঠানো হচ্ছে...';
-    btn.disabled = true;
-
-    try {
-        await db.collection('reports').add({
-            location,
-            collectorType,
-            currentRate,
-            mood: mood.value,
-            vipCode: vipCode || '',
-            status: 'pending',
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        showToast('✅ রিপোর্ট সফলভাবে জমা হয়েছে! অ্যাডমিন রিভিউ করবেন।');
-        reportForm.reset();
-    } catch (err) {
-        showToast('❌ রিপোর্ট জমা ব্যর্থ: ' + err.message, true);
-    }
-    btn.textContent = '📤 রিপোর্ট জমা দিন';
-    btn.disabled = false;
-});
-
-// ===== FIRESTORE: LOAD REPORTS (REAL-TIME) =====
-let allReports = [];
-let currentFilter = 'all';
-
-function loadReports() {
-    if (unsubReports) unsubReports();
-    unsubReports = db.collection('reports')
-        .orderBy('createdAt', 'desc')
-        .onSnapshot(snapshot => {
-            allReports = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            updateKPIs();
-            renderTable();
-        }, err => {
-            console.error('Firestore error:', err);
-        });
-}
-
-function updateKPIs() {
-    const total = allReports.length;
-    const pending = allReports.filter(r => r.status === 'pending').length;
-    const approved = allReports.filter(r => r.status === 'approved').length;
-    const rejected = allReports.filter(r => r.status === 'rejected').length;
-    document.getElementById('kpiTotal').textContent = total.toLocaleString('bn-BD');
-    document.getElementById('kpiPending').textContent = pending.toLocaleString('bn-BD');
-    document.getElementById('kpiApproved').textContent = approved.toLocaleString('bn-BD');
-    document.getElementById('kpiRejected').textContent = rejected.toLocaleString('bn-BD');
-}
-
-function renderTable() {
-    const tbody = document.getElementById('reportsBody');
-    const filtered = currentFilter === 'all' ? allReports : allReports.filter(r => r.status === currentFilter);
-
-    if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-tertiary)">কোনো রিপোর্ট নেই</td></tr>';
-        return;
-    }
-
-    tbody.innerHTML = filtered.map(r => {
-        const time = r.createdAt ? new Date(r.createdAt.seconds * 1000).toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' }) : '—';
-        const moodMap = { green: { icon: '🟢', cls: 'green', text: 'গ্রিন' }, yellow: { icon: '🟡', cls: 'yellow', text: 'ইয়েলো' }, red: { icon: '🔴', cls: 'red', text: 'রেড' } };
-        const m = moodMap[r.mood] || moodMap.green;
-        const statusMap = { pending: '⏳ পেন্ডিং', approved: '✅ অ্যাপ্রুভড', rejected: '❌ রিজেক্টেড' };
-
-        return `<tr>
-      <td>${time}</td>
-      <td>${r.location || '—'}</td>
-      <td>${r.collectorType || '—'}</td>
-      <td>৳ ${(r.currentRate || 0).toLocaleString('bn-BD')}</td>
-      <td><span class="mood-badge ${m.cls}">${m.icon} ${m.text}</span></td>
-      <td><span class="status-badge status-${r.status}">${statusMap[r.status] || r.status}</span></td>
-      <td class="table-actions">
-        ${r.status === 'pending' ? `<button class="btn-verify" onclick="approveReport('${r.id}')">✅</button><button class="btn-reject" onclick="rejectReport('${r.id}')">❌</button>` : ''}
-        <button class="btn-edit" onclick="openEdit('${r.id}')">✏️</button>
-        <button class="btn-delete" onclick="deleteReport('${r.id}')">🗑️</button>
-      </td>
-    </tr>`;
-    }).join('');
-}
-
-// Filter tabs
-document.querySelectorAll('.filter-tab').forEach(tab => {
-    tab.addEventListener('click', function () {
-        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-        this.classList.add('active');
-        currentFilter = this.dataset.filter;
-        renderTable();
-    });
-});
-
-// ===== CRUD OPERATIONS =====
-async function approveReport(id) {
-    try {
-        await db.collection('reports').doc(id).update({ status: 'approved' });
-        showToast('✅ রিপোর্ট অ্যাপ্রুভ হয়েছে!');
-    } catch (err) { showToast('❌ ত্রুটি: ' + err.message, true); }
-}
-
-async function rejectReport(id) {
-    try {
-        await db.collection('reports').doc(id).update({ status: 'rejected' });
-        showToast('❌ রিপোর্ট রিজেক্ট হয়েছে!');
-    } catch (err) { showToast('❌ ত্রুটি: ' + err.message, true); }
-}
-
-async function deleteReport(id) {
-    if (!confirm('এই রিপোর্ট ডিলিট করতে চান?')) return;
-    try {
-        await db.collection('reports').doc(id).delete();
-        showToast('🗑️ রিপোর্ট ডিলিট হয়েছে!');
-    } catch (err) { showToast('❌ ত্রুটি: ' + err.message, true); }
-}
-
-// ===== EDIT MODAL =====
-const editModal = document.getElementById('editModal');
-const editForm = document.getElementById('editForm');
-
-function openEdit(id) {
-    const report = allReports.find(r => r.id === id);
-    if (!report) return;
-    document.getElementById('editId').value = id;
-    document.getElementById('editLocation').value = report.location || '';
-    document.getElementById('editType').value = report.collectorType || '';
-    document.getElementById('editRate').value = report.currentRate || 0;
-    document.getElementById('editMood').value = report.mood || 'green';
-    document.getElementById('editStatus').value = report.status || 'pending';
-    editModal.classList.add('open');
-}
-
-function closeEdit() { editModal.classList.remove('open'); }
-document.getElementById('editModalClose').addEventListener('click', closeEdit);
-document.getElementById('editCancelBtn').addEventListener('click', closeEdit);
-editModal.addEventListener('click', (e) => { if (e.target === editModal) closeEdit(); });
-
-editForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const id = document.getElementById('editId').value;
-    try {
-        await db.collection('reports').doc(id).update({
-            location: document.getElementById('editLocation').value.trim(),
-            collectorType: document.getElementById('editType').value,
-            currentRate: parseInt(document.getElementById('editRate').value),
-            mood: document.getElementById('editMood').value,
-            status: document.getElementById('editStatus').value
-        });
-        showToast('💾 রিপোর্ট আপডেট হয়েছে!');
-        closeEdit();
-    } catch (err) { showToast('❌ ত্রুটি: ' + err.message, true); }
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => { const t = document.querySelector(a.getAttribute('href')); if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); } });
 });
 
 // ===== LEAFLET MAP =====
-const map = L.map('liveMap').setView([23.7644, 90.3893], 12);
-let currentTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '© OpenStreetMap © CARTO', maxZoom: 19
-}).addTo(map);
-
-const observer = new MutationObserver(() => {
+const map = L.map('liveMap', { scrollWheelZoom: false, tap: true }).setView([23.7644, 90.3893], 12);
+let currentTileLayer = null;
+function setMapTiles() {
     const theme = html.getAttribute('data-theme');
-    const tileUrl = theme === 'light'
-        ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
-        : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+    const url = theme === 'light' ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png' : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
     if (currentTileLayer) map.removeLayer(currentTileLayer);
-    currentTileLayer = L.tileLayer(tileUrl, { attribution: '© OpenStreetMap © CARTO', maxZoom: 19 }).addTo(map);
-});
-observer.observe(html, { attributes: true, attributeFilter: ['data-theme'] });
+    currentTileLayer = L.tileLayer(url, { attribution: '© OSM © CARTO', maxZoom: 19 }).addTo(map);
+}
+setMapTiles();
+new MutationObserver(setMapTiles).observe(html, { attributes: true, attributeFilter: ['data-theme'] });
 
-function makeIcon(color) {
+// Map markers
+const moodColors = { red: '#ff2d2d', yellow: '#ffc107', green: '#39ff14' };
+const moodLabels = { red: '🔴 রেড', yellow: '🟡 ইয়েলো', green: '🟢 গ্রিন' };
+function makeIcon(color, size = 16) {
     return L.divIcon({
-        className: 'custom-marker',
-        html: `<div style="width:18px;height:18px;background:${color};border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4)"></div>`,
-        iconSize: [18, 18], iconAnchor: [9, 9]
+        className: 'map-marker',
+        html: `<div style="width:${size}px;height:${size}px;background:${color};border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4)"></div>`,
+        iconSize: [size, size], iconAnchor: [size / 2, size / 2]
     });
 }
 
-const moodColors = { red: '#ff2d2d', yellow: '#ffc107', green: '#39ff14' };
+// Static hardcoded spots
 const chandaSpots = [
     { lat: 23.7245, lng: 90.4135, name: 'গুলিস্তান', type: 'লোকাল সিন্ডিকেট', rate: '৳ ১,৫০০', mood: 'red', note: 'শিশু পার্ক এলাকায় সক্রিয়' },
     { lat: 23.7381, lng: 90.3958, name: 'শাহবাগ', type: 'পলিটিক্যাল ক্যাডার', rate: '৳ ৮০০', mood: 'red', note: 'মোড়ে স্থায়ী চেকপোস্ট' },
@@ -268,65 +61,202 @@ const chandaSpots = [
     { lat: 23.7509, lng: 90.4009, name: 'তেজগাঁও', type: 'পাতি মাস্তান', rate: '৳ ১৫০', mood: 'green', note: 'ইন্ডাস্ট্রিয়াল এলাকা' }
 ];
 
-chandaSpots.forEach(spot => {
-    const marker = L.marker([spot.lat, spot.lng], { icon: makeIcon(moodColors[spot.mood]) }).addTo(map);
-    const moodLabel = { red: '🔴 রেড', yellow: '🟡 ইয়েলো', green: '🟢 গ্রিন' };
-    marker.bindPopup(`
-    <div style="font-family:Inter,sans-serif;line-height:1.5;min-width:180px">
-      <strong style="font-size:14px">📍 ${spot.name}</strong>
-      <div style="font-size:12px;color:#666;margin:4px 0">${spot.type}</div>
-      <div style="display:flex;align-items:center;gap:8px;margin:6px 0">
-        <span style="font-size:16px;font-weight:700;color:#333">${spot.rate}</span>
-        <span style="font-size:11px;padding:2px 8px;border-radius:10px;background:${moodColors[spot.mood]}20;color:${moodColors[spot.mood]}">${moodLabel[spot.mood]}</span>
-      </div>
-      <div style="font-size:11px;color:#888;font-style:italic">${spot.note}</div>
-    </div>
-  `);
+// All spots for search (static + dynamic)
+let allMapSpots = [...chandaSpots];
+let dynamicMarkers = [];
+let heatLayer = null;
+
+function convertBnToEn(str) {
+    return String(str).replace(/[০-৯]/g, d => '০১২৩৪৫৬৭৮৯'.indexOf(d));
+}
+
+function updateHeatmap() {
+    if (heatLayer) map.removeLayer(heatLayer);
+    const heatData = allMapSpots.map(s => {
+        const rateStr = String(s.rate).replace(/[^\d০-৯]/g, '');
+        const rateNum = parseInt(convertBnToEn(rateStr)) || 500;
+        const intensity = Math.min(rateNum / 1500, 1.0);
+        return [s.lat, s.lng, intensity];
+    });
+    heatLayer = L.heatLayer(heatData, {
+        radius: 35,
+        blur: 25,
+        maxZoom: 14,
+        gradient: { 0.4: '#ffd000', 0.65: '#ff7b00', 1.0: '#ff0000' }
+    }).addTo(map);
+}
+
+function createPopup(s) {
+    return `<div style="font-family:Inter,sans-serif;line-height:1.6;min-width:170px"><strong style="font-size:14px">📍 ${s.name}</strong><div style="font-size:12px;color:#666;margin:3px 0">${s.type}</div><div style="display:flex;align-items:center;gap:8px;margin:5px 0"><span style="font-size:16px;font-weight:700;color:#333">${s.rate}</span><span style="font-size:11px;padding:2px 8px;border-radius:10px;background:${moodColors[s.mood]}20;color:${moodColors[s.mood]}">${moodLabels[s.mood]}</span></div>${s.note ? `<div style="font-size:11px;color:#888;font-style:italic">${s.note}</div>` : ''}${s.source === 'firestore' ? '<div style="margin-top:4px;font-size:10px;color:#4a9b9b">✅ ভেরিফাইড রিপোর্ট</div>' : ''}</div>`;
+}
+
+// Add static markers
+chandaSpots.forEach(s => {
+    const marker = L.marker([s.lat, s.lng], { icon: makeIcon(moodColors[s.mood]) }).addTo(map).bindPopup(createPopup(s));
+    marker.on('mouseover', function (e) { this.openPopup(); });
+});
+updateHeatmap();
+
+// ===== DYNAMIC FIRESTORE MARKERS (approved reports) =====
+// Dhaka area coordinates for placing user reports
+const dhakaAreaCoords = {
+    'গুলিস্তান': { lat: 23.7245, lng: 90.4135 },
+    'শাহবাগ': { lat: 23.7381, lng: 90.3958 },
+    'মতিঝিল': { lat: 23.7330, lng: 90.4187 },
+    'মিরপুর': { lat: 23.8067, lng: 90.3686 },
+    'ফার্মগেট': { lat: 23.7572, lng: 90.3880 },
+    'উত্তরা': { lat: 23.8759, lng: 90.3795 },
+    'কারওয়ান বাজার': { lat: 23.7507, lng: 90.3916 },
+    'তেজগাঁও': { lat: 23.7509, lng: 90.4009 },
+    'ধানমন্ডি': { lat: 23.7461, lng: 90.3742 },
+    'মোহাম্মদপুর': { lat: 23.7662, lng: 90.3587 },
+    'বনানী': { lat: 23.7937, lng: 90.4066 },
+    'গুলশান': { lat: 23.7925, lng: 90.4135 },
+    'মালিবাগ': { lat: 23.7478, lng: 90.4128 },
+    'যাত্রাবাড়ী': { lat: 23.7106, lng: 90.4347 },
+    'সদরঘাট': { lat: 23.7063, lng: 90.4075 },
+    'মিরপুর ১০': { lat: 23.8067, lng: 90.3686 },
+    'বাড্ডা': { lat: 23.7836, lng: 90.4273 },
+    'রামপুরা': { lat: 23.7637, lng: 90.4236 },
+    'খিলগাঁও': { lat: 23.7532, lng: 90.4342 },
+    'শ্যামলী': { lat: 23.7730, lng: 90.3636 },
+    'নিউমার্কেট': { lat: 23.7337, lng: 90.3846 },
+    'পুরান ঢাকা': { lat: 23.7104, lng: 90.4074 }
+};
+
+function findCoords(location) {
+    const loc = location.toLowerCase();
+    for (const [key, coords] of Object.entries(dhakaAreaCoords)) {
+        if (loc.includes(key.toLowerCase()) || key.toLowerCase().includes(loc)) return coords;
+    }
+    // Random offset near Dhaka center
+    return { lat: 23.7644 + (Math.random() - 0.5) * 0.06, lng: 90.3893 + (Math.random() - 0.5) * 0.06 };
+}
+
+// Listen for approved reports in real-time
+db.collection('reports').where('status', '==', 'approved').onSnapshot(snapshot => {
+    // Clear old dynamic markers
+    dynamicMarkers.forEach(m => map.removeLayer(m));
+    dynamicMarkers = [];
+    // Remove old dynamic spots from allMapSpots
+    allMapSpots = [...chandaSpots];
+
+    snapshot.docs.forEach(doc => {
+        const r = doc.data();
+        const coords = findCoords(r.location || '');
+        const spot = {
+            lat: coords.lat,
+            lng: coords.lng,
+            name: r.location || 'অজানা',
+            type: r.collectorType || '—',
+            rate: '৳ ' + (r.currentRate || 0).toLocaleString('bn-BD'),
+            mood: r.mood || 'green',
+            note: r.vipCode || '',
+            source: 'firestore'
+        };
+        allMapSpots.push(spot);
+        const marker = L.marker([spot.lat, spot.lng], { icon: makeIcon(moodColors[spot.mood], 14) }).addTo(map).bindPopup(createPopup(spot));
+        marker.on('mouseover', function (e) { this.openPopup(); });
+        dynamicMarkers.push(marker);
+    });
+    updateHeatmap();
 });
 
-// Fix map size when section scrolled into view
-const mapObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => { if (entry.isIntersecting) map.invalidateSize(); });
-}, { threshold: 0.1 });
-mapObserver.observe(document.getElementById('map'));
+// Fix map size on scroll into view
+new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) map.invalidateSize(); });
+}, { threshold: 0.1 }).observe(document.getElementById('map'));
+
+// ===== SEARCH =====
+const searchInput = document.getElementById('mapSearchInput');
+const searchResults = document.getElementById('searchResults');
+
+searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    if (q.length < 2) { searchResults.classList.remove('show'); searchResults.innerHTML = ''; return; }
+
+    const matches = allMapSpots.filter(s =>
+        s.name.toLowerCase().includes(q) || s.type.toLowerCase().includes(q)
+    );
+
+    if (matches.length === 0) {
+        searchResults.innerHTML = '<div class="search-result-item" style="color:var(--text-tertiary)">❌ কোনো ফলাফল পাওয়া যায়নি</div>';
+    } else {
+        searchResults.innerHTML = matches.slice(0, 6).map(s =>
+            `<div class="search-result-item" onclick="flyToSpot(${s.lat},${s.lng},'${s.name}')">
+        <span class="mood-dot" style="background:${moodColors[s.mood]}"></span>
+        <span><strong>${s.name}</strong> — ${s.type} — ${s.rate}</span>
+      </div>`
+        ).join('');
+    }
+    searchResults.classList.add('show');
+});
+
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); searchLocation(); } });
+document.addEventListener('click', e => { if (!e.target.closest('.map-search-bar')) searchResults.classList.remove('show'); });
+
+function searchLocation() {
+    const q = searchInput.value.trim().toLowerCase();
+    if (!q) return;
+    const match = allMapSpots.find(s => s.name.toLowerCase().includes(q));
+    if (match) {
+        flyToSpot(match.lat, match.lng, match.name);
+    } else {
+        showToast('❌ "' + searchInput.value.trim() + '" এলাকায় কোনো চাঁদাবাজি রিপোর্ট নেই।', true);
+    }
+    searchResults.classList.remove('show');
+}
+
+function flyToSpot(lat, lng, name) {
+    map.flyTo([lat, lng], 15, { animate: true, duration: 1.2 });
+    searchInput.value = name;
+    searchResults.classList.remove('show');
+    document.getElementById('map').scrollIntoView({ behavior: 'smooth' });
+}
 
 // ===== ANIMATED COUNTERS =====
-function animateCounter(el, target, prefix) {
-    const duration = 2000;
-    const start = performance.now();
-    const update = (now) => {
-        const progress = Math.min((now - start) / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        el.textContent = (prefix || '') + Math.floor(eased * target).toLocaleString('bn-BD');
-        if (progress < 1) requestAnimationFrame(update);
-    };
-    requestAnimationFrame(update);
+function animateCounter(el, target) {
+    const dur = 2200, start = performance.now();
+    const tick = now => { const p = Math.min((now - start) / dur, 1); el.textContent = Math.floor((1 - Math.pow(1 - p, 4)) * target).toLocaleString('bn-BD'); if (p < 1) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
 }
-const counterObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting && !entry.target.dataset.animated) {
-            entry.target.dataset.animated = 'true';
-            const target = parseInt(entry.target.dataset.count);
-            if (!isNaN(target)) animateCounter(entry.target, target, entry.target.textContent.startsWith('৳') ? '৳ ' : '');
-        }
-    });
-}, { threshold: 0.5 });
-document.querySelectorAll('[data-count]').forEach(el => counterObserver.observe(el));
+document.querySelectorAll('[data-count]').forEach(el => {
+    new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting && !e.target.dataset.done) { e.target.dataset.done = '1'; animateCounter(e.target, parseInt(e.target.dataset.count)); } });
+    }, { threshold: 0.5 }).observe(el);
+});
+
+// ===== FORM → FIRESTORE =====
+function sanitize(s) { return s.replace(/[<>]/g, '').trim().slice(0, 200); }
+document.getElementById('reportForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const location = sanitize(document.getElementById('location').value);
+    const collectorType = document.getElementById('collectorType').value;
+    const currentRate = Math.min(Math.max(parseInt(document.getElementById('currentRate').value) || 0, 0), 999999);
+    const mood = document.querySelector('input[name="mood"]:checked');
+    const vipCode = sanitize(document.getElementById('vipCode').value);
+    if (!location || !collectorType || !currentRate || !mood) { showToast('⚠️ সব ফিল্ড পূরণ করুন!', true); return; }
+    const btn = document.getElementById('submitBtn');
+    btn.textContent = '⏳ পাঠানো হচ্ছে...'; btn.disabled = true;
+    try {
+        await db.collection('reports').add({ location, collectorType, currentRate, mood: mood.value, vipCode: vipCode || '', status: 'pending', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        document.getElementById('reportForm').style.display = 'none';
+        document.getElementById('formSuccessMsg').style.display = 'block';
+        document.getElementById('reportForm').reset();
+    } catch (err) { showToast('❌ ত্রুটি: ' + err.message, true); }
+    btn.textContent = '📤 রিপোর্ট জমা দিন'; btn.disabled = false;
+});
+
+window.resetFormView = function () {
+    document.getElementById('formSuccessMsg').style.display = 'none';
+    document.getElementById('reportForm').style.display = 'block';
+};
 
 // ===== TOAST =====
-function showToast(message, isError = false) {
-    const toast = document.getElementById('toast');
-    document.getElementById('toastMsg').textContent = message;
-    toast.style.borderColor = isError ? 'var(--danger-red)' : 'var(--accent)';
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 4000);
+function showToast(msg, err = false) {
+    const t = document.getElementById('toast'); document.getElementById('toastMsg').textContent = msg;
+    t.style.borderColor = err ? 'var(--danger-red)' : 'var(--accent)';
+    t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 4000);
 }
 
 // ===== MISC =====
-document.getElementById('downloadBtn').addEventListener('click', () => showToast('📲 শীঘ্রই আসছে! স্টে টিউনড।'));
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', (e) => {
-        const t = document.querySelector(a.getAttribute('href'));
-        if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
-    });
-});
