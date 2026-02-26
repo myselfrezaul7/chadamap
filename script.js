@@ -380,6 +380,7 @@ window.calculateChanda = function () {
     if (v === 'bus') base = 500;
     if (v === 'truck') base = 800;
     if (v === 'cng') base = 100;
+    if (v === 'private') base = 200;
 
     let multiplier = 1;
     if (r === 'city') multiplier = 1;
