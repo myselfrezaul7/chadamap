@@ -193,9 +193,12 @@ searchInput.addEventListener('input', () => {
         searchResults.innerHTML = '<div class="search-result-item" style="color:var(--text-tertiary)">❌ কোনো ফলাফল পাওয়া যায়নি</div>';
     } else {
         searchResults.innerHTML = matches.slice(0, 6).map(s =>
-            `<div class="search-result-item" onclick="flyToSpot(${s.lat},${s.lng},'${s.name}')">
-        <span class="mood-dot" style="background:${moodColors[s.mood]}"></span>
-        <span><strong>${s.name}</strong> — ${s.type} — ${s.rate}</span>
+            `<div class="search-result-item" onclick="flyToSpot(${s.lat},${s.lng},'${s.name}')" style="flex-direction:column; align-items:flex-start; gap:4px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <span class="mood-dot" style="background:${moodColors[s.mood]}"></span>
+            <span><strong>${s.name}</strong> — ${s.type} — ${s.rate}</span>
+        </div>
+        ${s.note ? `<div style="font-size:11px; color:var(--text-tertiary); margin-left:16px; white-space:normal; line-height:1.4;">📝 ${s.note}</div>` : ''}
       </div>`
         ).join('');
     }
