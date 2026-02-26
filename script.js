@@ -27,7 +27,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 });
 
 // ===== LEAFLET MAP =====
-const map = L.map('liveMap', { scrollWheelZoom: false, tap: true }).setView([23.7644, 90.3893], 12);
+const map = L.map('liveMap', { scrollWheelZoom: true, tap: true, touchZoom: true }).setView([23.7644, 90.3893], 12);
 let currentTileLayer = null;
 function setMapTiles() {
     const theme = html.getAttribute('data-theme');
