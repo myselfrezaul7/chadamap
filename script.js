@@ -51,14 +51,24 @@ function makeIcon(color, size = 16) {
 
 // Static hardcoded spots
 const chandaSpots = [
-    { lat: 23.7245, lng: 90.4135, name: 'গুলিস্তান', nameEn: 'gulistan', type: 'লোকাল সিন্ডিকেট', rate: '৳ ১,৫০০', mood: 'red', note: 'শিশু পার্ক এলাকায় সক্রিয়' },
+    { lat: 23.7245, lng: 90.4135, name: 'গুলিস্তান', nameEn: 'gulistan', type: 'লোকাল সিন্ডিকেট', rate: '৳ ১,৫০০', mood: 'red', note: 'শিশু পার্ক এলাকায় বাসমালিক সমিতির নামে' },
     { lat: 23.7381, lng: 90.3958, name: 'শাহবাগ', nameEn: 'shahbag', type: 'পলিটিক্যাল ক্যাডার', rate: '৳ ৮০০', mood: 'red', note: 'মোড়ে স্থায়ী চেকপোস্ট' },
-    { lat: 23.7330, lng: 90.4187, name: 'মতিঝিল', nameEn: 'motijheel', type: 'পাতি মাস্তান', rate: '৳ ১০০', mood: 'green', note: 'শাপলা চত্বরে, কম রেট' },
+    { lat: 23.7330, lng: 90.4187, name: 'মতিঝিল', nameEn: 'motijheel', type: 'পাতি মাস্তান', rate: '৳ ১০০', mood: 'green', note: 'শাপলা চত্বরে, রিকশা-ভ্যান থেকে কম রেট' },
     { lat: 23.8067, lng: 90.3686, name: 'মিরপুর ১০', nameEn: 'mirpur 10', type: 'পলিটিক্যাল ক্যাডার', rate: '৳ ৫০০', mood: 'red', note: '🔥 সবচেয়ে হট ডেঞ্জার জোন' },
     { lat: 23.7572, lng: 90.3880, name: 'ফার্মগেট', nameEn: 'farmgate', type: 'ট্রাফিক পুলিশ', rate: '৳ ২০০', mood: 'yellow', note: '"লাইসেন্স দেখান" গেম' },
     { lat: 23.8759, lng: 90.3795, name: 'উত্তরা', nameEn: 'uttara', type: 'পলিটিক্যাল ক্যাডার', rate: '৳ ৮০০', mood: 'red', note: 'সেক্টর ৭ এ নতুন চেকপোস্ট' },
-    { lat: 23.7507, lng: 90.3916, name: 'কারওয়ান বাজার', nameEn: 'karwan bazar', type: 'লোকাল সিন্ডিকেট', rate: '৳ ৩০০', mood: 'yellow', note: 'মিডিয়া অফিস এলাকা' },
-    { lat: 23.7509, lng: 90.4009, name: 'তেজগাঁও', nameEn: 'tejgaon', type: 'পাতি মাস্তান', rate: '৳ ১৫০', mood: 'green', note: 'ইন্ডাস্ট্রিয়াল এলাকা' }
+    { lat: 23.7507, lng: 90.3916, name: 'কারওয়ান বাজার', nameEn: 'karwan bazar', type: 'লোকাল সিন্ডিকেট', rate: '৳ ৩০০', mood: 'yellow', note: 'পণ্যবাহী ট্রাক ও পিকআপ থেকে চাঁদা' },
+    { lat: 23.7509, lng: 90.4009, name: 'তেজগাঁও', nameEn: 'tejgaon', type: 'ট্রাক টার্মিনাল সিন্ডিকেট', rate: '৳ ১৫০', mood: 'green', note: 'ইন্ডাস্ট্রিয়াল এলাকায় পার্কিং ফি এর নামে' },
+    // Real-world reported highway/terminal spots
+    { lat: 23.7837, lng: 90.3442, name: 'গাবতলী বাস টার্মিনাল', nameEn: 'gabtoli', type: 'মালিক-শ্রমিক সমিতি', rate: '৳ ১,২০০', mood: 'red', note: 'টার্মিনালে না থামলেও পার্কিং ফি দিতে হয়' },
+    { lat: 23.7877, lng: 90.3344, name: 'আমিনবাজার', nameEn: 'aminbazar', type: 'লোকাল সিন্ডিকেট', rate: '৳ ৪০০', mood: 'yellow', note: 'পণ্যবাহী ট্রাকে চাঁদাবাজি' },
+    { lat: 23.7153, lng: 90.4284, name: 'সায়েদাবাদ বাস টার্মিনাল', nameEn: 'sayedabad', type: 'পলিটিক্যাল ক্যাডার', rate: '৳ ১,৫০০', mood: 'red', note: 'বাস প্রতি নির্ধারিত চাঁদা ছাড়া ছাড়তে পারে না' },
+    { lat: 24.5828, lng: 90.3955, name: 'ত্রিশাল (দরিরামপুর)', nameEn: 'trishal', type: 'হাইওয়ে পুলিশ ও লোকাল', rate: '৳ ৫০০', mood: 'red', note: 'ঢাকা-ময়মনসিংহ মহাসড়কে বাস-ট্রাক থেকে চাঁদা' },
+    { lat: 24.7628, lng: 90.4121, name: 'ময়মনসিংহ পাটগুদাম', nameEn: 'mymensingh patgudam', type: 'টার্মিনাল সিন্ডিকেট', rate: '৳ ৬০০', mood: 'red', note: 'ময়মনসিংহ শহরের পাটগুদাম সেতু মোড়ে' },
+    { lat: 23.5186, lng: 90.9631, name: 'ইলিয়টগঞ্জ, কুমিল্লা', nameEn: 'eliotganj', type: 'হাইওয়ে সিন্ডিকেট', rate: '৳ ১,০০০', mood: 'yellow', note: 'ঢাকা-চট্টগ্রাম মহাসড়কে কাভার্ড ভ্যান টার্গেট' },
+    { lat: 24.6738, lng: 89.4182, name: 'শেরপুর, বগুড়া', nameEn: 'sherpur bogura', type: 'শ্রমিক সংগঠন', rate: '৳ ৮০০', mood: 'red', note: 'ঢাকা-বগুড়া মহাসড়কে ভারী পণ্যবাহী ট্রাকে চাঁদা' },
+    { lat: 24.3970, lng: 89.7711, name: 'বঙ্গবন্ধু সেতু এপ্রোচ', nameEn: 'bangabandhu bridge tangail', type: 'হাইওয়ে চাঁদাবাজ', rate: '৳ ২,০০০', mood: 'red', note: 'টাঙ্গাইল প্রান্তে সেতু পারাপারকারী ট্রাকে মোটা অংকের চাঁদা' },
+    { lat: 22.2965, lng: 91.9782, name: 'পটিয়া বাইপাস', nameEn: 'potiya', type: 'লোকাল সিন্ডিকেট', rate: '৳ ৫০০', mood: 'yellow', note: 'চট্টগ্রাম-কক্সবাজার মহাসড়কে সিএনজি ও বাস থেকে' }
 ];
 
 // All spots for search (static + dynamic)
@@ -122,6 +132,11 @@ const dhakaAreaCoords = {
     'শ্যামলী': { lat: 23.7730, lng: 90.3636 }, 'shyamoli': { lat: 23.7730, lng: 90.3636 },
     'নিউমার্কেট': { lat: 23.7337, lng: 90.3846 }, 'new market': { lat: 23.7337, lng: 90.3846 }, 'newmarket': { lat: 23.7337, lng: 90.3846 },
     'পুরান ঢাকা': { lat: 23.7104, lng: 90.4074 }, 'old dhaka': { lat: 23.7104, lng: 90.4074 }, 'puran dhaka': { lat: 23.7104, lng: 90.4074 },
+    'গাবতলী': { lat: 23.7837, lng: 90.3442 }, 'gabtoli': { lat: 23.7837, lng: 90.3442 },
+    'আমিনবাজার': { lat: 23.7877, lng: 90.3344 }, 'aminbazar': { lat: 23.7877, lng: 90.3344 },
+    'মহাখালী': { lat: 23.7781, lng: 90.4010 }, 'mohakhali': { lat: 23.7781, lng: 90.4010 },
+    'সায়েদাবাদ': { lat: 23.7153, lng: 90.4284 }, 'sayedabad': { lat: 23.7153, lng: 90.4284 },
+    'চানখারপুল': { lat: 23.7258, lng: 90.3957 }, 'chankharpul': { lat: 23.7258, lng: 90.3957 },
     'টঙ্গী': { lat: 23.8932, lng: 90.3989 }, 'tongi': { lat: 23.8932, lng: 90.3989 },
     'কাঁচপুর': { lat: 23.7032, lng: 90.5218 }, 'kanchpur': { lat: 23.7032, lng: 90.5218 },
     'নারায়ণগঞ্জ': { lat: 23.6238, lng: 90.5000 }, 'narayanganj': { lat: 23.6238, lng: 90.5000 },
@@ -131,6 +146,13 @@ const dhakaAreaCoords = {
     'কেরানীগঞ্জ': { lat: 23.6800, lng: 90.3200 }, 'keraniganj': { lat: 23.6800, lng: 90.3200 },
     'মানিকগঞ্জ': { lat: 23.8644, lng: 90.0047 }, 'manikganj': { lat: 23.8644, lng: 90.0047 },
     'নরসিংদী': { lat: 23.9193, lng: 90.7176 }, 'narsingdi': { lat: 23.9193, lng: 90.7176 },
+    'ময়মনসিংহ': { lat: 24.7471, lng: 90.4203 }, 'mymensingh': { lat: 24.7471, lng: 90.4203 },
+    'ত্রিশাল': { lat: 24.5828, lng: 90.3955 }, 'trishal': { lat: 24.5828, lng: 90.3955 },
+    'বগুড়া': { lat: 24.8465, lng: 89.3778 }, 'bogura': { lat: 24.8465, lng: 89.3778 },
+    'শেরপুর': { lat: 24.6738, lng: 89.4182 }, 'sherpur': { lat: 24.6738, lng: 89.4182 },
+    'কুমিল্লা': { lat: 23.4607, lng: 91.1809 }, 'cumilla': { lat: 23.4607, lng: 91.1809 },
+    'পটিয়া': { lat: 22.2965, lng: 91.9782 }, 'potiya': { lat: 22.2965, lng: 91.9782 },
+    'চট্টগ্রাম': { lat: 22.3569, lng: 91.7832 }, 'chattogram': { lat: 22.3569, lng: 91.7832 },
     'কক্সবাজার': { lat: 21.9497, lng: 92.1466 }, 'coxs bazar': { lat: 21.9497, lng: 92.1466 }, "cox's bazar": { lat: 21.9497, lng: 92.1466 }
 };
 
