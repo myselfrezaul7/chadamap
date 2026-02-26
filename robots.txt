@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://chadamap.vercel.app/sitemap.xml
