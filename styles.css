@@ -2740,3 +2740,41 @@ html[data-theme="light"] .navbar.scrolled {
     width: 20px;
     height: 20px;
 }
+
+/* ===== GLOW BUTTONS ===== */
+@keyframes pulseGlowMap {
+    0% {
+        box-shadow: 0 0 15px rgba(74, 155, 155, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 35px rgba(74, 155, 155, 0.8);
+    }
+
+    100% {
+        box-shadow: 0 0 15px rgba(74, 155, 155, 0.4);
+    }
+}
+
+.btn-glow-map {
+    animation: pulseGlowMap 2s infinite cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes pulseGlowRed {
+    0% {
+        box-shadow: 0 0 15px rgba(255, 45, 45, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 35px rgba(255, 45, 45, 0.9);
+    }
+
+    100% {
+        box-shadow: 0 0 15px rgba(255, 45, 45, 0.4);
+    }
+}
+
+.btn-glow-red {
+    animation: pulseGlowRed 2.5s infinite cubic-bezier(0.16, 1, 0.3, 1);
+    border-color: var(--danger-red-dim) !important;
+}

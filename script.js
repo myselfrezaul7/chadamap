@@ -156,7 +156,8 @@ const dhakaAreaCoords = {
     'কুমিল্লা': { lat: 23.4607, lng: 91.1809 }, 'cumilla': { lat: 23.4607, lng: 91.1809 },
     'পটিয়া': { lat: 22.2965, lng: 91.9782 }, 'potiya': { lat: 22.2965, lng: 91.9782 },
     'চট্টগ্রাম': { lat: 22.3569, lng: 91.7832 }, 'chattogram': { lat: 22.3569, lng: 91.7832 },
-    'কক্সবাজার': { lat: 21.9497, lng: 92.1466 }, 'coxs bazar': { lat: 21.9497, lng: 92.1466 }, "cox's bazar": { lat: 21.9497, lng: 92.1466 }
+    'কক্সবাজার': { lat: 21.9497, lng: 92.1466 }, 'coxs bazar': { lat: 21.9497, lng: 92.1466 }, "cox's bazar": { lat: 21.9497, lng: 92.1466 },
+    'নাটোর': { lat: 24.4102, lng: 89.0076 }, 'natore': { lat: 24.4102, lng: 89.0076 }
 };
 
 function findCoords(location) {
