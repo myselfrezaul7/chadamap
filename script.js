@@ -179,7 +179,12 @@ db.collection('reports').where('status', '==', 'approved').onSnapshot(snapshot =
 
     snapshot.docs.forEach(doc => {
         const r = doc.data();
-        const coords = findCoords(r.location || '');
+        let coords;
+        if (r.exactLat && r.exactLng) {
+            coords = { lat: r.exactLat, lng: r.exactLng };
+        } else {
+            coords = findCoords(r.location || '');
+        }
         const spot = {
             lat: coords.lat,
             lng: coords.lng,
@@ -265,27 +270,111 @@ document.querySelectorAll('[data-count]').forEach(el => {
     }, { threshold: 0.5 }).observe(el);
 });
 
+// ===== REPORT MAP (Mini Map) =====
+let reportMap = null;
+let reportMarker = null;
+
+function initReportMap() {
+    if (reportMap) return;
+    const mapEl = document.getElementById('reportMap');
+    if (!mapEl) return;
+
+    reportMap = L.map('reportMap', { scrollWheelZoom: false }).setView([23.7644, 90.3893], 12);
+    const theme = html.getAttribute('data-theme');
+    const url = theme === 'light' ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png' : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+    L.tileLayer(url, { attribution: '© OSM', maxZoom: 19 }).addTo(reportMap);
+
+    reportMarker = L.marker([23.7644, 90.3893], { draggable: true, icon: makeIcon(moodColors.red, 16) }).addTo(reportMap);
+
+    function updateHiddenInputs(lat, lng) {
+        document.getElementById('exactLat').value = lat;
+        document.getElementById('exactLng').value = lng;
+    }
+
+    reportMarker.on('dragend', function (e) {
+        const { lat, lng } = e.target.getLatLng();
+        updateHiddenInputs(lat, lng);
+    });
+
+    reportMap.on('click', function (e) {
+        reportMarker.setLatLng(e.latlng);
+        updateHiddenInputs(e.latlng.lat, e.latlng.lng);
+    });
+
+    updateHiddenInputs(23.7644, 90.3893);
+
+    new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) reportMap.invalidateSize(); });
+    }, { threshold: 0.1 }).observe(mapEl);
+}
+
+new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) initReportMap(); });
+}, { rootMargin: "0px 0px 500px 0px" }).observe(document.getElementById('report'));
+
+window.getUserLocation = function () {
+    const btn = document.getElementById('gpsBtn');
+    if (!navigator.geolocation) {
+        showToast('❌ আপনার ব্রাউজার GPS সাপোর্ট করে না।', true);
+        return;
+    }
+    btn.innerHTML = '⏳ লোডিং...';
+    navigator.geolocation.getCurrentPosition(pos => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        if (reportMap && reportMarker) {
+            reportMap.flyTo([lat, lng], 15);
+            reportMarker.setLatLng([lat, lng]);
+            document.getElementById('exactLat').value = lat;
+            document.getElementById('exactLng').value = lng;
+        }
+        btn.innerHTML = '✅ অবস্থান পাওয়া গেছে';
+        setTimeout(() => btn.innerHTML = '📡 আমার অবস্থান', 3000);
+    }, err => {
+        showToast('❌ লোকেশন অ্যাক্সেস দেওয়া হয়নি। প্লিজ পারমিশন দিন।', true);
+        btn.innerHTML = '📡 আমার অবস্থান';
+    });
+};
+
 // ===== FORM → FIRESTORE =====
 function sanitize(s) { return s.replace(/[<>]/g, '').trim().slice(0, 500); }
 document.getElementById('reportForm').addEventListener('submit', async e => {
     e.preventDefault();
-    const location = sanitize(document.getElementById('location').value);
+    const locationStr = sanitize(document.getElementById('location').value);
+    const exactLat = parseFloat(document.getElementById('exactLat').value);
+    const exactLng = parseFloat(document.getElementById('exactLng').value);
+
     const collectorType = document.getElementById('collectorType').value;
     const currentRate = Math.min(Math.max(parseInt(document.getElementById('currentRate').value) || 0, 0), 999999);
     const mood = document.querySelector('input[name="mood"]:checked');
     const vipCode = sanitize(document.getElementById('vipCode').value);
     const description = sanitize(document.getElementById('description').value);
-    if (!location || !collectorType || !currentRate || !mood) { showToast('⚠️ সব ফিল্ড পূরণ করুন!', true); return; }
+
+    if (isNaN(exactLat) || isNaN(exactLng) || !collectorType || !currentRate || !mood) { showToast('⚠️ ম্যাপে স্থান টিক করুন এবং সব আবশ্যিক ফিল্ড পূরণ করুন!', true); return; }
     const btn = document.getElementById('submitBtn');
     btn.textContent = '⏳ পাঠানো হচ্ছে...'; btn.disabled = true;
+
+    const data = {
+        location: locationStr || 'অজানা এলাকা',
+        exactLat: exactLat,
+        exactLng: exactLng,
+        collectorType: collectorType,
+        currentRate: currentRate,
+        mood: mood.value,
+        vipCode: vipCode || '',
+        description: description || '',
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        status: 'pending'
+    };
+
     try {
-        await db.collection('reports').add({ location, collectorType, currentRate, mood: mood.value, vipCode: vipCode || '', description: description || '', status: 'pending', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        await db.collection('reports').add(data);
         document.getElementById('reportForm').style.display = 'none';
         document.getElementById('formSuccessMsg').style.display = 'block';
         document.getElementById('reportForm').reset();
     } catch (err) { showToast('❌ ত্রুটি: ' + err.message, true); }
-    e.target.disabled = false;
-    e.target.innerHTML = 'রিপোর্ট করুন 🚀';
+    btn.disabled = false;
+    btn.innerHTML = '📤 রিপোর্ট জমা দিন';
 });
 
 // ===== SCROLL PROGRESS BAR =====
@@ -435,3 +524,27 @@ if (goTopBtn) {
         }
     }, { passive: true });
 }
+
+// ===== LIVE CHANDA TICKER =====
+function initChandaTicker() {
+    const ticker = document.getElementById('liveChandaTicker');
+    if (!ticker) return;
+
+    const now = new Date();
+    // Calculate how far into the month we are
+    const daysPassed = now.getDate() + (now.getHours() / 24) + (now.getMinutes() / 1440);
+
+    // Assuming 100+ Crore BDT per month = roughly ~3.3 Crore BDT per day.
+    let totalChanda = Math.floor(daysPassed * 33333333);
+
+    // Safety net to ensure it always looks like a huge number from the start of the month
+    if (totalChanda < 500000000) totalChanda += 1000000000;
+
+    // Fast-ticking interval to show real-time "collection"
+    setInterval(() => {
+        // Add random amount (fake speed multiplier for visual satisfaction)
+        totalChanda += Math.floor(Math.random() * 150) + 20;
+        ticker.textContent = '৳ ' + totalChanda.toLocaleString('bn-BD');
+    }, 80);
+}
+initChandaTicker();

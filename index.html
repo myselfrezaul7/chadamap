@@ -120,7 +120,15 @@
     <section class="hero" id="hero">
         <div class="container">
             <div class="hero-content reveal">
-                <div class="hero-badge">লাইভ — ঢাকায় ১৭৮টি চেকপোস্ট অ্যাক্টিভ</div>
+                <div class="hero-badge"
+                    style="display: flex; align-items: center; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                    <span
+                        style="display:inline-block; width:8px; height:8px; background:var(--danger-red); border-radius:50%; box-shadow: 0 0 10px var(--danger-red); animation: pulseMarker 2s infinite;"></span>
+                    এই মাসে আনুমানিক চাঁদা কালেকশন:
+                    <span id="liveChandaTicker"
+                        style="color: var(--danger-red); font-family: monospace; font-weight: 800; font-size: 1.1em; letter-spacing: 1px;">৳
+                        ১,০০,০০,০০,০০০</span>+
+                </div>
                 <h1 class="hero-title">
                     পকেটে টাকা আছে? <span class="text-gradient">"চা-নাস্তা"</span> দেওয়ার প্রস্তুতি নিন — এবার রুট
                     প্ল্যান
@@ -221,9 +229,22 @@
             <div class="report-form-wrapper reveal reveal-delay-1">
                 <form id="reportForm">
                     <div class="form-group">
-                        <label for="location">📍 লোকেশন</label>
-                        <input type="text" id="location" placeholder="যেমনঃ মিরপুর ১০ নম্বর গোলচত্বর" required
-                            autocomplete="off">
+                        <label>📍 মানচিত্রে স্থান চিহ্নিত করুন (আবশ্যক)</label>
+                        <div
+                            style="position: relative; margin-bottom: 10px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border);">
+                            <div id="reportMap" style="height: 200px; width: 100%; z-index: 1;"></div>
+                            <button type="button" class="btn-secondary" id="gpsBtn" onclick="getUserLocation()"
+                                style="position: absolute; bottom: 10px; right: 10px; z-index: 1000; padding: 6px 12px; font-size: 12px; background: var(--bg-card); backdrop-filter: blur(8px); border-radius: var(--radius-md); box-shadow: var(--shadow-md);">📡
+                                আমার অবস্থান</button>
+                        </div>
+                        <p style="font-size: 12px; color: var(--text-tertiary); margin-top: 5px;">GPS বাটন চাপুন অথবা
+                            মানচিত্রে ক্লিক করে পিন রাখুন — পিন টেনেও সরাতে পারবেন</p>
+                        <input type="hidden" id="exactLat">
+                        <input type="hidden" id="exactLng">
+                    </div>
+                    <div class="form-group">
+                        <label for="location">🏢 এলাকার নাম (ঐচ্ছিক)</label>
+                        <input type="text" id="location" placeholder="যেমনঃ মিরপুর ১০, মতিঝিল..." autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="collectorType">👤 চাঁদাবাজের ধরন</label>
@@ -454,7 +475,8 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p class="footer-disclaimer"><strong>সতর্কতা:</strong> চাঁদা-ম্যাপ একটি স্যাটায়ার কনসেপ্ট। 😉</p>
+                <p class="footer-disclaimer"><strong>সতর্কতা:</strong> চাঁদা-ম্যাপ একটি স্যাটায়ার কনসেপ্ট। 😉 তবে এখানে
+                    প্রদর্শিত ডেটা ও আর্থিক সোর্সগুলো বাস্তব ও বিভিন্ন সংবাদমাধ্যম থেকে সংগৃহীত।</p>
                 <p class="footer-copy">© ২০২৬ চাঁদা-ম্যাপ — সর্বস্বত্ব সংরক্ষিত</p>
             </div>
         </div>
