@@ -531,20 +531,26 @@ function initChandaTicker() {
     if (!ticker) return;
 
     const now = new Date();
-    // Calculate how far into the month we are
-    const daysPassed = now.getDate() + (now.getHours() / 24) + (now.getMinutes() / 1440);
+    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const millisInMonth = daysInMonth * 24 * 60 * 60 * 1000;
 
-    // Assuming 100+ Crore BDT per month = roughly ~3.3 Crore BDT per day.
-    let totalChanda = Math.floor(daysPassed * 33333333);
+    // Monthly Target: 100 Crore BDT (1,000,000,000)
+    const monthlyTarget = 1000000000;
 
-    // Safety net to ensure it always looks like a huge number from the start of the month
-    if (totalChanda < 500000000) totalChanda += 1000000000;
+    // Calculate precise milliseconds passed this month
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    const elapsedMillis = now.getTime() - startOfMonth;
 
-    // Fast-ticking interval to show real-time "collection"
+    // Calculate real-time exact amount based on proportion of month passed
+    let totalChanda = Math.floor((elapsedMillis / millisInMonth) * monthlyTarget);
+
+    // Amount per 80ms interval
+    const ratePerInterval = (monthlyTarget / millisInMonth) * 80;
+
+    // Fast-ticking interval to show real-time "collection" accurately
     setInterval(() => {
-        // Add random amount (fake speed multiplier for visual satisfaction)
-        totalChanda += Math.floor(Math.random() * 150) + 20;
-        ticker.textContent = '৳ ' + totalChanda.toLocaleString('bn-BD');
+        totalChanda += ratePerInterval;
+        ticker.textContent = '৳ ' + Math.floor(totalChanda).toLocaleString('bn-BD');
     }, 80);
 }
 initChandaTicker();
