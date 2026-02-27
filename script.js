@@ -224,17 +224,33 @@ searchInput.addEventListener('input', () => {
         searchResults.innerHTML = '<div class="search-result-item" style="color:var(--text-tertiary)">❌ কোনো ফলাফল পাওয়া যায়নি</div>';
     } else {
         searchResults.innerHTML = matches.slice(0, 6).map(s =>
-            `<div class="search-result-item" onclick="flyToSpot(${s.lat},${s.lng},'${s.name}')" style="flex-direction:column; align-items:flex-start; gap:4px;">
-        <div style="display:flex; align-items:center; gap:8px;">
+            `<div class="search-result-item" style="flex-direction:column; align-items:flex-start; gap:8px;">
+        <div style="display:flex; align-items:center; gap:8px; cursor:pointer; width:100%;" onclick="flyToSpot(${s.lat},${s.lng},'${s.name}')">
             <span class="mood-dot" style="background:${moodColors[s.mood]}"></span>
             <span><strong>${s.name}</strong> — ${s.type} — ${s.rate}</span>
         </div>
         ${s.note ? `<div style="font-size:11px; color:var(--text-tertiary); margin-left:16px; white-space:normal; line-height:1.4;">📝 ${s.note}</div>` : ''}
+        <button type="button" class="btn-secondary" style="margin-left:16px; padding:4px 8px; font-size:11px; margin-top:4px;" onclick="reportAtSpot(${s.lat},${s.lng},'${s.name}')">📍 এই লোকেশনে রিপোর্ট করুন</button>
       </div>`
         ).join('');
     }
     searchResults.classList.add('show');
 });
+
+window.reportAtSpot = function (lat, lng, name) {
+    document.getElementById('mapSearchInput').value = name;
+    document.getElementById('searchResults').classList.remove('show');
+
+    // Fill report form
+    document.getElementById('location').value = name;
+    if (reportMap && reportMarker) {
+        reportMap.flyTo([lat, lng], 15);
+        reportMarker.setLatLng([lat, lng]);
+        document.getElementById('exactLat').value = lat;
+        document.getElementById('exactLng').value = lng;
+    }
+    document.getElementById('report').scrollIntoView({ behavior: 'smooth' });
+}
 
 searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); searchLocation(); } });
 document.addEventListener('click', e => { if (!e.target.closest('.map-search-bar')) searchResults.classList.remove('show'); });
@@ -319,7 +335,7 @@ window.getUserLocation = function () {
         return;
     }
     btn.innerHTML = '⏳ লোডিং...';
-    navigator.geolocation.getCurrentPosition(pos => {
+    navigator.geolocation.getCurrentPosition(async pos => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
         if (reportMap && reportMarker) {
@@ -328,6 +344,19 @@ window.getUserLocation = function () {
             document.getElementById('exactLat').value = lat;
             document.getElementById('exactLng').value = lng;
         }
+
+        try {
+            // Reverse Geocoding via Nominatim OpenStreetMap
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14&addressdetails=1`);
+            const data = await res.json();
+            if (data && data.address) {
+                const area = data.address.suburb || data.address.city_district || data.address.town || data.address.village || data.address.county || data.address.city;
+                if (area) {
+                    document.getElementById('location').value = area;
+                }
+            }
+        } catch (e) { console.error('Geocoding error', e); }
+
         btn.innerHTML = '✅ অবস্থান পাওয়া গেছে';
         setTimeout(() => btn.innerHTML = '📡 আমার অবস্থান', 3000);
     }, err => {
