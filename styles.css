@@ -2778,3 +2778,21 @@ html[data-theme="light"] .navbar.scrolled {
     animation: pulseGlowRed 2.5s infinite cubic-bezier(0.16, 1, 0.3, 1);
     border-color: var(--danger-red-dim) !important;
 }
+
+/* ===== VOTE BUTTONS ===== */
+.btn-vote {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-vote:hover {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+    border-color: var(--accent);
+}

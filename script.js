@@ -189,10 +189,10 @@ db.collection('reports').where('status', '==', 'approved').onSnapshot(snapshot =
             lat: coords.lat,
             lng: coords.lng,
             name: r.location || 'অজানা',
-            type: r.collectorType || '—',
+            type: r.collectorType || '-',
             rate: '৳ ' + (r.currentRate || 0).toLocaleString('bn-BD'),
             mood: r.mood || 'green',
-            note: [r.description, r.vipCode].filter(Boolean).join(' — ') || '',
+            note: [r.description, r.vipCode].filter(Boolean).join(' - ') || '',
             source: 'firestore'
         };
         allMapSpots.push(spot);
@@ -221,16 +221,29 @@ searchInput.addEventListener('input', () => {
     );
 
     if (matches.length === 0) {
-        searchResults.innerHTML = '<div class="search-result-item" style="color:var(--text-tertiary)">❌ কোনো ফলাফল পাওয়া যায়নি</div>';
+        searchResults.innerHTML = `
+            <div class="search-result-item" style="flex-direction:column; align-items:center; gap:8px; padding:16px;">
+                <div style="color:var(--text-tertiary)">❌ কোনো ফলাফল পাওয়া যায়নি</div>
+                <button type="button" class="btn-secondary" style="padding:6px 16px; font-size:13px; margin-top:8px;" onclick="reportNewLocation('${q}')">
+                    📍 '${q}' এলাকায় রিপোর্ট করুন
+                </button>
+            </div>
+        `;
     } else {
         searchResults.innerHTML = matches.slice(0, 6).map(s =>
             `<div class="search-result-item" style="flex-direction:column; align-items:flex-start; gap:8px;">
         <div style="display:flex; align-items:center; gap:8px; cursor:pointer; width:100%;" onclick="flyToSpot(${s.lat},${s.lng},'${s.name}')">
             <span class="mood-dot" style="background:${moodColors[s.mood]}"></span>
-            <span><strong>${s.name}</strong> — ${s.type} — ${s.rate}</span>
+            <span><strong>${s.name}</strong> - ${s.type} - ${s.rate}</span>
         </div>
         ${s.note ? `<div style="font-size:11px; color:var(--text-tertiary); margin-left:16px; white-space:normal; line-height:1.4;">📝 ${s.note}</div>` : ''}
-        <button type="button" class="btn-secondary" style="margin-left:16px; padding:4px 8px; font-size:11px; margin-top:4px;" onclick="reportAtSpot(${s.lat},${s.lng},'${s.name}')">📍 এই লোকেশনে রিপোর্ট করুন</button>
+        <div style="display:flex; justify-content:space-between; width:100%; margin-top:4px; padding-left:16px;">
+            <div style="display:flex; gap:8px;">
+                <button type="button" class="btn-vote" onclick="voteResult('${s.name}', 'up', event)">👍 ঠিক</button>
+                <button type="button" class="btn-vote" onclick="voteResult('${s.name}', 'down', event)">👎 ভুল</button>
+            </div>
+            <button type="button" class="btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="reportAtSpot(${s.lat},${s.lng},'${s.name}')">📍 রিপোর্ট করুন</button>
+        </div>
       </div>`
         ).join('');
     }
@@ -250,6 +263,30 @@ window.reportAtSpot = function (lat, lng, name) {
         document.getElementById('exactLng').value = lng;
     }
     document.getElementById('report').scrollIntoView({ behavior: 'smooth' });
+}
+
+window.reportNewLocation = function (locName) {
+    document.getElementById('mapSearchInput').value = locName;
+    document.getElementById('searchResults').classList.remove('show');
+    document.getElementById('location').value = locName;
+    document.getElementById('report').scrollIntoView({ behavior: 'smooth' });
+    showToast('📍 ম্যাপে জায়গাটি পিন করুন এবং ফর্মটি পূরণ করুন।');
+}
+
+window.voteResult = function (name, type, e) {
+    e.stopPropagation();
+    const btn = e.target;
+    btn.innerHTML = type === 'up' ? '✅ ধন্যবাদ!' : '🙏 রিভিউ করব';
+    btn.style.borderColor = type === 'up' ? 'var(--neon-green)' : 'var(--danger-red)';
+    btn.style.color = type === 'up' ? 'var(--neon-green)' : 'var(--danger-red)';
+    setTimeout(() => {
+        btn.innerHTML = type === 'up' ? '👍 ঠিক' : '👎 ভুল';
+        btn.style.borderColor = 'var(--border)';
+        btn.style.color = 'var(--text-secondary)';
+    }, 2000);
+
+    if (type === 'up') showToast(`👍 '${name}' এর তথ্যের সত্যতা নিশ্চিত করার জন্য ধন্যবাদ!`);
+    else showToast(`👎 '${name}' এর তথ্যটি আমরা আবার ভেরিফাই করব।`);
 }
 
 searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); searchLocation(); } });
@@ -429,18 +466,18 @@ function showToast(msg, err = false) {
 
 // ===== AI EXCUSE GENERATOR =====
 const excuses = [
-    { emoji: '👮', text: '"ভাই আমার মামা DIG, ফোন করব?" — ৯৫% সাকসেস রেট' },
-    { emoji: '🤕', text: '"দুই রাস্তা আগে পকেটমার লইয়া গেছে, ভাই খালি পকেট!" — ৬৮% সাকসেস' },
-    { emoji: '🤰', text: '"বউ লেবারে, এখনই হসপিটাল যাইতে হবে!" — ৮৮% সাকসেস রেট' },
-    { emoji: '📱', text: '"ভাই ক্যামেরা চালু আছে, লাইভে আছি!" — ৭৫% সাকসেস রেট' },
-    { emoji: '🪪', text: '"আমি সাংবাদিক, প্রেস কার্ড দেখাই?" — ৬২% সাকসেস রেট' },
-    { emoji: '😭', text: '"গতকাল চাকরি গেছে ভাই, বাচ্চার দুধের টাকাও নাই!" — ৭৯% সাকসেস রেট' },
-    { emoji: '🤝', text: '"জামাল ভাইয়ের লোক আমি, চিনেন না?" — ৫৫% সাকসেস রেট (ভুল জামাল হলে 0%)' },
-    { emoji: '🔧', text: '"গাড়ি খারাপ, টো করতেছি, ভাই একটু সহানুভূতি!" — ৪৫% সাকসেস রেট' },
-    { emoji: '🤒', text: '"ভাই আমার জ্বর ১০৪, ডেঙ্গু হইতে পারে, কাছে আইসেন না!" — ৯২% সাকসেস রেট' },
-    { emoji: '📞', text: '"থানায় ফোন করব? নাকি আমরা ভদ্রভাবে সমাধান করি?" — ৩৫% সাকসেস রেট (ব্যাকফায়ার ঝুঁকি)' },
-    { emoji: '🎓', text: '"আমি মাদ্রাসার হুজুর, চাঁদা নিলে গুনাহ হবে ভাই!" — ৮৫% সাকসেস রেট' },
-    { emoji: '🚑', text: '"অ্যাম্বুলেন্স পিছনে আসতেছে, রাস্তা ছাড়েন!" — ৭০% সাকসেস রেট' }
+    { emoji: '👮', text: '"ভাই আমার মামা DIG, ফোন করব?" - ৯৫% সাকসেস রেট' },
+    { emoji: '🤕', text: '"দুই রাস্তা আগে পকেটমার লইয়া গেছে, ভাই খালি পকেট!" - ৬৮% সাকসেস' },
+    { emoji: '🤰', text: '"বউ লেবারে, এখনই হসপিটাল যাইতে হবে!" - ৮৮% সাকসেস রেট' },
+    { emoji: '📱', text: '"ভাই ক্যামেরা চালু আছে, লাইভে আছি!" - ৭৫% সাকসেস রেট' },
+    { emoji: '🪪', text: '"আমি সাংবাদিক, প্রেস কার্ড দেখাই?" - ৬২% সাকসেস রেট' },
+    { emoji: '😭', text: '"গতকাল চাকরি গেছে ভাই, বাচ্চার দুধের টাকাও নাই!" - ৭৯% সাকসেস রেট' },
+    { emoji: '🤝', text: '"জামাল ভাইয়ের লোক আমি, চিনেন না?" - ৫৫% সাকসেস রেট (ভুল জামাল হলে 0%)' },
+    { emoji: '🔧', text: '"গাড়ি খারাপ, টো করতেছি, ভাই একটু সহানুভূতি!" - ৪৫% সাকসেস রেট' },
+    { emoji: '🤒', text: '"ভাই আমার জ্বর ১০৪, ডেঙ্গু হইতে পারে, কাছে আইসেন না!" - ৯২% সাকসেস রেট' },
+    { emoji: '📞', text: '"থানায় ফোন করব? নাকি আমরা ভদ্রভাবে সমাধান করি?" - ৩৫% সাকসেস রেট (ব্যাকফায়ার ঝুঁকি)' },
+    { emoji: '🎓', text: '"আমি মাদ্রাসার হুজুর, চাঁদা নিলে গুনাহ হবে ভাই!" - ৮৫% সাকসেস রেট' },
+    { emoji: '🚑', text: '"অ্যাম্বুলেন্স পিছনে আসতেছে, রাস্তা ছাড়েন!" - ৭০% সাকসেস রেট' }
 ];
 let excuseCounter = 0;
 window.generateExcuse = function () {
@@ -483,7 +520,7 @@ function updateShiftTracker() {
     document.getElementById('shiftCountdown').textContent =
         `শিফট চেঞ্জ হতে বাকি: ${rh} ঘণ্টা ${rm} মিনিট ${rs} সেকেন্ড`;
     const w = document.getElementById('shiftWarning');
-    if (pct > 80) { w.style.display = 'block'; w.textContent = '⚡ সার্জ প্রাইসিং শুরু হতে পারে — এখনই পালান!'; }
+    if (pct > 80) { w.style.display = 'block'; w.textContent = '⚡ সার্জ প্রাইসিং শুরু হতে পারে - এখনই পালান!'; }
     else { w.style.display = 'none'; }
 }
 updateShiftTracker();
