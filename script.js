@@ -571,9 +571,17 @@ document.getElementById('reportForm').addEventListener('submit', async e => {
 });
 
 // ===== GENERATE SHARE CARD =====
-window.generateShareCard = function (name, rate, type) {
+window.generateShareCard = async function (name, rate, type) {
     const container = document.createElement('div');
-    container.className = 'share-card-container';
+    // Ensure fixed width/position so the card is always perfectly laid out off-screen
+    container.style.position = 'fixed';
+    container.style.top = '-9999px';
+    container.style.left = '-9999px';
+    container.style.width = '420px';
+    container.style.padding = '30px';
+    container.style.background = '#111827';
+    container.style.zIndex = '-1';
+
     container.innerHTML = `
         <div style="font-family: 'Inter', sans-serif; text-align: center; color: #fff;">
             <div style="display:flex; justify-content:center; align-items:center; gap:8px; margin-bottom: 24px;">
@@ -581,7 +589,7 @@ window.generateShareCard = function (name, rate, type) {
                     <rect width="40" height="40" rx="10" fill="#4a9b9b" />
                     <text x="16.5" y="24" font-family="Inter,sans-serif" font-size="14" font-weight="800" fill="white">৳</text>
                 </svg>
-                <div style="font-size: 16px; font-weight: 800; color: #4a9b9b; letter-spacing: 2px;">CHADA-MAP.VERCEL.APP</div>
+                <div style="font-size: 16px; font-weight: 800; color: #4a9b9b; letter-spacing: 2px;">CHADAMAP.VERCEL.APP</div>
             </div>
             <div style="font-size: 20px; font-weight: 800; color: #ff2d2d; margin-bottom: 8px; text-transform: uppercase;">🚨 লাইভ রোড-ট্যাক্স অ্যালার্ট</div>
             <div style="font-size: 42px; font-weight: 900; margin-bottom: 12px; line-height:1.2;">📍 ${name}</div>
@@ -597,18 +605,46 @@ window.generateShareCard = function (name, rate, type) {
 
     showToast("কার্ড তৈরি হচ্ছে...", false);
 
-    html2canvas(container, { backgroundColor: '#111827', scale: 2 }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = `chanda_alert_${name}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+    try {
+        const canvas = await html2canvas(container, { backgroundColor: '#111827', scale: 2, useCORS: true });
         container.remove();
-        showToast(`'${name}' এর অ্যালার্ট কার্ড ডাউনলোড হয়েছে!`, false);
-    }).catch(err => {
+
+        const dataUrl = canvas.toDataURL('image/png');
+
+        // Convert base64 to Blob for native sharing
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
+        const file = new File([blob], `chanda_alert_${name.replace(/\s+/g, '_')}.png`, { type: 'image/png' });
+
+        const triggerDownload = () => {
+            const link = document.createElement('a');
+            link.download = `chanda_alert_${name.replace(/\s+/g, '_')}.png`;
+            link.href = dataUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast(`'${name}' এর অ্যালার্ট কার্ড তৈরি হয়েছে!`, false);
+        };
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share({
+                    title: 'Chanda Map Alert',
+                    text: `Road Tax Alert for ${name}!`,
+                    files: [file]
+                });
+                showToast(`অ্যালার্ট কার্ড শেয়ার করা হয়েছে!`, false);
+            } catch (e) {
+                if (e.name !== 'AbortError') triggerDownload();
+            }
+        } else {
+            triggerDownload();
+        }
+    } catch (err) {
         console.error("Card generation failed", err);
         showToast("❌ কার্ড তৈরিতে সমস্যা হয়েছে।", true);
-        container.remove();
-    });
+        if (container.parentNode) container.remove();
+    }
 };
 // ===== SCROLL PROGRESS BAR =====
 window.addEventListener('scroll', () => {
