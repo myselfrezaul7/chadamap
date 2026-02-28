@@ -97,6 +97,8 @@
             </ul>
             <div class="nav-right">
                 <button class="theme-toggle" id="themeToggle" title="থিম পরিবর্তন">🌙</button>
+                <button id="navCalcBtn" class="nav-cta-outline" title="চাঁদা ক্যালকুলেটর"
+                    onclick="document.getElementById('calculatorModal').classList.add('active')">🧮</button>
                 <a href="admin.html" class="nav-cta-outline" title="অ্যাডমিন">🔐</a>
             </div>
             <button class="hamburger" id="hamburger" aria-label="মেনু">
@@ -104,6 +106,55 @@
             </button>
         </div>
     </nav>
+
+    <!-- ===== CALCULATOR MODAL ===== -->
+    <div id="calculatorModal" class="syndicate-modal">
+        <div class="modal-content" style="max-width: 500px; padding: 32px 24px;">
+            <span class="close-modal"
+                onclick="document.getElementById('calculatorModal').classList.remove('active')">&times;</span>
+            <div style="text-align: center; margin-bottom: 24px;">
+                <span class="section-tag">🧮 ক্যালকুলেটর</span>
+                <h2 class="section-title" style="font-size: 24px; margin-bottom: 8px;">কুইক <span
+                        class="text-gradient">চাঁদা এস্টিমেট</span></h2>
+                <p class="section-desc" style="margin: 0 auto; font-size: 13px;">বের হওয়ার আগেই পকেটে কত এক্সট্রা ক্যাশ
+                    রাখতে হবে তার প্ল্যান করুন।</p>
+            </div>
+            <div class="calc-row" style="flex-direction: column; gap: 16px;">
+                <div class="calc-group" style="width: 100%;">
+                    <label
+                        style="font-size: 13px; margin-bottom: 6px; display: block; color: var(--text-secondary);">যানবাহন</label>
+                    <select id="calcVehicle"
+                        style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary);">
+                        <option value="bus">বাস</option>
+                        <option value="truck">পণ্যবাহী ট্রাক</option>
+                        <option value="cng">সিএনজি/অটো</option>
+                        <option value="private">প্রাইভেট কার/মাইক্রোবাস</option>
+                    </select>
+                </div>
+                <div class="calc-group" style="width: 100%;">
+                    <label
+                        style="font-size: 13px; margin-bottom: 6px; display: block; color: var(--text-secondary);">রুট</label>
+                    <select id="calcRoute"
+                        style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary);">
+                        <option value="city">ঢাকা সিটি (লোকাল)</option>
+                        <option value="highway">মহাসড়ক (আউট অব সিটি)</option>
+                        <option value="bridge">সেতু / বড় টার্মিনাল</option>
+                    </select>
+                </div>
+                <button class="btn-primary calc-btn" onclick="calculateChanda()"
+                    style="width: 100%; margin-top: 8px; justify-content: center;">হিসাব করুন</button>
+            </div>
+            <div class="calc-result" id="calcResult"
+                style="margin-top: 24px; padding: 16px; border-radius: 12px; background: rgba(255,45,45,0.1); border: 1px solid rgba(255,45,45,0.2); text-align: center; font-size: 16px; font-weight: 600; color: var(--text-primary);">
+                সম্ভাব্য চাঁদা: <span
+                    style="font-size: 28px; font-weight: 800; color: var(--danger-red); display: block; margin-top: 8px;">৳
+                    ---</span>
+                <span
+                    style="font-size: 12px; color: var(--text-tertiary); font-weight: 400; display: block; margin-top: 4px;">/
+                    ট্রিপ</span>
+            </div>
+        </div>
+    </div>
 
     <!-- ===== SPOTS TICKER ===== -->
     <div class="spots-ticker-container">
@@ -143,7 +194,7 @@
                         onclick="document.getElementById('report').scrollIntoView({behavior:'smooth'})">🚨 স্পট রিপোর্ট
                         করুন</button>
                     <button class="btn-secondary"
-                        onclick="document.getElementById('calculator').scrollIntoView({behavior:'smooth'})">🧮 চাঁদা
+                        onclick="document.getElementById('calculatorModal').classList.add('active')">🧮 চাঁদা
                         হিসাব</button>
                 </div>
                 <div class="hero-stats">
@@ -174,7 +225,7 @@
                             onclick="document.getElementById('report').scrollIntoView({behavior:'smooth'})">🚨 রিপোর্ট
                             করুন</button>
                         <button class="btn-secondary"
-                            onclick="document.getElementById('calculator').scrollIntoView({behavior:'smooth'})">🧮 চাঁদা
+                            onclick="document.getElementById('calculatorModal').classList.add('active')">🧮 চাঁদা
                             হিসাব</button>
                     </div>
                 </div>
@@ -298,43 +349,7 @@
         </div>
     </section>
 
-    <!-- ===== CHANDA CALCULATOR ===== -->
-    <section class="calculator-section" id="calculator">
-        <div class="container">
-            <div class="reveal" style="text-align: center; margin-bottom: 30px;">
-                <span class="section-tag">🧮 ক্যালকুলেটর</span>
-                <h2 class="section-title">কুইক <span class="text-gradient">চাঁদা এস্টিমেট</span></h2>
-                <p class="section-desc" style="margin: 0 auto;">বের হওয়ার আগেই পকেটে কত এক্সট্রা ক্যাশ রাখতে হবে তার
-                    প্ল্যান করুন।</p>
-            </div>
-            <div class="calculator-card reveal reveal-delay-1" style="max-width: 600px; margin: 0 auto; margin-top: 0;">
-                <div class="calc-row">
-                    <div class="calc-group">
-                        <label
-                            style="font-size: 12px; margin-bottom: 4px; display: block; color: var(--text-secondary);">যানবাহন</label>
-                        <select id="calcVehicle">
-                            <option value="bus">বাস</option>
-                            <option value="truck">পণ্যবাহী ট্রাক</option>
-                            <option value="cng">সিএনজি/অটো</option>
-                            <option value="private">প্রাইভেট কার/মাইক্রোবাস</option>
-                        </select>
-                    </div>
-                    <div class="calc-group">
-                        <label
-                            style="font-size: 12px; margin-bottom: 4px; display: block; color: var(--text-secondary);">রুট</label>
-                        <select id="calcRoute">
-                            <option value="city">ঢাকা সিটি (লোকাল)</option>
-                            <option value="highway">মহাসড়ক (আউট অব সিটি)</option>
-                            <option value="bridge">সেতু / বড় টার্মিনাল</option>
-                        </select>
-                    </div>
-                    <button class="btn-primary calc-btn" onclick="calculateChanda()" style="align-self: flex-end;">হিসাব
-                        করুন</button>
-                </div>
-                <div class="calc-result" id="calcResult">সম্ভাব্য চাঁদা: <span>৳ ---</span> / ট্রিপ</div>
-            </div>
-        </div>
-    </section>
+
 
 
 

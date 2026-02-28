@@ -104,11 +104,33 @@
                     </div>
                 </div>
 
-                <div class="filter-tabs">
-                    <button class="filter-tab active" data-filter="all">সবগুলো</button>
-                    <button class="filter-tab" data-filter="pending">⏳ পেন্ডিং</button>
-                    <button class="filter-tab" data-filter="approved">✅ অ্যাপ্রুভড</button>
-                    <button class="filter-tab" data-filter="rejected">❌ রিজেক্টেড</button>
+                <div class="dashboard-widgets"
+                    style="display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 24px;">
+                    <div class="chart-widget"
+                        style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px;">
+                        <h3 style="margin-bottom: 16px; font-size: 16px; color: var(--text-secondary);">রিপোর্ট
+                            স্ট্যাটাস ব্রেকডাউন</h3>
+                        <div style="position: relative; height: 100%; width: 100%; max-width: 250px;">
+                            <canvas id="reportsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-controls"
+                    style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div class="filter-tabs" style="margin-bottom: 0;">
+                        <button class="filter-tab active" data-filter="all">সবগুলো</button>
+                        <button class="filter-tab" data-filter="pending">⏳ পেন্ডিং</button>
+                        <button class="filter-tab" data-filter="approved">✅ অ্যাপ্রুভড</button>
+                        <button class="filter-tab" data-filter="rejected">❌ রিজেক্টেড</button>
+                    </div>
+
+                    <div class="admin-search-wrapper" style="position: relative; flex: 1; max-width: 300px;">
+                        <span
+                            style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 14px;">🔍</span>
+                        <input type="text" id="adminSearch" placeholder="লোকেশন বা বিবরণ খুঁজুন..."
+                            style="width: 100%; padding: 12px 16px 12px 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 100px; color: var(--text-primary); outline: none; transition: border-color var(--transition);">
+                    </div>
                 </div>
 
                 <div class="dash-table-wrapper">
@@ -186,7 +208,8 @@
     <div class="toast" id="toast"><span class="toast-icon">✅</span><span class="toast-msg" id="toastMsg">Success</span>
     </div>
 
-    <!-- Firebase SDK -->
+    <!-- Chart & Firebase SDKs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>

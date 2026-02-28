@@ -42,7 +42,8 @@ loginBtn.addEventListener('click', async () => {
 logoutBtn.addEventListener('click', () => { auth.signOut(); showToast('🚪 লগআউট সফল!'); });
 
 // ===== FIRESTORE =====
-let allReports = [], currentFilter = 'all';
+let allReports = [], currentFilter = 'all', currentSearch = '';
+let reportsChart = null;
 function loadReports() {
   if (unsubReports) unsubReports();
   unsubReports = db.collection('reports').orderBy('createdAt', 'desc').onSnapshot(snap => {
@@ -58,18 +59,75 @@ function updateKPIs() {
   document.getElementById('kpiPending').textContent = p.toLocaleString('bn-BD');
   document.getElementById('kpiApproved').textContent = a.toLocaleString('bn-BD');
   document.getElementById('kpiRejected').textContent = j.toLocaleString('bn-BD');
+
+  updateChart(p, a, j);
+}
+
+function updateChart(pending, approved, rejected) {
+  const ctx = document.getElementById('reportsChart');
+  if (!ctx) return;
+  const data = [pending, approved, rejected];
+
+  if (reportsChart) {
+    reportsChart.data.datasets[0].data = data;
+    reportsChart.update();
+  } else {
+    reportsChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['পেন্ডিং', 'অ্যাপ্রুভড', 'রিজেক্টেড'],
+        datasets: [{
+          data: data,
+          backgroundColor: ['#ffc107', '#39ff14', '#ff2d2d'],
+          borderColor: 'transparent',
+          borderWidth: 0,
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            titleFont: { family: 'Inter' },
+            bodyFont: { family: 'Inter' }
+          }
+        },
+        cutout: '75%'
+      }
+    });
+  }
 }
 
 function renderTable() {
   const tbody = document.getElementById('reportsBody');
-  const filtered = currentFilter === 'all' ? allReports : allReports.filter(r => r.status === currentFilter);
+  let filtered = currentFilter === 'all' ? allReports : allReports.filter(r => r.status === currentFilter);
+
+  if (currentSearch) {
+    filtered = filtered.filter(r =>
+      (r.location || '').toLowerCase().includes(currentSearch) ||
+      (r.description || '').toLowerCase().includes(currentSearch) ||
+      (r.collectorType || '').toLowerCase().includes(currentSearch)
+    );
+  }
+
   if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-tertiary)">কোনো রিপোর্ট নেই</td></tr>'; return; }
   const moodMap = { green: { i: '🟢', c: 'green', t: 'গ্রিন' }, yellow: { i: '🟡', c: 'yellow', t: 'ইয়েলো' }, red: { i: '🔴', c: 'red', t: 'রেড' } };
   const statusMap = { pending: '⏳ পেন্ডিং', approved: '✅ অ্যাপ্রুভড', rejected: '❌ রিজেক্টেড' };
   tbody.innerHTML = filtered.map(r => {
     const time = r.createdAt ? new Date(r.createdAt.seconds * 1000).toLocaleString('bn-BD', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' }) : '—';
     const m = moodMap[r.mood] || moodMap.green;
-    return `<tr><td>${time}</td><td>${r.location || '—'}</td><td>${r.collectorType || '—'}</td><td>৳ ${(r.currentRate || 0).toLocaleString('bn-BD')}</td><td style="max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${r.description || '—'}">${r.description || '—'}</td><td><span class="mood-badge ${m.c}">${m.i} ${m.t}</span></td><td><span class="status-badge status-${r.status}">${statusMap[r.status] || r.status}</span></td><td class="table-actions">${r.status === 'pending' ? `<button class="btn-verify" onclick="approveReport('${r.id}')">✅</button><button class="btn-reject" onclick="rejectReport('${r.id}')">❌</button>` : ''}<button class="btn-edit" onclick="openEdit('${r.id}')">✏️</button><button class="btn-delete" onclick="deleteReport('${r.id}')">🗑️</button></td></tr>`;
+    return `<tr>
+      <td data-label="সময়">${time}</td>
+      <td data-label="লোকেশন">${r.location || '—'}</td>
+      <td data-label="ধরন">${r.collectorType || '—'}</td>
+      <td data-label="ডিমান্ড">৳ ${(r.currentRate || 0).toLocaleString('bn-BD')}</td>
+      <td data-label="বিবরণ" style="max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${r.description || '—'}">${r.description || '—'}</td>
+      <td data-label="মুড"><span class="mood-badge ${m.c}">${m.i} ${m.t}</span></td>
+      <td data-label="স্ট্যাটাস"><span class="status-badge status-${r.status}">${statusMap[r.status] || r.status}</span></td>
+      <td data-label="অ্যাকশন" class="table-actions">${r.status === 'pending' ? `<button class="btn-verify" onclick="approveReport('${r.id}')">✅</button><button class="btn-reject" onclick="rejectReport('${r.id}')">❌</button>` : ''}<button class="btn-edit" onclick="openEdit('${r.id}')">✏️</button><button class="btn-delete" onclick="deleteReport('${r.id}')">🗑️</button></td>
+    </tr>`;
   }).join('');
 }
 
@@ -79,6 +137,14 @@ document.querySelectorAll('.filter-tab').forEach(tab => {
     this.classList.add('active'); currentFilter = this.dataset.filter; renderTable();
   });
 });
+
+const searchInput = document.getElementById('adminSearch');
+if (searchInput) {
+  searchInput.addEventListener('input', (e) => {
+    currentSearch = e.target.value.toLowerCase();
+    renderTable();
+  });
+}
 
 // CRUD
 async function approveReport(id) { try { await db.collection('reports').doc(id).update({ status: 'approved' }); showToast('✅ অ্যাপ্রুভড!'); } catch (e) { showToast('❌ ' + e.message, true); } }
