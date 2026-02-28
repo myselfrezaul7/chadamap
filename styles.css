@@ -1321,6 +1321,27 @@ html[data-theme="light"] .spots-ticker-container {
     transform: none
 }
 
+/* ===== CALCULATOR SECTION ===== */
+.calculator-section {
+    padding: 100px 0;
+    background: var(--bg-tertiary);
+    position: relative;
+}
+
+.calculator-section .calculator-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 30px;
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+}
+
+html[data-theme="light"] .calculator-section {
+    background: var(--bg-primary);
+}
+
 /* ===== ENTERPRISE ===== */
 .enterprise {
     padding: 80px 0;
@@ -2851,4 +2872,82 @@ html[data-theme="light"] .spots-ticker-container {
     background: var(--bg-card-hover);
     color: var(--text-primary);
     border-color: var(--accent);
+}
+
+/* ===== HIGH PRIORITY MOBILE OPTIMIZATIONS ===== */
+@media screen and (max-width: 768px) {
+
+    /* Stack hero actions vertically so buttons do not overflow horizontally */
+    .hero-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 12px;
+    }
+
+    .hero-actions button {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 0 !important;
+    }
+
+    /* Wrap the GPS button nicely in the report form */
+    .report-form-wrapper .form-group>div {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    .report-form-wrapper #gpsBtn {
+        width: 100%;
+        margin-bottom: 10px;
+        justify-content: center;
+    }
+
+    /* Prevent calculator inputs from breaking on small screens */
+    .calc-row {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .calc-row .calc-btn {
+        width: 100% !important;
+        align-self: flex-start !important;
+    }
+
+    /* Search Bar and results wrapping */
+    .map-search-bar {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+
+    .map-search-bar input {
+        min-width: unset;
+        width: 100%;
+    }
+
+    .map-search-bar button {
+        width: 100%;
+    }
+
+    /* Stack search result voting buttons gracefully */
+    .search-result-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .search-result-item>div:last-child {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    /* Spots ticker sizing constraints */
+    .spots-ticker-container {
+        padding: 8px 0;
+    }
+
+    .ticker-item {
+        font-size: 11px;
+    }
 }

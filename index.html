@@ -141,27 +141,16 @@
                         করুন</button>
                 </div>
 
-                <div class="calculator-card reveal reveal-delay-2">
-                    <h3>🧮 কুইক চাঁদা এস্টিমেট</h3>
-                    <div class="calc-row">
-                        <div class="calc-group">
-                            <select id="calcVehicle">
-                                <option value="bus">বাস</option>
-                                <option value="truck">পণ্যবাহী ট্রাক</option>
-                                <option value="cng">সিএনজি/অটো</option>
-                                <option value="private">প্রাইভেট কার/মাইক্রোবাস</option>
-                            </select>
-                        </div>
-                        <div class="calc-group">
-                            <select id="calcRoute">
-                                <option value="city">ঢাকা সিটি (লোকাল)</option>
-                                <option value="highway">মহাসড়ক (আউট অব সিটি)</option>
-                                <option value="bridge">সেতু / বড় টার্মিনাল</option>
-                            </select>
-                        </div>
-                        <button class="btn-primary calc-btn" onclick="calculateChanda()">হিসাব করুন</button>
-                    </div>
-                    <div class="calc-result" id="calcResult">সম্ভাব্য চাঁদা: <span>৳ ---</span> / ট্রিপ</div>
+                <div class="hero-actions">
+                    <button class="btn-primary btn-glow-map"
+                        onclick="document.getElementById('map').scrollIntoView({behavior:'smooth'})">🗺️ লাইভ ম্যাপ
+                        দেখুন</button>
+                    <button class="btn-secondary btn-glow-red"
+                        onclick="document.getElementById('report').scrollIntoView({behavior:'smooth'})">🚨 স্পট রিপোর্ট
+                        করুন</button>
+                    <button class="btn-secondary"
+                        onclick="document.getElementById('calculator').scrollIntoView({behavior:'smooth'})">🧮 চাঁদা
+                        হিসাব</button>
                 </div>
                 <div class="hero-stats">
                     <div class="hero-stat">
@@ -300,49 +289,46 @@
         </div>
     </section>
 
-
-    <!-- ===== ENTERPRISE ===== -->
-    <section class="enterprise" id="enterprise">
+    <!-- ===== CHANDA CALCULATOR ===== -->
+    <section class="calculator-section" id="calculator">
         <div class="container">
-            <div class="reveal">
-                <span class="section-tag" style="color:var(--danger-red);background:var(--danger-red-dim)">💼
-                    এন্টারপ্রাইজ</span>
-                <div class="enterprise-content">
-                    <h2 class="section-title">চাঁদাবাজ ভাইদের জন্য <span class="glow-text-red">এন্টারপ্রাইজ
-                            ভার্সন!</span></h2>
-                    <p class="section-desc">সিন্ডিকেট লিডার? প্রিমিয়াম সাবস্ক্রিপশন কিনে লাইভ ট্রাক ট্র্যাক করুন।</p>
-                </div>
+            <div class="reveal" style="text-align: center; margin-bottom: 30px;">
+                <span class="section-tag">🧮 ক্যালকুলেটর</span>
+                <h2 class="section-title">কুইক <span class="text-gradient">চাঁদা এস্টিমেট</span></h2>
+                <p class="section-desc" style="margin: 0 auto;">বের হওয়ার আগেই পকেটে কত এক্সট্রা ক্যাশ রাখতে হবে তার
+                    প্ল্যান করুন।</p>
             </div>
-            <div class="pricing-card reveal reveal-delay-1">
-                <span class="pricing-badge">🔥 সবচেয়ে জনপ্রিয়</span>
-                <h3>সিন্ডিকেট প্রো প্ল্যান</h3>
-                <div class="price">৯,৯৯৯ ৳ <span>/ মাসিক</span></div>
-                <ul class="pricing-features">
-                    <li><span class="check">✓</span> ধনী যাত্রীদের রুটের হিটম্যাপ</li>
-                    <li><span class="check">✓</span> প্রতিদ্বন্দ্বী সিন্ডিকেটের চেকপোস্ট ট্র্যাকিং</li>
-                    <li><span class="check">✓</span> মালবাহী ট্রাকের রিয়েল-টাইম GPS ডেটা</li>
-                    <li><span class="check">✓</span> ট্রাফিক পুলিশের শিফট চেঞ্জ অ্যালার্ট</li>
-                    <li><span class="check">✓</span> "সার্জ প্রাইসিং" - ঈদের সময় রেট বাড়ানোর AI</li>
-                    <li><span class="check">✓</span> ২৪/৭ ডেডিকেটেড "মামা" সাপোর্ট লাইন</li>
-                </ul>
-                <button class="btn-enterprise" onclick="showSatirePopup()">🚀 সিন্ডিকেট প্রো কিনুন</button>
-
-                <!-- ===== SATIRE POPUP ("Masud") ===== -->
-                <div class="satire-popup-overlay" id="satirePopup" style="border-radius: inherit; display: none;">
-                    <div class="satire-popup-card" style="padding: 30px; margin: 15px;">
-                        <div class="satire-emoji" style="font-size: 36px;">😒</div>
-                        <h3 style="margin-bottom: 5px;">হাহাহা...</h3>
-                        <p style="margin-bottom: 5px;">"তুই কি আর ভালো হবি না মাসুদ?"</p>
-                        <p style="font-size: 12px; color: var(--text-tertiary); line-height: 1.4;">
-                            (চাঁদাবাজি প্রো-ম্যাক্স ভার্সন এখনো ডেভেলপমেন্টে আছে)</p>
-                        <button class="btn-secondary" onclick="hideSatirePopup()"
-                            style="margin-top: 15px; width: 100%; justify-content: center; padding: 10px;">আচ্ছা ভাই,
-                            কান ধরছি 🥺</button>
+            <div class="calculator-card reveal reveal-delay-1" style="max-width: 600px; margin: 0 auto; margin-top: 0;">
+                <div class="calc-row">
+                    <div class="calc-group">
+                        <label
+                            style="font-size: 12px; margin-bottom: 4px; display: block; color: var(--text-secondary);">যানবাহন</label>
+                        <select id="calcVehicle">
+                            <option value="bus">বাস</option>
+                            <option value="truck">পণ্যবাহী ট্রাক</option>
+                            <option value="cng">সিএনজি/অটো</option>
+                            <option value="private">প্রাইভেট কার/মাইক্রোবাস</option>
+                        </select>
                     </div>
+                    <div class="calc-group">
+                        <label
+                            style="font-size: 12px; margin-bottom: 4px; display: block; color: var(--text-secondary);">রুট</label>
+                        <select id="calcRoute">
+                            <option value="city">ঢাকা সিটি (লোকাল)</option>
+                            <option value="highway">মহাসড়ক (আউট অব সিটি)</option>
+                            <option value="bridge">সেতু / বড় টার্মিনাল</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary calc-btn" onclick="calculateChanda()" style="align-self: flex-end;">হিসাব
+                        করুন</button>
                 </div>
+                <div class="calc-result" id="calcResult">সম্ভাব্য চাঁদা: <span>৳ ---</span> / ট্রিপ</div>
             </div>
         </div>
     </section>
+
+
+
 
     <!-- ===== VAI LEADERBOARD ===== -->
     <section class="vai-leaderboard-section" id="leaderboard">
@@ -435,6 +421,49 @@
                     <p class="shift-countdown" id="shiftCountdown">শিফট চেঞ্জ হতে বাকি: গণনা হচ্ছে...</p>
                 </div>
                 <div class="shift-warning" id="shiftWarning">⚡ সার্জ প্রাইসিং শুরু হতে পারে - এখনই পালান!</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== ENTERPRISE ===== -->
+    <section class="enterprise" id="enterprise">
+        <div class="container">
+            <div class="reveal">
+                <span class="section-tag" style="color:var(--danger-red);background:var(--danger-red-dim)">💼
+                    এন্টারপ্রাইজ</span>
+                <div class="enterprise-content">
+                    <h2 class="section-title">চাঁদাবাজ ভাইদের জন্য <span class="glow-text-red">এন্টারপ্রাইজ
+                            ভার্সন!</span></h2>
+                    <p class="section-desc">সিন্ডিকেট লিডার? প্রিমিয়াম সাবস্ক্রিপশন কিনে লাইভ ট্রাক ট্র্যাক করুন।</p>
+                </div>
+            </div>
+            <div class="pricing-card reveal reveal-delay-1">
+                <span class="pricing-badge">🔥 সবচেয়ে জনপ্রিয়</span>
+                <h3>সিন্ডিকেট প্রো প্ল্যান</h3>
+                <div class="price">৯,৯৯৯ ৳ <span>/ মাসিক</span></div>
+                <ul class="pricing-features">
+                    <li><span class="check">✓</span> ধনী যাত্রীদের রুটের হিটম্যাপ</li>
+                    <li><span class="check">✓</span> প্রতিদ্বন্দ্বী সিন্ডিকেটের চেকপোস্ট ট্র্যাকিং</li>
+                    <li><span class="check">✓</span> মালবাহী ট্রাকের রিয়েল-টাইম GPS ডেটা</li>
+                    <li><span class="check">✓</span> ট্রাফিক পুলিশের শিফট চেঞ্জ অ্যালার্ট</li>
+                    <li><span class="check">✓</span> "সার্জ প্রাইসিং" - ঈদের সময় রেট বাড়ানোর AI</li>
+                    <li><span class="check">✓</span> ২৪/৭ ডেডিকেটেড "মামা" সাপোর্ট লাইন</li>
+                </ul>
+                <button class="btn-enterprise" onclick="showSatirePopup()">🚀 সিন্ডিকেট প্রো কিনুন</button>
+
+                <!-- ===== SATIRE POPUP ("Masud") ===== -->
+                <div class="satire-popup-overlay" id="satirePopup" style="border-radius: inherit; display: none;">
+                    <div class="satire-popup-card" style="padding: 30px; margin: 15px;">
+                        <div class="satire-emoji" style="font-size: 36px;">😒</div>
+                        <h3 style="margin-bottom: 5px;">হাহাহা...</h3>
+                        <p style="margin-bottom: 5px;">"তুই কি আর ভালো হবি না মাসুদ?"</p>
+                        <p style="font-size: 12px; color: var(--text-tertiary); line-height: 1.4;">
+                            (চাঁদাবাজি প্রো-ম্যাক্স ভার্সন এখনো ডেভেলপমেন্টে আছে)</p>
+                        <button class="btn-secondary" onclick="hideSatirePopup()"
+                            style="margin-top: 15px; width: 100%; justify-content: center; padding: 10px;">আচ্ছা ভাই,
+                            কান ধরছি 🥺</button>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
