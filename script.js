@@ -108,6 +108,27 @@ chandaSpots.forEach(s => {
     const marker = L.marker([s.lat, s.lng], { icon: makeIcon(moodColors[s.mood]) }).addTo(map).bindPopup(createPopup(s));
     marker.on('mouseover', function (e) { this.openPopup(); });
 });
+// ===== TICKER LOGIC =====
+function updateSpotsTicker() {
+    const ticker = document.getElementById('spotsTicker');
+    if (!ticker) return;
+    if (allMapSpots.length === 0) {
+        ticker.innerHTML = '<span class="ticker-item">✅ বর্তমানে কোনো চাঁদাবাজির স্পট রিপোর্ট নেই</span>';
+        return;
+    }
+    // Duplicate the spots array 3 times to ensure a smooth infinite scroll without gaps on large screens
+    const spotsForTicker = [...allMapSpots, ...allMapSpots, ...allMapSpots];
+    ticker.innerHTML = spotsForTicker.map(s => `
+        <span class="ticker-item" style="cursor:pointer" onclick="flyToSpot(${s.lat},${s.lng},'${s.name.replace(/'/g, "\\'")}')">
+            <span class="mood-dot" style="background:${moodColors[s.mood]}; width:8px; height:8px;"></span>
+            <strong>${s.name}</strong>
+            <span style="opacity:0.6">|</span>
+            <span style="color:${moodColors[s.mood]}">${s.rate}</span>
+        </span>
+    `).join('');
+}
+
+updateSpotsTicker();
 updateHeatmap();
 
 // ===== DYNAMIC FIRESTORE MARKERS (approved reports) =====
@@ -201,6 +222,7 @@ db.collection('reports').where('status', '==', 'approved').onSnapshot(snapshot =
         dynamicMarkers.push(marker);
     });
     updateHeatmap();
+    updateSpotsTicker();
 });
 
 // Fix map size on scroll into view
@@ -230,8 +252,10 @@ searchInput.addEventListener('input', () => {
             </div>
         `;
     } else {
-        searchResults.innerHTML = matches.slice(0, 6).map(s =>
-            `<div class="search-result-item" style="flex-direction:column; align-items:flex-start; gap:8px;">
+        searchResults.innerHTML = matches.slice(0, 6).map(s => {
+            const docId = s.name.replace(/\//g, '_');
+            const votes = window.spotVotesObj ? (window.spotVotesObj[docId] || { upvotes: 0, downvotes: 0 }) : { upvotes: 0, downvotes: 0 };
+            return `<div class="search-result-item" style="flex-direction:column; align-items:flex-start; gap:8px;">
         <div style="display:flex; align-items:center; gap:8px; cursor:pointer; width:100%;" onclick="flyToSpot(${s.lat},${s.lng},'${s.name}')">
             <span class="mood-dot" style="background:${moodColors[s.mood]}"></span>
             <span><strong>${s.name}</strong> - ${s.type} - ${s.rate}</span>
@@ -239,13 +263,13 @@ searchInput.addEventListener('input', () => {
         ${s.note ? `<div style="font-size:11px; color:var(--text-tertiary); margin-left:16px; white-space:normal; line-height:1.4;">📝 ${s.note}</div>` : ''}
         <div style="display:flex; justify-content:space-between; width:100%; margin-top:4px; padding-left:16px;">
             <div style="display:flex; gap:8px;">
-                <button type="button" class="btn-vote" onclick="voteResult('${s.name}', 'up', event)">👍 ঠিক</button>
-                <button type="button" class="btn-vote" onclick="voteResult('${s.name}', 'down', event)">👎 ভুল</button>
+                <button type="button" class="btn-vote" onclick="voteResult('${s.name}', 'up', event)">👍 ঠিক <span style="opacity:0.7;margin-left:3px">${votes.upvotes}</span></button>
+                <button type="button" class="btn-vote" onclick="voteResult('${s.name}', 'down', event)">👎 ভুল <span style="opacity:0.7;margin-left:3px">${votes.downvotes}</span></button>
             </div>
             <button type="button" class="btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="reportAtSpot(${s.lat},${s.lng},'${s.name}')">📍 রিপোর্ট করুন</button>
         </div>
       </div>`
-        ).join('');
+        }).join('');
     }
     searchResults.classList.add('show');
 });
@@ -256,12 +280,13 @@ window.reportAtSpot = function (lat, lng, name) {
 
     // Fill report form
     document.getElementById('location').value = name;
-    if (reportMap && reportMarker) {
-        reportMap.flyTo([lat, lng], 15);
-        reportMarker.setLatLng([lat, lng]);
-        document.getElementById('exactLat').value = lat;
-        document.getElementById('exactLng').value = lng;
-    }
+
+    // Set on main map
+    map.flyTo([lat, lng], 15);
+    reportMarker.setLatLng([lat, lng]);
+    document.getElementById('exactLat').value = lat;
+    document.getElementById('exactLng').value = lng;
+
     document.getElementById('report').scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -273,14 +298,54 @@ window.reportNewLocation = function (locName) {
     showToast('📍 ম্যাপে জায়গাটি পিন করুন এবং ফর্মটি পূরণ করুন।');
 }
 
-window.voteResult = function (name, type, e) {
+window.spotVotesObj = {};
+if (typeof db !== 'undefined') {
+    db.collection('spot_votes').onSnapshot(snapshot => {
+        snapshot.docs.forEach(doc => {
+            window.spotVotesObj[doc.id] = doc.data();
+        });
+        // Re-render search if open to show updated votes
+        if (searchInput.value.trim().length >= 2 && searchResults.classList.contains('show')) {
+            searchInput.dispatchEvent(new Event('input'));
+        }
+    });
+}
+
+window.voteResult = async function (name, type, e) {
     e.stopPropagation();
     const btn = e.target;
-    btn.innerHTML = type === 'up' ? '✅ ধন্যবাদ!' : '🙏 রিভিউ করব';
+    // Keep a reference to the span to re-inject later
+    const docId = name.replace(/\//g, '_');
+    const votes = window.spotVotesObj ? (window.spotVotesObj[docId] || { upvotes: 0, downvotes: 0 }) : { upvotes: 0, downvotes: 0 };
+    let newUp = votes.upvotes + (type === 'up' ? 1 : 0);
+    let newDown = votes.downvotes + (type === 'down' ? 1 : 0);
+
+    btn.innerHTML = type === 'up' ? `✅ ধন্যবাদ! <span style="opacity:0.7;margin-left:3px">${newUp}</span>` : `🙏 রিভিউ করব <span style="opacity:0.7;margin-left:3px">${newDown}</span>`;
     btn.style.borderColor = type === 'up' ? 'var(--neon-green)' : 'var(--danger-red)';
     btn.style.color = type === 'up' ? 'var(--neon-green)' : 'var(--danger-red)';
+
+    // Persistence
+    if (typeof db !== 'undefined') {
+        const docRef = db.collection('spot_votes').doc(docId);
+        try {
+            await db.runTransaction(async (transaction) => {
+                const doc = await transaction.get(docRef);
+                if (!doc.exists) {
+                    transaction.set(docRef, { upvotes: type === 'up' ? 1 : 0, downvotes: type === 'down' ? 1 : 0 });
+                } else {
+                    const currentUp = doc.data().upvotes || 0;
+                    const currentDown = doc.data().downvotes || 0;
+                    transaction.update(docRef, {
+                        upvotes: currentUp + (type === 'up' ? 1 : 0),
+                        downvotes: currentDown + (type === 'down' ? 1 : 0)
+                    });
+                }
+            });
+        } catch (err) { console.error('Vote err', err); }
+    }
+
     setTimeout(() => {
-        btn.innerHTML = type === 'up' ? '👍 ঠিক' : '👎 ভুল';
+        btn.innerHTML = type === 'up' ? `👍 ঠিক <span style="opacity:0.7;margin-left:3px">${newUp}</span>` : `👎 ভুল <span style="opacity:0.7;margin-left:3px">${newDown}</span>`;
         btn.style.borderColor = 'var(--border)';
         btn.style.color = 'var(--text-secondary)';
     }, 2000);
@@ -323,47 +388,32 @@ document.querySelectorAll('[data-count]').forEach(el => {
     }, { threshold: 0.5 }).observe(el);
 });
 
-// ===== REPORT MAP (Mini Map) =====
-let reportMap = null;
-let reportMarker = null;
+// ===== REPORT MARKER ON MAIN MAP =====
+let reportMarker = L.marker([23.7644, 90.3893], { draggable: true, icon: makeIcon(moodColors.red, 16) }).addTo(map);
 
-function initReportMap() {
-    if (reportMap) return;
-    const mapEl = document.getElementById('reportMap');
-    if (!mapEl) return;
-
-    reportMap = L.map('reportMap', { scrollWheelZoom: false }).setView([23.7644, 90.3893], 12);
-    const theme = html.getAttribute('data-theme');
-    const url = theme === 'light' ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png' : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-    L.tileLayer(url, { attribution: '© OSM', maxZoom: 19 }).addTo(reportMap);
-
-    reportMarker = L.marker([23.7644, 90.3893], { draggable: true, icon: makeIcon(moodColors.red, 16) }).addTo(reportMap);
-
-    function updateHiddenInputs(lat, lng) {
-        document.getElementById('exactLat').value = lat;
-        document.getElementById('exactLng').value = lng;
-    }
-
-    reportMarker.on('dragend', function (e) {
-        const { lat, lng } = e.target.getLatLng();
-        updateHiddenInputs(lat, lng);
-    });
-
-    reportMap.on('click', function (e) {
-        reportMarker.setLatLng(e.latlng);
-        updateHiddenInputs(e.latlng.lat, e.latlng.lng);
-    });
-
-    updateHiddenInputs(23.7644, 90.3893);
-
-    new IntersectionObserver(entries => {
-        entries.forEach(e => { if (e.isIntersecting) reportMap.invalidateSize(); });
-    }, { threshold: 0.1 }).observe(mapEl);
+function updateHiddenInputs(lat, lng) {
+    document.getElementById('exactLat').value = lat;
+    document.getElementById('exactLng').value = lng;
 }
 
-new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) initReportMap(); });
-}, { rootMargin: "0px 0px 500px 0px" }).observe(document.getElementById('report'));
+// Initial update
+updateHiddenInputs(23.7644, 90.3893);
+
+reportMarker.on('dragend', function (e) {
+    const { lat, lng } = e.target.getLatLng();
+    updateHiddenInputs(lat, lng);
+});
+
+map.on('click', function (e) {
+    // Only place marker if we are somewhat zoomed in, to avoid accidental clicks when viewing the whole city
+    reportMarker.setLatLng(e.latlng);
+    updateHiddenInputs(e.latlng.lat, e.latlng.lng);
+
+    // Only scroll to the form if the user isn't holding shift (to allow easy continuous mapping)
+    if (!e.originalEvent.shiftKey) {
+        document.getElementById('report').scrollIntoView({ behavior: 'smooth' });
+    }
+});
 
 window.getUserLocation = function () {
     const btn = document.getElementById('gpsBtn');
@@ -375,13 +425,11 @@ window.getUserLocation = function () {
     navigator.geolocation.getCurrentPosition(async pos => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
-        if (reportMap && reportMarker) {
-            reportMap.flyTo([lat, lng], 15);
-            reportMarker.setLatLng([lat, lng]);
-            document.getElementById('exactLat').value = lat;
-            document.getElementById('exactLng').value = lng;
-        }
-
+        map.flyTo([lat, lng], 15);
+        reportMarker.setLatLng([lat, lng]);
+        document.getElementById('exactLat').value = lat;
+        document.getElementById('exactLng').value = lng;
+        document.getElementById('map').scrollIntoView({ behavior: 'smooth' });
         try {
             // Reverse Geocoding via Nominatim OpenStreetMap
             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14&addressdetails=1`);

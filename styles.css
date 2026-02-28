@@ -485,6 +485,60 @@ html[data-theme="light"] .navbar.scrolled {
     transform: rotate(-45deg) translate(5px, -5px)
 }
 
+/* ===== SPOTS TICKER ===== */
+.spots-ticker-container {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    width: 100%;
+    z-index: 990;
+    background: rgba(15, 15, 15, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+    padding: 6px 0;
+}
+
+html[data-theme="light"] .spots-ticker-container {
+    background: rgba(245, 245, 245, 0.85);
+    border-bottom-color: rgba(0, 0, 0, 0.05);
+}
+
+.spots-ticker {
+    display: inline-flex;
+    white-space: nowrap;
+    animation: ticker 40s linear infinite;
+    gap: 32px;
+}
+
+.spots-ticker:hover {
+    animation-play-state: paused;
+}
+
+@keyframes ticker {
+    0% {
+        transform: translateX(100vw);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+.ticker-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.ticker-item strong {
+    color: var(--text-primary);
+}
+
 /* ===== HERO ===== */
 .hero {
     min-height: 100vh;

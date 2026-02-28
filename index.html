@@ -103,6 +103,13 @@
         </div>
     </nav>
 
+    <!-- ===== SPOTS TICKER ===== -->
+    <div class="spots-ticker-container">
+        <div class="spots-ticker" id="spotsTicker">
+            <!-- Populated via JS -->
+        </div>
+    </div>
+
     <!-- ===== HERO ===== -->
     <section class="hero" id="hero">
         <div class="container">
@@ -217,15 +224,16 @@
                 <form id="reportForm">
                     <div class="form-group">
                         <label>📍 মানচিত্রে স্থান চিহ্নিত করুন (আবশ্যক)</label>
-                        <div
-                            style="position: relative; margin-bottom: 10px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border);">
-                            <div id="reportMap" style="height: 200px; width: 100%; z-index: 1;"></div>
+                        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 5px;">
                             <button type="button" class="btn-secondary" id="gpsBtn" onclick="getUserLocation()"
-                                style="position: absolute; bottom: 10px; right: 10px; z-index: 1000; padding: 6px 12px; font-size: 12px; background: var(--bg-card); backdrop-filter: blur(8px); border-radius: var(--radius-md); box-shadow: var(--shadow-md);">📡
-                                আমার অবস্থান</button>
+                                style="padding: 8px 16px; font-size: 13px; flex-shrink: 0; display: flex; align-items: center; gap: 6px;">
+                                📡 আমার অবস্থান
+                            </button>
+                            <p style="font-size: 12px; color: var(--text-tertiary); margin: 0; line-height: 1.4;">
+                                👆 <strong>GPS</strong> বাটন চাপুন অথবা <strong>উপরের মেইন ম্যাপে</strong> ক্লিক করে পিন
+                                রাখুন।
+                            </p>
                         </div>
-                        <p style="font-size: 12px; color: var(--text-tertiary); margin-top: 5px;">GPS বাটন চাপুন অথবা
-                            মানচিত্রে ক্লিক করে পিন রাখুন - পিন টেনেও সরাতে পারবেন</p>
                         <input type="hidden" id="exactLat">
                         <input type="hidden" id="exactLng">
                     </div>
