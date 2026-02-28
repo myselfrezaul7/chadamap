@@ -296,6 +296,8 @@ img {
     position: fixed;
     top: 0;
     left: 0;
+    right: 0;
+    margin: 0 auto;
     width: 100%;
     z-index: 1000;
     padding: 0 24px;
@@ -303,7 +305,7 @@ img {
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    transition: all var(--transition);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -313,12 +315,21 @@ html[data-theme="light"] .navbar {
 }
 
 .navbar.scrolled {
-    background: rgba(10, 10, 10, 0.7);
-    border-bottom-color: var(--border)
+    top: 16px;
+    max-width: 1200px;
+    width: calc(100% - 32px);
+    border-radius: 100px;
+    background: rgba(15, 15, 15, 0.75);
+    border: 1px solid var(--glass-border);
+    border-bottom-color: var(--glass-border);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    padding: 0 24px;
 }
 
 html[data-theme="light"] .navbar.scrolled {
-    background: rgba(240, 240, 240, 0.75)
+    background: rgba(245, 245, 245, 0.85);
+    border-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
 }
 
 .nav-inner {
@@ -489,7 +500,7 @@ html[data-theme="light"] .navbar.scrolled {
 
 /* ===== SPOTS TICKER ===== */
 .spots-ticker-container {
-    position: fixed;
+    position: absolute;
     top: 64px;
     left: 0;
     width: 100%;
