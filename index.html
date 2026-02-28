@@ -133,7 +133,7 @@
                     না, কিন্তু সবাই দেয়। আমরা শুধু সেটাকে ম্যাপে দেখাচ্ছি।
                 </p>
 
-                <div class="hero-actions">
+                <div class="hero-actions desktop-only">
                     <button class="btn-primary btn-glow-map"
                         onclick="document.getElementById('map').scrollIntoView({behavior:'smooth'})">🗺️ লাইভ ম্যাপ
                         দেখুন</button>
@@ -162,6 +162,19 @@
             <div class="hero-visual reveal reveal-delay-1">
                 <div class="hero-image-wrapper">
                     <img src="real-chanda-hero.png" alt="ঢাকার চাঁদাবাজি স্পট ম্যাপ" loading="eager">
+
+                    <!-- Mobile only overlay over image -->
+                    <div class="mobile-hero-overlay-actions">
+                        <button class="btn-primary btn-glow-map"
+                            onclick="document.getElementById('map').scrollIntoView({behavior:'smooth'})">🗺️ লাইভ ম্যাপ
+                            দেখুন</button>
+                        <button class="btn-secondary btn-glow-red"
+                            onclick="document.getElementById('report').scrollIntoView({behavior:'smooth'})">🚨 রিপোর্ট
+                            করুন</button>
+                        <button class="btn-secondary"
+                            onclick="document.getElementById('calculator').scrollIntoView({behavior:'smooth'})">🧮 চাঁদা
+                            হিসাব</button>
+                    </div>
                 </div>
             </div>
         </div>
