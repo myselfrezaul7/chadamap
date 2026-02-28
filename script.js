@@ -307,7 +307,7 @@ searchInput.addEventListener('input', () => {
             </div>
         `;
     } else {
-        searchResults.innerHTML = matches.slice(0, 6).map(s => {
+        searchResults.innerHTML = matches.slice(0, 15).map(s => {
             const docId = s.name.replace(/\//g, '_');
             const votes = window.spotVotesObj ? (window.spotVotesObj[docId] || { upvotes: 0, downvotes: 0 }) : { upvotes: 0, downvotes: 0 };
             return `<div class="search-result-item" style="flex-direction:column; align-items:flex-start; gap:8px;">
