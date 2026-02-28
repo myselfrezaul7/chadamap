@@ -239,14 +239,16 @@
                 <p class="section-desc" style="margin:0 auto">ঢাকার রাস্তায় কোথায় কত "রোড ট্যাক্স" - ক্রাউডসোর্সড ডেটা
                     থেকে লাইভ আপডেট।</p>
             </div>
-            <div class="map-wrapper reveal reveal-delay-2">
-                <div class="map-search-bar" id="mapSearchBar">
+            <div style="position: relative; width: 100%;">
+                <div class="map-search-bar reveal reveal-delay-2" id="mapSearchBar">
                     <input type="text" id="mapSearchInput" placeholder="লোকেশন খুঁজুন... যেমন: গুলিস্তান, মিরপুর"
                         autocomplete="off">
                     <button onclick="searchLocation()">খুঁজুন</button>
                     <div class="search-results" id="searchResults"></div>
                 </div>
-                <div id="liveMap"></div>
+                <div class="map-wrapper reveal reveal-delay-2">
+                    <div id="liveMap"></div>
+                </div>
             </div>
             <div class="map-legend reveal reveal-delay-2">
                 <span class="legend-item"><span class="legend-dot red"></span> রেড অ্যালার্ট - হাই রেট</span>
