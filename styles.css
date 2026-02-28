@@ -717,7 +717,9 @@ html[data-theme="light"] .spots-ticker-container {
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: all var(--transition);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 html[data-theme="light"] .radio-option label {
@@ -725,11 +727,16 @@ html[data-theme="light"] .radio-option label {
     /* Light gray for light mode */
 }
 
+.radio-option label:active {
+    transform: scale(0.96);
+}
+
 .radio-option input[type="radio"]:checked+label {
     background: var(--bg-card-hover);
     color: var(--text-primary);
     border-color: var(--accent);
-    box-shadow: 0 4px 12px var(--accent-dim);
+    box-shadow: 0 4px 16px var(--accent-dim);
+    transform: translateY(-2px);
 }
 
 html[data-theme="light"] .radio-option input[type="radio"]:checked+label {
@@ -3060,9 +3067,23 @@ html[data-theme="light"] .calculator-section {
     }
 
     /* Wrap the GPS button nicely in the report form */
-    .report-form-wrapper .form-group>div {
+    .report-form-wrapper .form-group>div:not(.radio-group) {
         flex-direction: column;
         align-items: flex-start !important;
+    }
+
+    /* Optimize card paddings and spacing for horizontal space constraints */
+    .calculator-card,
+    .pricing-card {
+        padding: 24px 16px;
+    }
+
+    .report-form-wrapper form {
+        padding: 20px 16px;
+    }
+
+    .calc-row {
+        padding: 16px;
     }
 
     .report-form-wrapper #gpsBtn {
@@ -3109,6 +3130,26 @@ html[data-theme="light"] .calculator-section {
         width: 100%;
         display: flex;
         justify-content: space-between;
+    }
+
+    /* Fix radio buttons horizontal layout from being column stacked */
+    .report-form-wrapper .form-group .radio-group {
+        flex-direction: row !important;
+        align-items: center !important;
+    }
+
+    /* Optimize card paddings and spacing for horizontal space constraints */
+    .calculator-card,
+    .pricing-card {
+        padding: 24px 16px;
+    }
+
+    .report-form-wrapper form {
+        padding: 20px 16px;
+    }
+
+    .calc-row {
+        padding: 16px;
     }
 
     /* Spots ticker sizing constraints */
