@@ -6,6 +6,28 @@ const revealObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
+// ===== NUMBER COUNTING =====
+const statObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const el = entry.target;
+            const target = parseInt(el.getAttribute('data-count'), 10);
+            let current = 0;
+            const increment = Math.max(1, Math.floor(target / 40));
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                el.textContent = current.toLocaleString('bn-BD');
+            }, 50);
+            statObserver.unobserve(el);
+        }
+    });
+});
+document.querySelectorAll('.stat-value').forEach(el => statObserver.observe(el));
+
 // ===== THEME =====
 const themeToggle = document.getElementById('themeToggle');
 const html = document.documentElement;
@@ -100,13 +122,45 @@ function updateHeatmap() {
 }
 
 function createPopup(s) {
-    return `<div style="font-family:Inter,sans-serif;line-height:1.6;min-width:170px"><strong style="font-size:14px">📍 ${s.name}</strong><div style="font-size:12px;color:#666;margin:3px 0">${s.type}</div><div style="display:flex;align-items:center;gap:8px;margin:5px 0"><span style="font-size:16px;font-weight:700;color:#333">${s.rate}</span><span style="font-size:11px;padding:2px 8px;border-radius:10px;background:${moodColors[s.mood]}20;color:${moodColors[s.mood]}">${moodLabels[s.mood]}</span></div>${s.note ? `<div style="font-size:11px;color:#888;font-style:italic">${s.note}</div>` : ''}${s.source === 'firestore' ? '<div style="margin-top:4px;font-size:10px;color:#4a9b9b">✅ ভেরিফাইড রিপোর্ট</div>' : ''}</div>`;
+    return `
+    <div style="font-family:Inter,sans-serif;line-height:1.6;min-width:170px">
+        <strong style="font-size:14px">📍 ${s.name}</strong>
+        <div style="font-size:12px;color:#666;margin:3px 0">${s.type}</div>
+        <div style="display:flex;align-items:center;gap:8px;margin:5px 0">
+            <span style="font-size:16px;font-weight:700;color:#333">${s.rate}</span>
+            <span style="font-size:11px;padding:2px 8px;border-radius:10px;background:${moodColors[s.mood]}20;color:${moodColors[s.mood]}">${moodLabels[s.mood]}</span>
+        </div>
+        ${s.note ? `<div style="font-size:11px;color:#888;font-style:italic">${s.note}</div>` : ''}
+        ${s.source === 'firestore' ? '<div style="margin-top:4px;font-size:10px;color:#4a9b9b">✅ ভেরিফাইড রিপোর্ট</div>' : ''}
+        <div style="margin-top:10px; border-top:1px solid #ccc; padding-top:8px; text-align:center;">
+            <button onclick="generateShareCard('${s.name}', '${s.rate}', '${s.type}')" 
+                style="background:none; color:#1a73e8; border:1px solid #1a73e8; padding:4px 12px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer; width:100%; transition:all 0.2s;">
+                📸 অ্যালার্ট কার্ড ডাউনলোড
+            </button>
+        </div>
+    </div>`;
 }
+
+// ===== LIVE MAP MARKERS (CLUSTERED) =====
+const markersClusterGroup = L.markerClusterGroup({
+    iconCreateFunction: function (cluster) {
+        return L.divIcon({
+            html: '<div style="background:var(--accent-dim); color:var(--text-primary); border:2px solid var(--accent); border-radius:50%; width:36px; height:36px; display:flex; align-items:center; justify-content:center; font-weight:bold; box-shadow:0 0 10px var(--accent-dim);">' + cluster.getChildCount() + '</div>',
+            className: 'custom-cluster-icon',
+            iconSize: L.point(36, 36)
+        });
+    },
+    spiderfyOnMaxZoom: true,
+    showCoverageOnHover: false,
+    zoomToBoundsOnClick: true
+});
+map.addLayer(markersClusterGroup);
 
 // Add static markers
 chandaSpots.forEach(s => {
-    const marker = L.marker([s.lat, s.lng], { icon: makeIcon(moodColors[s.mood]) }).addTo(map).bindPopup(createPopup(s));
+    const marker = L.marker([s.lat, s.lng], { icon: makeIcon(moodColors[s.mood]) }).bindPopup(createPopup(s));
     marker.on('mouseover', function (e) { this.openPopup(); });
+    markersClusterGroup.addLayer(marker);
 });
 // ===== TICKER LOGIC =====
 function updateSpotsTicker() {
@@ -193,7 +247,7 @@ function findCoords(location) {
 // Listen for approved reports in real-time
 db.collection('reports').where('status', '==', 'approved').onSnapshot(snapshot => {
     // Clear old dynamic markers
-    dynamicMarkers.forEach(m => map.removeLayer(m));
+    dynamicMarkers.forEach(m => markersClusterGroup.removeLayer(m));
     dynamicMarkers = [];
     // Remove old dynamic spots from allMapSpots
     allMapSpots = [...chandaSpots];
@@ -217,8 +271,9 @@ db.collection('reports').where('status', '==', 'approved').onSnapshot(snapshot =
             source: 'firestore'
         };
         allMapSpots.push(spot);
-        const marker = L.marker([spot.lat, spot.lng], { icon: makeIcon(moodColors[spot.mood], 14) }).addTo(map).bindPopup(createPopup(spot));
+        const marker = L.marker([spot.lat, spot.lng], { icon: makeIcon(moodColors[spot.mood], 14) }).bindPopup(createPopup(spot));
         marker.on('mouseover', function (e) { this.openPopup(); });
+        markersClusterGroup.addLayer(marker);
         dynamicMarkers.push(marker);
     });
     updateHeatmap();
@@ -481,16 +536,59 @@ document.getElementById('reportForm').addEventListener('submit', async e => {
         status: 'pending'
     };
 
-    try {
-        await db.collection('reports').add(data);
-        document.getElementById('reportForm').style.display = 'none';
-        document.getElementById('formSuccessMsg').style.display = 'block';
-        document.getElementById('reportForm').reset();
-    } catch (err) { showToast('❌ ত্রুটি: ' + err.message, true); }
-    btn.disabled = false;
-    btn.innerHTML = '📤 রিপোর্ট জমা দিন';
+    db.collection('reports').add(data)
+        .then(() => {
+            showToast("✅ স্পট রিপোর্ট সফলভাবে জমা হয়েছে।", false);
+            document.getElementById('reportForm').reset();
+            document.getElementById('reportForm').style.display = 'none';
+            document.getElementById('formSuccessMsg').style.display = 'block';
+        }).catch((error) => {
+            showToast("❌ এরর: " + error.message, true);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'রিপোর্ট জমা দিন';
+        });
 });
 
+// ===== GENERATE SHARE CARD =====
+window.generateShareCard = function (name, rate, type) {
+    const container = document.createElement('div');
+    container.className = 'share-card-container';
+    container.innerHTML = `
+        <div style="font-family: 'Inter', sans-serif; text-align: center; color: #fff;">
+            <div style="display:flex; justify-content:center; align-items:center; gap:8px; margin-bottom: 24px;">
+                <svg width="24" height="24" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="40" height="40" rx="10" fill="#4a9b9b" />
+                    <text x="16.5" y="24" font-family="Inter,sans-serif" font-size="14" font-weight="800" fill="white">৳</text>
+                </svg>
+                <div style="font-size: 16px; font-weight: 800; color: #4a9b9b; letter-spacing: 2px;">CHADA-MAP.VERCEL.APP</div>
+            </div>
+            <div style="font-size: 20px; font-weight: 800; color: #ff2d2d; margin-bottom: 8px; text-transform: uppercase;">🚨 লাইভ রোড-ট্যাক্স অ্যালার্ট</div>
+            <div style="font-size: 42px; font-weight: 900; margin-bottom: 12px; line-height:1.2;">📍 ${name}</div>
+            <div style="font-size: 18px; color: #9ca3af; margin-bottom: 32px; background: rgba(255,255,255,0.05); display:inline-block; padding:8px 16px; border-radius:20px;">কালেক্টর: ${type}</div>
+            <div style="background: rgba(255, 45, 45, 0.1); padding: 24px; border-radius: 16px; border: 2px solid #ff2d2d;">
+                <div style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #ff2d2d; margin-bottom: 8px;">বর্তমান রানিং রেট</div>
+                <div style="font-size: 56px; font-weight: 900; color: #fff; letter-spacing:-1px;">${rate}</div>
+            </div>
+            <div style="margin-top: 32px; font-size: 12px; color: #6b7280;">এই কার্ড অটোমেটিক জেনারেট করা হয়েছে। বাস্তব ডেটার উপর ভিত্তি করে স্যাটায়ার।</div>
+        </div>
+    `;
+    document.body.appendChild(container);
+
+    showToast("কার্ড তৈরি হচ্ছে...", false);
+
+    html2canvas(container, { backgroundColor: '#111827', scale: 2 }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `chanda_alert_${name}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        container.remove();
+        showToast(`'${name}' এর অ্যালার্ট কার্ড ডাউনলোড হয়েছে!`, false);
+    }).catch(err => {
+        console.error("Card generation failed", err);
+        showToast("❌ কার্ড তৈরিতে সমস্যা হয়েছে।", true);
+        container.remove();
+    });
+};
 // ===== SCROLL PROGRESS BAR =====
 window.addEventListener('scroll', () => {
     const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
@@ -505,11 +603,19 @@ window.resetFormView = function () {
     document.getElementById('reportForm').style.display = 'block';
 };
 
-// ===== TOAST =====
-function showToast(msg, err = false) {
-    const t = document.getElementById('toast'); document.getElementById('toastMsg').textContent = msg;
-    t.style.borderColor = err ? 'var(--danger-red)' : 'var(--accent)';
-    t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 4000);
+// ===== TOAST NOTIFICATIONS =====
+window.showToast = function (msg, error = false) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    const toast = document.createElement('div');
+    toast.className = `toast-message ${error ? 'warning' : 'success'}`;
+    const icon = error ? '⚠️' : '✅';
+    toast.innerHTML = `<span class="toast-icon">${icon}</span><span class="toast-text">${msg}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        setTimeout(() => toast.remove(), 400);
+    }, 4000);
 }
 
 // ===== AI EXCUSE GENERATOR =====

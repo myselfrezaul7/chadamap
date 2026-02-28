@@ -39,6 +39,8 @@
     <!-- Assets -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="icon" type="image/png" href="hero-map.png">
     <link rel="apple-touch-icon" href="hero-map.png">
@@ -189,13 +191,13 @@
                 <p class="section-desc" style="margin:0 auto">ঢাকার রাস্তায় কোথায় কত "রোড ট্যাক্স" - ক্রাউডসোর্সড ডেটা
                     থেকে লাইভ আপডেট।</p>
             </div>
-            <div class="map-search-bar reveal reveal-delay-1" id="mapSearchBar">
-                <input type="text" id="mapSearchInput" placeholder="লোকেশন খুঁজুন... যেমন: গুলিস্তান, মিরপুর"
-                    autocomplete="off">
-                <button onclick="searchLocation()">খুঁজুন</button>
-                <div class="search-results" id="searchResults"></div>
-            </div>
             <div class="map-wrapper reveal reveal-delay-2">
+                <div class="map-search-bar" id="mapSearchBar">
+                    <input type="text" id="mapSearchInput" placeholder="লোকেশন খুঁজুন... যেমন: গুলিস্তান, মিরপুর"
+                        autocomplete="off">
+                    <button onclick="searchLocation()">খুঁজুন</button>
+                    <div class="search-results" id="searchResults"></div>
+                </div>
                 <div id="liveMap"></div>
             </div>
             <div class="map-legend reveal reveal-delay-2">
@@ -346,29 +348,45 @@
                 <p class="section-desc" style="margin:0 auto">সবচেয়ে বেশি "রোড ট্যাক্স" দিয়ে কারা চ্যাম্পিয়ন?
                     সম্মানের সাথে তাদের নাম ঘোষণা করা হচ্ছে।</p>
             </div>
-            <div class="leaderboard-wrapper reveal reveal-delay-1">
-                <div class="leaderboard-header">
-                    <span>🥇 র‍্যাংক</span><span>নাম</span><span>এলাকা</span><span>মোট "বিনিয়োগ"</span>
+            <div class="leaderboard-podium-wrapper reveal reveal-delay-1">
+                <div class="podium-container">
+                    <div class="podium-step silver">
+                        <div class="avatar-mock">🥈</div>
+                        <div class="podium-name">আবুল বাশার</div>
+                        <div class="podium-score">৳ ৯,৮০০</div>
+                        <div class="podium-area">গুলিস্তান</div>
+                        <div class="podium-block">2</div>
+                    </div>
+                    <div class="podium-step gold">
+                        <div class="avatar-mock" style="transform: scale(1.2)">👑</div>
+                        <div class="podium-name">মোঃ কপাল ভাঙা মিয়া</div>
+                        <div class="podium-score" style="color:var(--accent); font-weight:800; font-size:18px;">৳ ১২,৪৫০
+                        </div>
+                        <div class="podium-area">মিরপুর ১০</div>
+                        <div class="podium-block">1</div>
+                    </div>
+                    <div class="podium-step bronze">
+                        <div class="avatar-mock">🥉</div>
+                        <div class="podium-name">ড্রাইভার হাবিব</div>
+                        <div class="podium-score">৳ ৮,৫০০</div>
+                        <div class="podium-area">টঙ্গী</div>
+                        <div class="podium-block">3</div>
+                    </div>
                 </div>
-                <div class="leaderboard-row gold">
-                    <span class="rank">🥇</span><span>মোঃ কপাল ভাঙা মিয়া</span><span>মিরপুর ১০</span><span>৳
-                        ১২,৪৫০</span>
+
+                <div class="leaderboard-list">
+                    <div class="leaderboard-row">
+                        <span class="rank">4</span><span>CNG চালক সেলিম</span><span>উত্তরা</span><span>৳ ৭,১০০</span>
+                    </div>
+                    <div class="leaderboard-row">
+                        <span class="rank">5</span><span>রিকশাওয়ালা করিম</span><span>ফার্মগেট</span><span>৳
+                            ১,২০০</span>
+                    </div>
                 </div>
-                <div class="leaderboard-row silver">
-                    <span class="rank">🥈</span><span>আবুল বাশার (দুর্ভাগা)</span><span>গুলিস্তান</span><span>৳
-                        ৯,৮০০</span>
-                </div>
-                <div class="leaderboard-row bronze">
-                    <span class="rank">🥉</span><span>ট্রাক ড্রাইভার হাবিব</span><span>টঙ্গী</span><span>৳ ৮,৫০০</span>
-                </div>
-                <div class="leaderboard-row">
-                    <span class="rank">4</span><span>CNG চালক সেলিম</span><span>উত্তরা</span><span>৳ ৭,১০০</span>
-                </div>
-                <div class="leaderboard-row">
-                    <span class="rank">5</span><span>রিকশাওয়ালা করিম</span><span>ফার্মগেট</span><span>৳ ১,২০০</span>
-                </div>
-                <div class="leaderboard-disclaimer">⚠️ ফেইক ডেটা - কোনো রিয়েল পার্সনের সাথে মিল পাওয়া গেলে সেটা
-                    সম্পূর্ণ কাকতালীয়।</div>
+
+                <div class="leaderboard-disclaimer"
+                    style="margin-top:24px; font-size: 13px; color: var(--text-tertiary); text-align: center;">⚠️ ফেইক
+                    ডেটা - কোনো রিয়েল পার্সনের সাথে মিল পাওয়া গেলে সেটা সম্পূর্ণ কাকতালীয়।</div>
             </div>
         </div>
     </section>
@@ -540,15 +558,20 @@
         </svg>
     </button>
 
-    <!-- Toast -->
-    <div class="toast" id="toast"><span class="toast-icon">✅</span><span class="toast-msg" id="toastMsg"></span></div>
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+    <!-- External Libraries -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <script src="firebase.js"></script>
     <script src="script.js"></script>
 </body>
