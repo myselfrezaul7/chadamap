@@ -294,7 +294,11 @@ searchInput.addEventListener('input', () => {
     if (q.length < 2) { searchResults.classList.remove('show'); searchResults.innerHTML = ''; return; }
 
     const matches = allMapSpots.filter(s =>
-        s.name.toLowerCase().includes(q) || s.type.toLowerCase().includes(q) || (s.nameEn && s.nameEn.toLowerCase().includes(q))
+        (s.name && s.name.toLowerCase().includes(q)) ||
+        (s.type && s.type.toLowerCase().includes(q)) ||
+        (s.nameEn && s.nameEn.toLowerCase().includes(q)) ||
+        (s.note && s.note.toLowerCase().includes(q)) ||
+        (s.location && s.location.toLowerCase().includes(q))
     );
 
     if (matches.length === 0) {
@@ -470,14 +474,24 @@ map.on('click', function (e) {
     }
 });
 
-window.getUserLocation = function () {
+const getPos = (options) => new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, options));
+
+window.getUserLocation = async function () {
     const btn = document.getElementById('gpsBtn');
     if (!navigator.geolocation) {
         showToast('❌ আপনার ব্রাউজার GPS সাপোর্ট করে না।', true);
         return;
     }
-    btn.innerHTML = '⏳ লোডিং...';
-    navigator.geolocation.getCurrentPosition(async pos => {
+    btn.innerHTML = '⏳ জিপিএস খোঁজা হচ্ছে...';
+
+    try {
+        // Try high accuracy first (max 8 seconds)
+        let pos = await getPos({ enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }).catch(async (e) => {
+            console.warn("High accuracy GPS failed, falling back to network location...", e);
+            // Fall back to low accuracy (network/wifi triangulation) with 15s timeout
+            return await getPos({ enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 });
+        });
+
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
         map.flyTo([lat, lng], 15);
@@ -485,6 +499,7 @@ window.getUserLocation = function () {
         document.getElementById('exactLat').value = lat;
         document.getElementById('exactLng').value = lng;
         document.getElementById('map').scrollIntoView({ behavior: 'smooth' });
+
         try {
             // Reverse Geocoding via Nominatim OpenStreetMap
             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14&addressdetails=1`);
@@ -499,10 +514,16 @@ window.getUserLocation = function () {
 
         btn.innerHTML = '✅ অবস্থান পাওয়া গেছে';
         setTimeout(() => btn.innerHTML = '📡 আমার অবস্থান', 3000);
-    }, err => {
-        showToast('❌ লোকেশন অ্যাক্সেস দেওয়া হয়নি। প্লিজ পারমিশন দিন।', true);
+
+    } catch (err) {
+        console.error("GPS completely failed:", err);
+        let msg = '❌ লোকেশন অ্যাক্সেস দেওয়া হয়নি বা সিগন্যাল নেই।';
+        if (err.code === 3) msg = '❌ লাইভ নেটওয়ার্ক টাইমআউট! আবার চেষ্টা করুন।';
+        if (err.code === 2) msg = '❌ আপনার ডিভাইসে জিপিএস বন্ধ আছে বা সিগন্যাল নেই।';
+        if (err.code === 1) msg = '❌ ব্রাউজার সেটিংসে লোকেশন পারমিশন দিন।';
+        showToast(msg, true);
         btn.innerHTML = '📡 আমার অবস্থান';
-    });
+    }
 };
 
 // ===== FORM → FIRESTORE =====
