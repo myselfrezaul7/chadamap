@@ -3381,4 +3381,13 @@ html[data-theme="light"] .calculator-section {
     .podium-area {
         font-size: 10px;
     }
+
+    .map-search-bar {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        width: 100%;
+        margin-bottom: 16px;
+    }
 }
