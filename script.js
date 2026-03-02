@@ -304,9 +304,9 @@ searchInput.addEventListener('input', () => {
     if (matches.length === 0) {
         searchResults.innerHTML = `
             <div class="search-result-item" style="flex-direction:column; align-items:center; gap:8px; padding:16px;">
-                <div style="color:var(--text-tertiary)">❌ কোনো ফলাফল পাওয়া যায়নি</div>
-                <button type="button" class="btn-secondary" style="padding:6px 16px; font-size:13px; margin-top:8px;" onclick="reportNewLocation('${q}')">
-                    📍 '${q}' এলাকায় রিপোর্ট করুন
+                <div style="color:var(--text-tertiary)">❌ কোনো রিপোর্ট পাওয়া যায়নি</div>
+                <button type="button" class="btn-secondary" style="padding:6px 16px; font-size:13px; margin-top:8px;" onclick="searchLocation()">
+                    📍 '${q}' ম্যাপে দেখুন
                 </button>
             </div>
         `;
@@ -349,10 +349,31 @@ window.reportAtSpot = function (lat, lng, name) {
     document.getElementById('report').scrollIntoView({ behavior: 'smooth' });
 }
 
-window.reportNewLocation = function (locName) {
+window.reportNewLocation = async function (locName) {
     document.getElementById('mapSearchInput').value = locName;
     document.getElementById('searchResults').classList.remove('show');
     document.getElementById('location').value = locName;
+
+    // Attempt to fly to the location
+    const coords = findCoords(locName);
+    let flyLat = coords.lat, flyLng = coords.lng;
+
+    // Check if it's the random center offset
+    if (Math.abs(flyLat - 23.7644) <= 0.03 && Math.abs(flyLng - 90.3893) <= 0.03) {
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locName + ', Bangladesh')}&limit=1`);
+            const data = await res.json();
+            if (data && data.length > 0) {
+                flyLat = parseFloat(data[0].lat);
+                flyLng = parseFloat(data[0].lon);
+            }
+        } catch (e) { }
+    }
+
+    map.flyTo([flyLat, flyLng], 15, { animate: true, duration: 1.2 });
+    reportMarker.setLatLng([flyLat, flyLng]);
+    updateHiddenInputs(flyLat, flyLng);
+
     document.getElementById('report').scrollIntoView({ behavior: 'smooth' });
     showToast('📍 ম্যাপে জায়গাটি পিন করুন এবং ফর্মটি পূরণ করুন।');
 }
@@ -416,16 +437,82 @@ window.voteResult = async function (name, type, e) {
 searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); searchLocation(); } });
 document.addEventListener('click', e => { if (!e.target.closest('.map-search-bar')) searchResults.classList.remove('show'); });
 
-function searchLocation() {
+let tempSearchMarker = null;
+
+async function searchLocation() {
     const q = searchInput.value.trim().toLowerCase();
     if (!q) return;
+
+    if (tempSearchMarker) {
+        map.removeLayer(tempSearchMarker);
+        tempSearchMarker = null;
+    }
+
+    const searchBtn = searchInput.nextElementSibling;
+    const btnText = searchBtn.innerText;
+
     const match = allMapSpots.find(s => s.name.toLowerCase().includes(q) || (s.nameEn && s.nameEn.toLowerCase().includes(q)));
     if (match) {
         flyToSpot(match.lat, match.lng, match.name);
-    } else {
-        showToast('❌ "' + searchInput.value.trim() + '" এলাকায় কোনো চাঁদাবাজি রিপোর্ট নেই।', true);
+        return;
     }
+
+    // Geocoding Fallback
+    searchBtn.innerText = '⏳ খুঁজছি...';
+    searchBtn.disabled = true;
     searchResults.classList.remove('show');
+
+    // First check hardcoded known area coords
+    const coords = findCoords(q);
+    const isRandomOffset = (Math.abs(coords.lat - 23.7644) <= 0.06 && Math.abs(coords.lng - 90.3893) <= 0.06);
+
+    if (!isRandomOffset) {
+        flyToUnknownSpot(coords.lat, coords.lng, searchInput.value.trim());
+        searchBtn.innerText = btnText;
+        searchBtn.disabled = false;
+        return;
+    }
+
+    // Nominatim fallback
+    try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q + ', Bangladesh')}&limit=1`);
+        const data = await res.json();
+
+        if (data && data.length > 0) {
+            flyToUnknownSpot(parseFloat(data[0].lat), parseFloat(data[0].lon), searchInput.value.trim());
+        } else {
+            showToast('❌ "' + searchInput.value.trim() + '" লোকেশনটি ম্যাপে পাওয়া যায়নি।', true);
+        }
+    } catch (err) {
+        showToast('❌ নেটওয়ার্ক ত্রুটি, লোকেশন খোঁজা সম্ভব হয়নি।', true);
+    }
+
+    searchBtn.innerText = btnText;
+    searchBtn.disabled = false;
+}
+
+function flyToUnknownSpot(lat, lng, name) {
+    map.flyTo([lat, lng], 15, { animate: true, duration: 1.2 });
+
+    // Add a temporary marker for the searched location
+    if (tempSearchMarker) map.removeLayer(tempSearchMarker);
+    tempSearchMarker = L.marker([lat, lng], {
+        icon: L.divIcon({
+            className: 'search-marker',
+            html: '<div style="font-size:24px; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.3))">📌</div>',
+            iconSize: [24, 24], iconAnchor: [12, 24]
+        })
+    }).addTo(map);
+
+    tempSearchMarker.bindPopup(`
+        <div style="font-family:Inter;text-align:center;">
+            <strong>${name}</strong><br/>
+            <span style="color:var(--text-tertiary);font-size:12px">এখানে কোনো রিপোর্ট নেই</span><br/>
+            <button onclick="reportNewLocation('${name}')" style="margin-top:8px;padding:4px 8px;font-size:11px;background:var(--accent);color:#fff;border:none;border-radius:4px;cursor:pointer;">📍 রিপোর্ট করুন</button>
+        </div>
+    `).openPopup();
+
+    document.getElementById('map').scrollIntoView({ behavior: 'smooth' });
 }
 
 function flyToSpot(lat, lng, name) {
