@@ -104,8 +104,13 @@
                     </div>
                 </div>
 
+                <div style="text-align: right; margin-bottom: 16px;">
+                    <span style="font-size: 13px; color: var(--text-tertiary);" id="lastUpdatedText">সর্বশেষ আপডেট:
+                        —</span>
+                </div>
+
                 <div class="dashboard-widgets"
-                    style="display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 24px;">
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 24px;">
                     <div class="chart-widget"
                         style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px;">
                         <h3 style="margin-bottom: 16px; font-size: 16px; color: var(--text-secondary);">রিপোর্ট
@@ -114,10 +119,19 @@
                             <canvas id="reportsChart"></canvas>
                         </div>
                     </div>
+
+                    <div class="chart-widget"
+                        style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px;">
+                        <h3 style="margin-bottom: 16px; font-size: 16px; color: var(--text-secondary);">গত ৭ দিনের
+                            ট্রেন্ড</h3>
+                        <div style="position: relative; height: 100%; width: 100%;">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="table-controls"
-                    style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 24px; position: relative;">
                     <div class="filter-tabs" style="margin-bottom: 0;">
                         <button class="filter-tab active" data-filter="all">সবগুলো</button>
                         <button class="filter-tab" data-filter="pending">⏳ পেন্ডিং</button>
@@ -125,11 +139,35 @@
                         <button class="filter-tab" data-filter="rejected">❌ রিজেক্টেড</button>
                     </div>
 
-                    <div class="admin-search-wrapper" style="position: relative; flex: 1; max-width: 300px;">
-                        <span
-                            style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 14px;">🔍</span>
-                        <input type="text" id="adminSearch" placeholder="লোকেশন বা বিবরণ খুঁজুন..."
-                            style="width: 100%; padding: 12px 16px 12px 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 100px; color: var(--text-primary); outline: none; transition: border-color var(--transition);">
+                    <div style="display: flex; gap: 12px; flex: 1; max-width: 500px;">
+                        <select id="dateFilter"
+                            style="padding: 12px 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 100px; color: var(--text-primary); outline: none; cursor: pointer;">
+                            <option value="all">সব সময়</option>
+                            <option value="today">আজ</option>
+                            <option value="7days">গত ৭ দিন</option>
+                            <option value="30days">গত ৩০ দিন</option>
+                        </select>
+                        <div class="admin-search-wrapper" style="position: relative; flex: 1;">
+                            <span
+                                style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 14px;">🔍</span>
+                            <input type="text" id="adminSearch" placeholder="লোকেশন বা বিবরণ খুঁজুন..."
+                                style="width: 100%; padding: 12px 16px 12px 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 100px; color: var(--text-primary); outline: none; transition: border-color var(--transition);">
+                        </div>
+                    </div>
+
+                    <div id="bulkActionBar"
+                        style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-elevated); border: 1px solid var(--accent); border-radius: var(--radius-md); align-items: center; padding: 0 16px; justify-content: space-between; z-index: 10;">
+                        <span style="font-weight: 600; color: var(--accent);"><span id="selectedCount">0</span>টি
+                            সিলেক্ট করা হয়েছে</span>
+                        <div style="display: flex; gap: 8px;">
+                            <button id="bulkApproveBtn" class="btn-primary"
+                                style="padding: 6px 12px; font-size: 12px;">✅ অ্যাপ্রুভ</button>
+                            <button id="bulkRejectBtn" class="btn-secondary"
+                                style="padding: 6px 12px; font-size: 12px; border-color: var(--danger-red); color: var(--danger-red);">❌
+                                রিজেক্ট</button>
+                            <button id="bulkCancelBtn" class="btn-secondary"
+                                style="padding: 6px 12px; font-size: 12px; border: none;">বাতিল</button>
+                        </div>
                     </div>
                 </div>
 
@@ -138,6 +176,7 @@
                         <table class="dash-table" id="reportsTable">
                             <thead>
                                 <tr>
+                                    <th style="width: 40px;"><input type="checkbox" id="selectAllCheckbox"></th>
                                     <th>সময়</th>
                                     <th>লোকেশন</th>
                                     <th>ধরন</th>
