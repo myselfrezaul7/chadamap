@@ -740,6 +740,12 @@ window.addEventListener('scroll', () => {
     if (height > 0) {
         document.getElementById('scrollProgress').style.width = (winScroll / height) * 100 + '%';
     }
+
+    // Parallax
+    const heroImage = document.getElementById('heroImage');
+    if (heroImage && winScroll < window.innerHeight) {
+        heroImage.style.transform = `translateY(${winScroll * 0.15}px)`;
+    }
 }, { passive: true });
 
 window.resetFormView = function () {
@@ -897,6 +903,31 @@ function initChandaTicker() {
     const now = new Date();
     const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
     const millisInMonth = daysInMonth * 24 * 60 * 60 * 1000;
+
+    // ... keeping the rest identical - replacing the end ...
+
+    // ===== RIPPLE EFFECT =====
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.btn-primary, .btn-secondary').forEach(btn => {
+            btn.classList.add('ripple-btn');
+            btn.addEventListener('pointerdown', function (e) {
+                const rect = btn.getBoundingClientRect();
+                const diameter = Math.max(rect.width, rect.height);
+                const radius = diameter / 2;
+
+                const ripple = document.createElement('span');
+                ripple.style.width = ripple.style.height = `${diameter}px`;
+                ripple.style.left = `${e.clientX - rect.left - radius}px`;
+                ripple.style.top = `${e.clientY - rect.top - radius}px`;
+                ripple.classList.add('ripple');
+
+                const existing = btn.getElementsByClassName('ripple')[0];
+                if (existing) existing.remove();
+
+                btn.appendChild(ripple);
+            });
+        });
+    });
 
     // Monthly Target: 100 Crore BDT (1,000,000,000)
     const monthlyTarget = 1000000000;

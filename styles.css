@@ -227,6 +227,34 @@ img {
     border-radius: 50%;
 }
 
+/* ===== RIPPLE EFFECT ===== */
+.ripple-btn {
+    position: relative;
+    overflow: hidden;
+    transform: translate3d(0, 0, 0);
+}
+
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple-animation 600ms linear;
+    background-color: rgba(255, 255, 255, 0.4);
+    pointer-events: none;
+}
+
+@keyframes ripple-animation {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+.parallax-img {
+    will-change: transform;
+    transition: transform 0.1s ease-out;
+}
+
 /* ===== UTILITY ===== */
 .container {
     max-width: 1200px;
