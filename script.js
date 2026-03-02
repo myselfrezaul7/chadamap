@@ -615,6 +615,8 @@ window.getUserLocation = async function () {
 
 // ===== FORM → FIRESTORE =====
 function sanitize(s) { return s.replace(/[<>]/g, '').trim().slice(0, 500); }
+let pendingReportData = null;
+
 document.getElementById('reportForm').addEventListener('submit', async e => {
     e.preventDefault();
     const locationStr = sanitize(document.getElementById('location').value);
@@ -628,10 +630,8 @@ document.getElementById('reportForm').addEventListener('submit', async e => {
     const description = sanitize(document.getElementById('description').value);
 
     if (isNaN(exactLat) || isNaN(exactLng) || !collectorType || !currentRate || !mood) { showToast('⚠️ ম্যাপে স্থান টিক করুন এবং সব আবশ্যিক ফিল্ড পূরণ করুন!', true); return; }
-    const btn = document.getElementById('submitBtn');
-    btn.textContent = '⏳ পাঠানো হচ্ছে...'; btn.disabled = true;
 
-    const data = {
+    pendingReportData = {
         location: locationStr || 'অজানা এলাকা',
         exactLat: exactLat,
         exactLng: exactLng,
@@ -644,18 +644,75 @@ document.getElementById('reportForm').addEventListener('submit', async e => {
         status: 'pending'
     };
 
-    db.collection('reports').add(data)
+    document.getElementById('confirmSubmitModal').style.display = 'flex';
+});
+
+document.getElementById('finalSubmitBtn').addEventListener('click', () => {
+    if (!pendingReportData) return;
+
+    document.getElementById('confirmSubmitModal').style.display = 'none';
+    const btn = document.getElementById('submitBtn');
+    btn.textContent = '⏳ পাঠানো হচ্ছে...'; btn.disabled = true;
+
+    db.collection('reports').add(pendingReportData)
         .then(() => {
             showToast("✅ স্পট রিপোর্ট সফলভাবে জমা হয়েছে।", false);
             document.getElementById('reportForm').reset();
+            localStorage.removeItem('chandaMapDraft');
             document.getElementById('reportForm').style.display = 'none';
             document.getElementById('formSuccessMsg').style.display = 'block';
+            pendingReportData = null;
         }).catch((error) => {
             showToast("❌ এরর: " + error.message, true);
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = 'রিপোর্ট জমা দিন';
+            btn.disabled = false;
+            btn.innerHTML = '📤 রিপোর্ট জমা দিন';
         });
 });
+
+// ===== AUTO-SAVE DRAFT =====
+function saveDraft() {
+    const draft = {
+        location: document.getElementById('location').value,
+        exactLat: document.getElementById('exactLat').value,
+        exactLng: document.getElementById('exactLng').value,
+        collectorType: document.getElementById('collectorType').value,
+        currentRate: document.getElementById('currentRate').value,
+        mood: document.querySelector('input[name="mood"]:checked')?.value || '',
+        vipCode: document.getElementById('vipCode').value,
+        description: document.getElementById('description').value
+    };
+    localStorage.setItem('chandaMapDraft', JSON.stringify(draft));
+}
+
+function loadDraft() {
+    const draftStr = localStorage.getItem('chandaMapDraft');
+    if (draftStr) {
+        try {
+            const draft = JSON.parse(draftStr);
+            if (draft.location) document.getElementById('location').value = draft.location;
+            if (draft.exactLat && draft.exactLng) {
+                document.getElementById('exactLat').value = draft.exactLat;
+                document.getElementById('exactLng').value = draft.exactLng;
+                reportMarker.setLatLng([draft.exactLat, draft.exactLng]);
+            }
+            if (draft.collectorType) document.getElementById('collectorType').value = draft.collectorType;
+            if (draft.currentRate) document.getElementById('currentRate').value = draft.currentRate;
+            if (draft.mood) {
+                const moodOpt = document.querySelector(`input[name="mood"][value="${draft.mood}"]`);
+                if (moodOpt) moodOpt.checked = true;
+            }
+            if (draft.vipCode) document.getElementById('vipCode').value = draft.vipCode;
+            if (draft.description) document.getElementById('description').value = draft.description;
+        } catch (e) { }
+    }
+}
+
+document.querySelectorAll('#reportForm input, #reportForm select, #reportForm textarea').forEach(el => {
+    el.addEventListener('input', saveDraft);
+    el.addEventListener('change', saveDraft);
+});
+
+window.addEventListener('load', loadDraft);
 
 // ===== GENERATE SHARE CARD =====
 window.generateShareCard = async function (name, rate, type) {
