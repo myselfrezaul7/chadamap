@@ -102,6 +102,14 @@
                         <div class="kpi-label">রিজেক্টেড</div>
                         <div class="kpi-value" id="kpiRejected">০</div>
                     </div>
+                    <div class="kpi-card" style="border-left-color: #a855f7;">
+                        <div class="kpi-label">আজকের রিপোর্ট 📬</div>
+                        <div class="kpi-value" id="kpiToday" style="color: #a855f7;">০</div>
+                    </div>
+                    <div class="kpi-card" style="border-left-color: #3b82f6;">
+                        <div class="kpi-label">সর্বোচ্চ রেট (আজ) 💰</div>
+                        <div class="kpi-value" id="kpiHighestRate" style="color: #3b82f6; font-size: 24px;">৳০</div>
+                    </div>
                 </div>
 
                 <div style="text-align: right; margin-bottom: 16px;">
@@ -109,23 +117,26 @@
                         —</span>
                 </div>
 
-                <div class="dashboard-widgets"
-                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 24px;">
-                    <div class="chart-widget"
-                        style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px;">
-                        <h3 style="margin-bottom: 16px; font-size: 16px; color: var(--text-secondary);">রিপোর্ট
-                            স্ট্যাটাস ব্রেকডাউন</h3>
-                        <div style="position: relative; height: 100%; width: 100%; max-width: 250px;">
-                            <canvas id="reportsChart"></canvas>
+                <div class="dashboard-widgets-scroll"
+                    style="overflow-x: auto; padding-bottom: 16px; margin-bottom: 24px; scrollbar-width: none;">
+                    <div class="dashboard-widgets"
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; min-width: 600px;">
+                        <div class="chart-widget"
+                            style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px;">
+                            <h3 style="margin-bottom: 16px; font-size: 16px; color: var(--text-secondary);">রিপোর্ট
+                                স্ট্যাটাস ব্রেকডাউন</h3>
+                            <div style="position: relative; height: 100%; width: 100%; max-width: 250px;">
+                                <canvas id="reportsChart"></canvas>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="chart-widget"
-                        style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px;">
-                        <h3 style="margin-bottom: 16px; font-size: 16px; color: var(--text-secondary);">গত ৭ দিনের
-                            ট্রেন্ড</h3>
-                        <div style="position: relative; height: 100%; width: 100%;">
-                            <canvas id="trendChart"></canvas>
+                        <div class="chart-widget"
+                            style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px;">
+                            <h3 style="margin-bottom: 16px; font-size: 16px; color: var(--text-secondary);">গত ৭ দিনের
+                                ট্রেন্ড</h3>
+                            <div style="position: relative; height: 100%; width: 100%;">
+                                <canvas id="trendChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -172,7 +183,10 @@
                 </div>
 
                 <div class="dash-table-wrapper">
-                    <div class="dash-table-scroll">
+                    <div id="reportsList" class="reports-mobile-list" style="display: none;">
+                        <div style="text-align:center;padding:40px;color:var(--text-tertiary)">ডেটা লোড হচ্ছে...</div>
+                    </div>
+                    <div class="dash-table-scroll desktop-only">
                         <table class="dash-table" id="reportsTable">
                             <thead>
                                 <tr>

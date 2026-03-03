@@ -703,12 +703,19 @@ document.getElementById('reportForm').addEventListener('submit', async e => {
     const exactLng = parseFloat(document.getElementById('exactLng').value);
 
     const collectorType = document.getElementById('collectorType').value;
-    const currentRate = Math.min(Math.max(parseInt(document.getElementById('currentRate').value) || 0, 0), 999999);
+    const rateMin = parseInt(document.getElementById('rateMin').value) || 0;
+    const rateMax = parseInt(document.getElementById('rateMax').value) || 0;
+
+    // Convert to Bangla digits strings
+    const minBn = String(rateMin).replace(/[0-9]/g, d => '০১২৩৪৫৬৭৮৯'[d]);
+    const maxBn = String(rateMax).replace(/[0-9]/g, d => '০১২৩৪৫৬৭৮৯'[d]);
+    const currentRate = (rateMax > rateMin) ? `৳${minBn}–৳${maxBn}` : `৳${minBn}`;
+
     const mood = document.querySelector('input[name="mood"]:checked');
     const vipCode = sanitize(document.getElementById('vipCode').value);
     const description = sanitize(document.getElementById('description').value);
 
-    if (isNaN(exactLat) || isNaN(exactLng) || !collectorType || !currentRate || !mood) { showToast('⚠️ ম্যাপে স্থান টিক করুন এবং সব আবশ্যিক ফিল্ড পূরণ করুন!', true); return; }
+    if (isNaN(exactLat) || isNaN(exactLng) || !collectorType || rateMin < 10 || !mood) { showToast('⚠️ ম্যাপে স্থান টিক করুন এবং সব আবশ্যিক ফিল্ড পূরণ করুন!', true); return; }
 
     pendingReportData = {
         location: locationStr || 'অজানা এলাকা',
@@ -719,7 +726,7 @@ document.getElementById('reportForm').addEventListener('submit', async e => {
         mood: mood.value,
         vipCode: vipCode || '',
         description: description || '',
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         status: 'pending'
     };
 
@@ -755,7 +762,8 @@ function saveDraft() {
         exactLat: document.getElementById('exactLat').value,
         exactLng: document.getElementById('exactLng').value,
         collectorType: document.getElementById('collectorType').value,
-        currentRate: document.getElementById('currentRate').value,
+        rateMin: document.getElementById('rateMin').value,
+        rateMax: document.getElementById('rateMax').value,
         mood: document.querySelector('input[name="mood"]:checked')?.value || '',
         vipCode: document.getElementById('vipCode').value,
         description: document.getElementById('description').value
@@ -775,7 +783,8 @@ function loadDraft() {
                 reportMarker.setLatLng([draft.exactLat, draft.exactLng]);
             }
             if (draft.collectorType) document.getElementById('collectorType').value = draft.collectorType;
-            if (draft.currentRate) document.getElementById('currentRate').value = draft.currentRate;
+            if (draft.rateMin) document.getElementById('rateMin').value = draft.rateMin;
+            if (draft.rateMax) document.getElementById('rateMax').value = draft.rateMax;
             if (draft.mood) {
                 const moodOpt = document.querySelector(`input[name="mood"][value="${draft.mood}"]`);
                 if (moodOpt) moodOpt.checked = true;
