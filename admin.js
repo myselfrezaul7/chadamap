@@ -423,6 +423,50 @@ window.deleteReport = async function (id, e) {
   renderReports();
 }
 
+// Database Rescue Function
+window.rescueOldReports = async function (e) {
+  if (!confirm('পুরোনো রিপোর্টগুলো (যাদের createdAt নেই) সিঙ্ক করতে চান?')) return;
+  const btn = e.target;
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '⏳ সিঙ্ক হচ্ছে...';
+  btn.disabled = true;
+
+  try {
+    // Get ALL reports bypassing the 'createdAt' order filter
+    const snap = await db.collection('reports').get();
+    let count = 0;
+    const promises = [];
+
+    snap.docs.forEach(doc => {
+      const data = doc.data();
+      if (!data.createdAt && data.timestamp) {
+        promises.push(db.collection('reports').doc(doc.id).update({
+          createdAt: data.timestamp
+        }));
+        count++;
+      } else if (!data.createdAt && !data.timestamp) {
+        promises.push(db.collection('reports').doc(doc.id).update({
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }));
+        count++;
+      }
+    });
+
+    if (promises.length > 0) {
+      await Promise.all(promises);
+      showToast('✅ ' + count + ' টি পুরোনো রিপোর্ট সিঙ্ক করা হয়েছে!');
+    } else {
+      showToast('সব রিপোর্ট আগে থেকেই সিঙ্ক করা আছে!');
+    }
+  } catch (err) {
+    showToast('❌ এরর: ' + err.message, true);
+    console.error('Migration error:', err);
+  }
+
+  btn.innerHTML = originalText;
+  btn.disabled = false;
+};
+
 // Edit modal
 const editModal = document.getElementById('editModal'), editForm = document.getElementById('editForm');
 function openEdit(id) {
