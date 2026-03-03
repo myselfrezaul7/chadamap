@@ -726,23 +726,32 @@ window.generateShareCard = async function (name, rate, type) {
     container.style.background = '#111827';
     container.style.zIndex = '-1';
 
+    const nowStr = new Date().toLocaleString('bn-BD', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
     container.innerHTML = `
         <div style="font-family: 'Inter', sans-serif; text-align: center; color: #fff;">
-            <div style="display:flex; justify-content:center; align-items:center; gap:8px; margin-bottom: 24px;">
-                <svg width="24" height="24" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="40" height="40" rx="10" fill="#4a9b9b" />
-                    <text x="16.5" y="24" font-family="Inter,sans-serif" font-size="14" font-weight="800" fill="white">৳</text>
-                </svg>
-                <div style="font-size: 16px; font-weight: 800; color: #4a9b9b; letter-spacing: 2px;">CHADAMAP.VERCEL.APP</div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 24px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <svg width="24" height="24" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="40" height="40" rx="10" fill="#4a9b9b" />
+                        <text x="16.5" y="24" font-family="Inter,sans-serif" font-size="14" font-weight="800" fill="white">৳</text>
+                    </svg>
+                    <div style="font-size: 16px; font-weight: 800; color: #4a9b9b; letter-spacing: 2px;">CHADAMAP.VERCEL.APP</div>
+                </div>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=https://chadamap.vercel.app&color=4a9b9b&bgcolor=111827" style="border-radius: 4px; border: 2px solid rgba(74, 155, 155, 0.3);" />
             </div>
+            
             <div style="font-size: 20px; font-weight: 800; color: #ff2d2d; margin-bottom: 8px; text-transform: uppercase;">🚨 লাইভ রোড-ট্যাক্স অ্যালার্ট</div>
             <div style="font-size: 42px; font-weight: 900; margin-bottom: 12px; line-height:1.2;">📍 ${name}</div>
-            <div style="font-size: 18px; color: #9ca3af; margin-bottom: 32px; background: rgba(255,255,255,0.05); display:inline-block; padding:8px 16px; border-radius:20px;">কালেক্টর: ${type}</div>
-            <div style="background: rgba(255, 45, 45, 0.1); padding: 24px; border-radius: 16px; border: 2px solid #ff2d2d;">
-                <div style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #ff2d2d; margin-bottom: 8px;">বর্তমান রানিং রেট</div>
-                <div style="font-size: 56px; font-weight: 900; color: #fff; letter-spacing:-1px;">${rate}</div>
+            <div style="font-size: 18px; color: #9ca3af; margin-bottom: 32px; background: rgba(255,255,255,0.05); display:inline-block; padding:8px 16px; border-radius:20px;">
+                কালেক্টর: ${type} • <span>${nowStr}</span>
             </div>
-            <div style="margin-top: 32px; font-size: 12px; color: #6b7280;">এই কার্ড অটোমেটিক জেনারেট করা হয়েছে। বাস্তব ডেটার উপর ভিত্তি করে স্যাটায়ার।</div>
+            
+            <div style="background: radial-gradient(circle at center, rgba(255, 45, 45, 0.2) 0%, rgba(255, 45, 45, 0.05) 100%); padding: 24px; border-radius: 16px; border: 2px solid rgba(255, 45, 45, 0.5); box-shadow: inset 0 0 20px rgba(255, 45, 45, 0.1);">
+                <div style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #ff2d2d; margin-bottom: 8px;">বর্তমান রানিং রেট</div>
+                <div style="font-size: 56px; font-weight: 900; color: #fff; letter-spacing:-1px; text-shadow: 0 0 10px rgba(255, 45, 45, 0.5);">${rate}</div>
+            </div>
+            <div style="margin-top: 32px; font-size: 12px; color: #6b7280; opacity: 0.8;">এই কার্ড অটোমেটিক জেনারেট করা হয়েছে। বাস্তব ডেটার উপর ভিত্তি করে স্যাটায়ার।</div>
         </div>
     `;
     document.body.appendChild(container);
@@ -760,14 +769,27 @@ window.generateShareCard = async function (name, rate, type) {
         const blob = await res.blob();
         const file = new File([blob], `chanda_alert_${name.replace(/\s+/g, '_')}.png`, { type: 'image/png' });
 
-        const triggerDownload = () => {
+        const triggerDownload = (url, n) => {
             const link = document.createElement('a');
-            link.download = `chanda_alert_${name.replace(/\s+/g, '_')}.png`;
-            link.href = dataUrl;
+            link.download = `chanda_alert_${n.replace(/\s+/g, '_')}.png`;
+            link.href = url;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            showToast(`'${name}' এর অ্যালার্ট কার্ড তৈরি হয়েছে!`, false);
+            showToast(`'${n}' এর অ্যালার্ট কার্ড ডাউনলোড হয়েছে!`, false);
+        };
+
+        const triggerFallback = async (b, url, n) => {
+            try {
+                if (navigator.clipboard && window.ClipboardItem) {
+                    await navigator.clipboard.write([new ClipboardItem({ 'image/png': b })]);
+                    showToast(`কার্ড ক্লিপবোর্ডে কপি হয়েছে!`, false);
+                } else {
+                    triggerDownload(url, n);
+                }
+            } catch (e) {
+                triggerDownload(url, n);
+            }
         };
 
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -779,10 +801,10 @@ window.generateShareCard = async function (name, rate, type) {
                 });
                 showToast(`অ্যালার্ট কার্ড শেয়ার করা হয়েছে!`, false);
             } catch (e) {
-                if (e.name !== 'AbortError') triggerDownload();
+                if (e.name !== 'AbortError') triggerFallback(blob, dataUrl, name);
             }
         } else {
-            triggerDownload();
+            triggerFallback(blob, dataUrl, name);
         }
     } catch (err) {
         console.error("Card generation failed", err);
