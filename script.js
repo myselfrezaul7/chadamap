@@ -105,8 +105,21 @@ function convertBnToEn(str) {
     return String(str).replace(/[০-৯]/g, d => '০১২৩৪৫৬৭৮৯'.indexOf(d));
 }
 
+let isHeatmapVisible = true;
+
+function getZoomRadius() {
+    const zoom = map.getZoom();
+    if (zoom >= 15) return 60;
+    if (zoom === 14) return 45;
+    if (zoom === 13) return 30;
+    if (zoom === 12) return 20;
+    return 15;
+}
+
 function updateHeatmap() {
     if (heatLayer) map.removeLayer(heatLayer);
+    if (!isHeatmapVisible) return;
+
     const heatData = allMapSpots.map(s => {
         const rateStr = String(s.rate).replace(/[^\d০-৯]/g, '');
         const rateNum = parseInt(convertBnToEn(rateStr)) || 500;
@@ -114,12 +127,46 @@ function updateHeatmap() {
         return [s.lat, s.lng, intensity];
     });
     heatLayer = L.heatLayer(heatData, {
-        radius: 35,
+        radius: getZoomRadius(),
         blur: 25,
         maxZoom: 14,
         gradient: { 0.4: '#ffd000', 0.65: '#ff7b00', 1.0: '#ff0000' }
     }).addTo(map);
 }
+
+map.on('zoomend', () => {
+    if (isHeatmapVisible) updateHeatmap();
+});
+
+// Add Heatmap Toggle Control
+const HeatmapControl = L.Control.extend({
+    options: { position: 'topright' },
+    onAdd: function () {
+        const btn = L.DomUtil.create('button', 'leaflet-bar leaflet-control');
+        btn.innerHTML = '🔥 হিটম্যাপ হাইড';
+        btn.style.cssText = 'padding:6px 12px; background:var(--bg-card); color:var(--text-primary); border:2px solid rgba(255,45,45,0.4); border-radius:6px; cursor:pointer; font-weight:600; font-family:Inter,sans-serif; box-shadow:0 2px 10px rgba(0,0,0,0.2); transition: all 0.2s;';
+
+        btn.onmouseover = function () { btn.style.background = 'var(--bg-card-hover)'; }
+        btn.onmouseout = function () { btn.style.background = 'var(--bg-card)'; }
+
+        btn.onclick = function (e) {
+            L.DomEvent.stopPropagation(e);
+            isHeatmapVisible = !isHeatmapVisible;
+            if (isHeatmapVisible) {
+                btn.innerHTML = '🔥 হিটম্যাপ হাইড';
+                btn.style.borderColor = 'rgba(255,45,45,0.4)';
+                updateHeatmap();
+            } else {
+                btn.innerHTML = '🔥 হিটম্যাপ অন';
+                btn.style.borderColor = 'rgba(255,255,255,0.1)';
+                if (heatLayer) map.removeLayer(heatLayer);
+            }
+        };
+        L.DomEvent.disableClickPropagation(btn);
+        return btn;
+    }
+});
+map.addControl(new HeatmapControl());
 
 function createPopup(s) {
     return `
@@ -563,6 +610,26 @@ map.on('click', function (e) {
 
 const getPos = (options) => new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, options));
 
+let watchId = null;
+let userLocationMarker = null;
+
+function updateUserLocationMarker(lat, lng) {
+    if (!userLocationMarker) {
+        userLocationMarker = L.marker([lat, lng], {
+            icon: L.divIcon({
+                className: 'user-loc-marker',
+                html: '<div style="width:16px;height:16px;background:#1a73e8;border-radius:50%;border:2px solid white;box-shadow:0 0 4px rgba(0,0,0,0.4);position:relative;"><div class="pulse-ring"></div></div>',
+                iconSize: [16, 16],
+                iconAnchor: [8, 8]
+            }),
+            zIndexOffset: 1000,
+            interactive: false
+        }).addTo(map);
+    } else {
+        userLocationMarker.setLatLng([lat, lng]);
+    }
+}
+
 window.getUserLocation = async function () {
     const btn = document.getElementById('gpsBtn');
     if (!navigator.geolocation) {
@@ -582,10 +649,19 @@ window.getUserLocation = async function () {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
         map.flyTo([lat, lng], 15);
+
+        // Report marker moves here once so they can report easily
         reportMarker.setLatLng([lat, lng]);
         document.getElementById('exactLat').value = lat;
         document.getElementById('exactLng').value = lng;
         document.getElementById('map').scrollIntoView({ behavior: 'smooth' });
+
+        // Start live tracking the blue dot
+        updateUserLocationMarker(lat, lng);
+        if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+        watchId = navigator.geolocation.watchPosition((p) => {
+            updateUserLocationMarker(p.coords.latitude, p.coords.longitude);
+        }, null, { enableHighAccuracy: true, maximumAge: 5000 });
 
         try {
             // Reverse Geocoding via Nominatim OpenStreetMap
@@ -599,8 +675,11 @@ window.getUserLocation = async function () {
             }
         } catch (e) { console.error('Geocoding error', e); }
 
-        btn.innerHTML = '✅ অবস্থান পাওয়া গেছে';
-        setTimeout(() => btn.innerHTML = '📡 আমার অবস্থান', 3000);
+        btn.innerHTML = '✅ লাইভ ট্র্যাকিং অন';
+        setTimeout(() => btn.innerHTML = '📡 লাইভ ট্র্যাকিং অন', 3000);
+        btn.style.background = 'rgba(26, 115, 232, 0.2)';
+        btn.style.borderColor = '#1a73e8';
+        btn.style.color = '#fff';
 
     } catch (err) {
         console.error("GPS completely failed:", err);
