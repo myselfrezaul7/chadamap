@@ -93,7 +93,13 @@ const chandaSpots = [
     { lat: 23.5186, lng: 90.9631, name: 'ইলিয়টগঞ্জ, কুমিল্লা', nameEn: 'eliotganj', type: 'হাইওয়ে সিন্ডিকেট', rate: '৳ ১,০০০', mood: 'yellow', note: 'ঢাকা-চট্টগ্রাম মহাসড়কে কাভার্ড ভ্যান টার্গেট' },
     { lat: 24.6738, lng: 89.4182, name: 'শেরপুর, বগুড়া', nameEn: 'sherpur bogura', type: 'শ্রমিক সংগঠন', rate: '৳ ৮০০', mood: 'red', note: 'ঢাকা-বগুড়া মহাসড়কে ভারী পণ্যবাহী ট্রাকে চাঁদা' },
     { lat: 24.3970, lng: 89.7711, name: 'বঙ্গবন্ধু সেতু এপ্রোচ', nameEn: 'bangabandhu bridge tangail', type: 'হাইওয়ে চাঁদাবাজ', rate: '৳ ২,০০০', mood: 'red', note: 'টাঙ্গাইল প্রান্তে সেতু পারাপারকারী ট্রাকে মোটা অংকের চাঁদা' },
-    { lat: 22.2965, lng: 91.9782, name: 'পটিয়া বাইপাস', nameEn: 'potiya', type: 'লোকাল সিন্ডিকেট', rate: '৳ ৫০০', mood: 'yellow', note: 'চট্টগ্রাম-কক্সবাজার মহাসড়কে সিএনজি ও বাস থেকে' }
+    { lat: 22.2965, lng: 91.9782, name: 'পটিয়া বাইপাস', nameEn: 'potiya', type: 'লোকাল সিন্ডিকেট', rate: '৳ ৫০০', mood: 'yellow', note: 'চট্টগ্রাম-কক্সবাজার মহাসড়কে সিএনজি ও বাস থেকে' },
+    // Recent News Incidents (March 2026 update)
+    { lat: 23.8475, lng: 90.2589, name: 'ঢাকা-আরিচা মহাসড়ক (সাভার)', nameEn: 'dhaka aricha highway', type: 'হাইওয়ে সিন্ডিকেট', rate: '৳ ৫,০০০', mood: 'red', note: 'প্রতিদিন ২ কোটি টাকার বেপরোয়া চাঁদাবাজি <br><small><a href="https://somoynews.tv" target="_blank" style="color:var(--neon-green)">সূত্র: সময় সংবাদ</a></small>' },
+    { lat: 23.9932, lng: 90.3807, name: 'গাজীপুর চৌরাস্তা', nameEn: 'gazipur chowrasta', type: 'পরিবহন শ্রমিক নেতা', rate: '৳ ৩,০০০', mood: 'red', note: 'ঢাকা-ময়মনসিংহ মহাসড়কে ৫ গুণ বেড়েছে চাঁদাবাজি <br><small><a href="https://bdnews24.com" target="_blank" style="color:var(--neon-green)">সূত্র: বিডিনিউজ টোয়েন্টিফোর</a></small>' },
+    { lat: 23.7153, lng: 90.4284, name: 'যাত্রাবাড়ী-সায়েদাবাদ এলাকা', nameEn: 'jatrabari', type: 'পলিটিক্যাল ক্যাডার', rate: '৳ ১,৫০০', mood: 'red', note: 'পরিবহন খাতে বছরে হাজার কোটি টাকা চাঁদা আদায়ের অন্যতম স্পট <br><small><a href="https://prothomalo.com" target="_blank" style="color:var(--neon-green)">সূত্র: প্রথম আলো</a></small>' },
+    { lat: 23.6931, lng: 90.4607, name: 'সাইনবোর্ড (ঢাকা-চট্টগ্রাম মহাসড়ক)', nameEn: 'signboard', type: 'লোকাল সিন্ডিকেট', rate: '৳ ৮০০', mood: 'yellow', note: 'মহাসড়কের ৫৩৩টি চাঁদাবাজি স্পটের একটি প্রধান কেন্দ্র <br><small><a href="https://bonikbarta.com" target="_blank" style="color:var(--neon-green)">সূত্র: পুলিশ সদর দপ্তর রিপোর্ট</a></small>' },
+    { lat: 23.7509, lng: 90.4009, name: 'তেজগাঁও ট্রাকস্ট্যান্ড', nameEn: 'tejgaon truck stand', type: 'মালিক-শ্রমিক সমিতি', rate: '৳ ১,২০০', mood: 'red', note: 'পার্কিং ফি-এর নামে পণ্যবাহী ট্রাকে জোরপূর্বক চাঁদাবাজি' }
 ];
 
 // All spots for search (static + dynamic)
