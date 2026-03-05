@@ -98,6 +98,7 @@
             <ul class="nav-links" id="navLinks">
                 <li><a href="#map">লাইভ ম্যাপ</a></li>
                 <li><a href="#report">স্পট রিপোর্ট</a></li>
+                <li><a href="#allReports">সব রিপোর্ট</a></li>
                 <li><a href="#enterprise">এন্টারপ্রাইজ</a></li>
             </ul>
             <div class="nav-right">
@@ -512,6 +513,52 @@
                     <p class="shift-countdown" id="shiftCountdown">শিফট চেঞ্জ হতে বাকি: গণনা হচ্ছে...</p>
                 </div>
                 <div class="shift-warning" id="shiftWarning">⚡ সার্জ প্রাইসিং শুরু হতে পারে - এখনই পালান!</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== ALL REPORTS FEED ===== -->
+    <section class="all-reports-section" id="allReports">
+        <div class="container">
+            <div class="reveal">
+                <span class="section-tag">📋 ডেটাবেস</span>
+                <h2 class="section-title">সকল <span class="text-gradient">চাঁদাবাজি রিপোর্ট</span></h2>
+                <p class="section-desc" style="margin-bottom:24px">সংবাদমাধ্যম থেকে যাচাইকৃত ও ইউজার সাবমিটেড ঘটনা — এক
+                    জায়গায়।</p>
+            </div>
+
+            <div class="reports-stats reveal reveal-delay-1" id="reportsStats">
+                <div class="stat-card-mini">
+                    <span class="stat-num" id="totalReportsCount">0</span>
+                    <span class="stat-label">মোট রিপোর্ট</span>
+                </div>
+                <div class="stat-card-mini">
+                    <span class="stat-num" id="newsVerifiedCount">0</span>
+                    <span class="stat-label">📰 সংবাদ সূত্র</span>
+                </div>
+                <div class="stat-card-mini">
+                    <span class="stat-num" id="userSubmittedCount">0</span>
+                    <span class="stat-label">👤 ইউজার রিপোর্ট</span>
+                </div>
+            </div>
+
+            <div class="reports-filters reveal reveal-delay-2">
+                <div class="filter-pills">
+                    <button class="filter-btn active" data-filter="all"
+                        onclick="filterReportsFeed('all', this)">সব</button>
+                    <button class="filter-btn" data-filter="red" onclick="filterReportsFeed('red', this)">🔴 হাই
+                        রিস্ক</button>
+                    <button class="filter-btn" data-filter="yellow" onclick="filterReportsFeed('yellow', this)">🟡
+                        মিড</button>
+                    <button class="filter-btn" data-filter="green" onclick="filterReportsFeed('green', this)">🟢
+                        লো</button>
+                </div>
+                <input type="text" class="feed-search-input" id="reportsFeedSearch" placeholder="🔍 এলাকা খুঁজুন..."
+                    oninput="searchReportsFeed(this.value)">
+            </div>
+
+            <div class="reports-feed-grid reveal reveal-delay-3" id="reportsFeedGrid">
+                <!-- JS populates -->
             </div>
         </div>
     </section>
