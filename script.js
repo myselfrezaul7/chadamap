@@ -155,7 +155,8 @@ const HeatmapControl = L.Control.extend({
     options: { position: 'topright' },
     onAdd: function () {
         const btn = L.DomUtil.create('button', 'leaflet-bar leaflet-control');
-        btn.innerHTML = '🔥 হিটম্যাপ হাইড';
+        btn.innerHTML = '🔥';
+        btn.title = 'হিটম্যাপ অন/অফ করুন';
         btn.style.cssText = 'padding:6px 12px; background:var(--bg-card); color:var(--text-primary); border:2px solid rgba(255,45,45,0.4); border-radius:6px; cursor:pointer; font-weight:600; font-family:Inter,sans-serif; box-shadow:0 2px 10px rgba(0,0,0,0.2); transition: all 0.2s;';
 
         btn.onmouseover = function () { btn.style.background = 'var(--bg-card-hover)'; }
@@ -165,11 +166,11 @@ const HeatmapControl = L.Control.extend({
             L.DomEvent.stopPropagation(e);
             isHeatmapVisible = !isHeatmapVisible;
             if (isHeatmapVisible) {
-                btn.innerHTML = '🔥 হিটম্যাপ হাইড';
+                btn.innerHTML = '🔥';
                 btn.style.borderColor = 'rgba(255,45,45,0.4)';
                 updateHeatmap();
             } else {
-                btn.innerHTML = '🔥 হিটম্যাপ অন';
+                btn.innerHTML = '🔥';
                 btn.style.borderColor = 'rgba(255,255,255,0.1)';
                 if (heatLayer) map.removeLayer(heatLayer);
             }
@@ -337,7 +338,9 @@ db.collection('reports').where('status', '==', 'approved').onSnapshot(snapshot =
     });
     updateHeatmap();
     updateSpotsTicker();
-    renderReportsFeed();
+    if (typeof renderReportsFeed === 'function') {
+        renderReportsFeed();
+    }
 });
 
 // Fix map size on scroll into view
@@ -1130,80 +1133,4 @@ function initChandaTicker() {
 }
 initChandaTicker();
 
-// ===== ALL REPORTS FEED =====
-let currentFeedFilter = 'all';
-let currentFeedSearch = '';
-
-function renderReportsFeed() {
-    const grid = document.getElementById('reportsFeedGrid');
-    const totalEl = document.getElementById('totalReportsCount');
-    const newsEl = document.getElementById('newsVerifiedCount');
-    const userEl = document.getElementById('userSubmittedCount');
-    if (!grid) return;
-
-    // Filter spots
-    let spots = [...allMapSpots];
-    if (currentFeedFilter !== 'all') {
-        spots = spots.filter(s => s.mood === currentFeedFilter);
-    }
-    if (currentFeedSearch) {
-        const q = currentFeedSearch.toLowerCase();
-        spots = spots.filter(s =>
-            s.name.toLowerCase().includes(q) ||
-            (s.nameEn && s.nameEn.toLowerCase().includes(q)) ||
-            (s.type && s.type.toLowerCase().includes(q))
-        );
-    }
-
-    // Stats
-    const total = allMapSpots.length;
-    const newsCount = allMapSpots.filter(s => s.note && s.note.includes('<a href')).length;
-    const userCount = allMapSpots.filter(s => s.source === 'firestore').length;
-    if (totalEl) totalEl.textContent = total;
-    if (newsEl) newsEl.textContent = newsCount;
-    if (userEl) userEl.textContent = userCount;
-
-    // Render cards
-    if (spots.length === 0) {
-        grid.innerHTML = '<div class="feed-empty-state">🙅 কোনো রিপোর্ট পাওয়া যায়নি</div>';
-        return;
-    }
-
-    grid.innerHTML = spots.map((s, i) => {
-        const isNews = s.note && s.note.includes('<a href');
-        const isUser = s.source === 'firestore';
-        const sourceBadge = isNews ? '📰 সংবাদ সূত্র' : (isUser ? '👤 ইউজার রিপোর্ট' : '📌 হার্ডকোডেড');
-        return `<div class="report-feed-card mood-${s.mood}">
-            <div class="card-header">
-                <span class="card-location">${s.name}</span>
-                <span class="card-type-badge">${s.type || '-'}</span>
-            </div>
-            <div class="card-rate">${s.rate}</div>
-            <div class="card-note">${s.note || 'কোনো বিবরণ নেই'}</div>
-            <div class="card-actions">
-                <button class="card-map-btn" onclick="flyToSpot(${s.lat}, ${s.lng})">🗺️ ম্যাপে দেখুন</button>
-                <span class="card-source-badge">${sourceBadge}</span>
-            </div>
-        </div>`;
-    }).join('');
-}
-
-function flyToSpot(lat, lng) {
-    map.flyTo([lat, lng], 15, { duration: 1.2 });
-    document.getElementById('map').scrollIntoView({ behavior: 'smooth' });
-}
-
-function filterReportsFeed(mood, btn) {
-    currentFeedFilter = mood;
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    if (btn) btn.classList.add('active');
-    renderReportsFeed();
-}
-
-function searchReportsFeed(val) {
-    currentFeedSearch = val;
-    renderReportsFeed();
-}
-
-// Initial render
-renderReportsFeed();
+// The renderReportsFeed logic has been moved to reports.html
