@@ -261,6 +261,73 @@
     <div class="toast" id="toast"><span class="toast-icon">✅</span><span class="toast-msg" id="toastMsg">Success</span>
     </div>
 
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav" id="mobileBottomNav">
+        <a href="index.html" class="bottom-tab" data-tab="home">
+            <span class="tab-icon">🏠</span>
+            <span class="tab-label">হোম</span>
+        </a>
+        <a href="index.html#map" class="bottom-tab" data-tab="map">
+            <span class="tab-icon">🗺️</span>
+            <span class="tab-label">ম্যাপ</span>
+        </a>
+        <a href="index.html#report" class="bottom-tab" data-tab="report">
+            <span class="tab-icon">⚠️</span>
+            <span class="tab-label">রিপোর্ট</span>
+        </a>
+        <a href="reports.html" class="bottom-tab" data-tab="reports">
+            <span class="tab-icon">📋</span>
+            <span class="tab-label">সব রিপোর্ট</span>
+        </a>
+        <button class="bottom-tab" id="moreTabBtn" data-tab="more">
+            <span class="tab-icon">☰</span>
+            <span class="tab-label">আরও</span>
+        </button>
+    </nav>
+
+    <!-- More Panel Backdrop -->
+    <div class="more-panel-backdrop" id="morePanelBackdrop"></div>
+
+    <!-- More Panel -->
+    <div class="more-panel" id="morePanel">
+        <div class="more-search-bar">
+            <span>🔍</span>
+            <input type="text" placeholder="এলাকা খুঁজুন..." id="moreSearchInput">
+        </div>
+        <div class="more-section">
+            <h4 class="more-section-title">EXPLORE</h4>
+            <a href="enterprise.html" class="more-link">
+                <div class="more-icon" style="background:rgba(239,68,68,0.1);color:#ef4444;">💼</div>
+                এন্টারপ্রাইজ
+            </a>
+            <button class="more-link" onclick="window.location.href='index.html'; closeMobileMore();">
+                <div class="more-icon" style="background:rgba(56,189,248,0.1);color:#38bdf8;">🧮</div>
+                চাঁদা ক্যালকুলেটর
+            </button>
+            <a href="admin.html" class="more-link">
+                <div class="more-icon" style="background:rgba(234,179,8,0.1);color:#eab308;">🔐</div>
+                অ্যাডমিন প্যানেল
+            </a>
+        </div>
+        <div class="more-divider"></div>
+        <div class="more-section">
+            <h4 class="more-section-title">SOCIAL</h4>
+            <button class="more-link" onclick="alert('ফেসবুক পেজ শীঘ্রই আসছে!'); closeMobileMore();">
+                <div class="more-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;">📘</div>
+                ফেসবুক <span class="coming-soon">(শীঘ্রই আসছে)</span>
+            </button>
+            <button class="more-link" onclick="alert('ইনস্টাগ্রাম অ্যাকাউন্ট শীঘ্রই আসছে!'); closeMobileMore();">
+                <div class="more-icon" style="background:rgba(168,85,247,0.1);color:#a855f7;">📸</div>
+                ইনস্টাগ্রাম <span class="coming-soon">(শীঘ্রই আসছে)</span>
+            </button>
+        </div>
+        <div class="more-divider"></div>
+        <div class="more-footer-row">
+            <span class="more-section-title">THEME</span>
+            <button class="theme-toggle-more" id="moreThemeToggle" onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark')">🌙</button>
+        </div>
+    </div>
+
     <!-- Chart & Firebase SDKs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>

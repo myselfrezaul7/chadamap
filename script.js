@@ -1134,3 +1134,43 @@ function initChandaTicker() {
 initChandaTicker();
 
 // The renderReportsFeed logic has been moved to reports.html
+
+// === MOBILE BOTTOM NAV WIRING ===
+function closeMobileMore() {
+    document.getElementById('morePanel')?.classList.remove('active');
+    document.getElementById('morePanelBackdrop')?.classList.remove('active');
+    document.querySelector('#moreTabBtn')?.classList.remove('active');
+}
+
+document.getElementById('moreTabBtn')?.addEventListener('click', () => {
+    const panel = document.getElementById('morePanel');
+    const backdrop = document.getElementById('morePanelBackdrop');
+    const btn = document.getElementById('moreTabBtn');
+    const isOpen = panel?.classList.contains('active');
+    if (isOpen) {
+        closeMobileMore();
+    } else {
+        panel?.classList.add('active');
+        backdrop?.classList.add('active');
+        btn?.classList.add('active');
+    }
+});
+
+document.getElementById('morePanelBackdrop')?.addEventListener('click', closeMobileMore);
+
+// Active tab highlighting based on click
+// (For single page sections; index.html)
+document.querySelectorAll('.bottom-tab[data-tab]').forEach(tab => {
+    tab.addEventListener('click', (e) => {
+        // Only do this if it's an anchor on the same page
+        if(tab.getAttribute('href')?.startsWith('#') || tab.id === 'moreTabBtn') {
+            document.querySelectorAll('.bottom-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+        }
+    });
+});
+
+// Theme toggle in More panel triggers the main theme toggle
+document.getElementById('moreThemeToggle')?.addEventListener('click', () => {
+    document.getElementById('themeToggle')?.click();
+});
