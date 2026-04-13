@@ -3883,13 +3883,50 @@ html[data-theme="light"] .calculator-section {
     }
 
     .reports-stats {
-        flex-direction: column !important;
+        flex-direction: row !important;
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
         gap: 8px !important;
     }
 
     .reports-filters {
         flex-direction: column !important;
-        gap: 8px !important;
+        gap: 12px !important;
+    }
+
+    .stat-card-mini {
+        padding: 12px 4px !important;
+        min-width: unset !important;
+    }
+
+    .stat-card-mini .stat-num {
+        font-size: 20px !important;
+    }
+
+    .stat-card-mini .stat-label {
+        font-size: 10px !important;
+    }
+
+    .all-reports-section {
+        padding-bottom: 120px !important; /* Space for bottom nav */
+    }
+
+    .filter-pills {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        width: 100%;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox */
+    }
+    
+    .filter-pills::-webkit-scrollbar {
+        display: none; /* Safari and Chrome */
+    }
+
+    .feed-search-input {
+        width: 100%;
     }
 }
 
@@ -4296,4 +4333,164 @@ html[data-theme="light"] .mobile-bottom-nav {
 html[data-theme="light"] .more-panel {
     background: rgba(255,255,255,0.95);
     border-color: rgba(0,0,0,0.08);
+}
+
+/* ===== COMPREHENSIVE MOBILE UI POLISH (AUDIT UPGRADES) ===== */
+@media (max-width: 768px) {
+    /* 2. Report Form */
+    .report-form-wrapper {
+        background: var(--bg-card);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 24px 16px;
+        backdrop-filter: blur(var(--glass-blur));
+        -webkit-backdrop-filter: blur(var(--glass-blur));
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        margin: 0 -16px; /* pull slightly wider than container */
+    }
+    .form-group label {
+        font-size: 14px;
+        color: var(--text-primary);
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+        padding: 16px 14px; /* bigger touch targets */
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        font-size: 15px;
+    }
+    .form-group .radio-option label {
+        padding: 14px 8px;
+    }
+    .btn-submit {
+        width: 100%;
+        padding: 16px;
+        font-size: 16px;
+        background: linear-gradient(135deg, var(--neon-green), #2db36c);
+        border: none;
+        box-shadow: 0 4px 15px rgba(57, 255, 20, 0.3);
+        border-radius: 12px;
+    }
+
+    /* 3. Enterprise Page */
+    .enterprise {
+        padding-top: 24px !important;
+    }
+    .pricing-card {
+        padding: 24px 20px !important;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5), 0 0 40px rgba(239, 68, 68, 0.1) !important;
+        border-radius: 2rem !important;
+    }
+    .enterprise-content {
+        gap: 12px !important;
+        margin-bottom: 24px !important;
+    }
+    .enterprise-content .section-desc {
+        max-width: 90%;
+    }
+    .site-footer {
+        padding-bottom: 120px !important; /* space for bottom nav */
+    }
+
+    /* 4. AI Excuse Generator */
+    .excuse-card {
+        background: var(--bg-card);
+        border: 1px solid var(--glass-border);
+        border-radius: 2rem;
+        backdrop-filter: blur(var(--glass-blur));
+        -webkit-backdrop-filter: blur(var(--glass-blur));
+        padding: 24px 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    .excuse-display {
+        background: rgba(255, 255, 255, 0.03);
+        border-color: rgba(255,255,255,0.05);
+        border-radius: 1.5rem;
+        max-height: 250px;
+        overflow-y: auto;
+    }
+    .excuse-generator-section {
+        padding: 50px 0 40px 0;
+    }
+
+    /* 5. Shift Tracker */
+    .shift-card {
+        background: var(--bg-card);
+        border: 1px solid var(--glass-border);
+        border-radius: 2rem;
+        backdrop-filter: blur(var(--glass-blur));
+        -webkit-backdrop-filter: blur(var(--glass-blur));
+        padding: 24px 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    .shift-block {
+        border-radius: 1.2rem;
+    }
+    .shift-block.current-shift {
+        background: rgba(99, 102, 241, 0.1);
+        border-color: rgba(99, 102, 241, 0.2);
+    }
+    .shift-block.next-shift {
+        background: rgba(245, 158, 11, 0.1);
+        border-color: rgba(245, 158, 11, 0.2);
+    }
+    .shift-progress-bar {
+        height: 12px;
+        border-radius: 6px;
+    }
+    .shift-progress-fill {
+        background: linear-gradient(90deg, #6366f1, #f59e0b) !important;
+        border-radius: 6px;
+    }
+    #shiftCountdown {
+        font-size: 15px;
+        font-weight: 600;
+        margin-top: 12px;
+    }
+
+    /* 6. Hero CTAs */
+    .mobile-hero-overlay-actions button {
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        background: rgba(18, 24, 38, 0.8) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+    }
+    .mobile-hero-overlay-actions .btn-glow-map {
+        border-color: rgba(56, 189, 248, 0.3) !important;
+    }
+    .mobile-hero-overlay-actions .btn-glow-red {
+        border-color: rgba(239, 68, 68, 0.3) !important;
+    }
+    .hero-stat {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 16px;
+        padding: 12px 8px;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+
+    /* 7. Admin Login */
+    .admin-auth-card {
+        background: var(--bg-card);
+        border: 1px solid var(--glass-border);
+        border-radius: 2rem;
+        backdrop-filter: blur(var(--glass-blur));
+        -webkit-backdrop-filter: blur(var(--glass-blur));
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        padding: 32px 24px;
+    }
+    .btn-google {
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        color: var(--text-primary) !important;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-radius: 16px;
+        padding: 14px;
+        font-weight: 500;
+    }
 }
