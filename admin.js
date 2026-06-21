@@ -1,9 +1,17 @@
 // ===== THEME =====
 const themeToggle = document.getElementById('themeToggle');
 const html = document.documentElement;
-function setTheme(t) { html.setAttribute('data-theme', t); themeToggle.textContent = t === 'dark' ? '🌙' : '☀️'; localStorage.setItem('chandamap-theme', t); }
+function setTheme(t) {
+  html.setAttribute('data-theme', t);
+  if (themeToggle) themeToggle.textContent = t === 'dark' ? '🌙' : '☀️';
+  const moreThemeBtn = document.getElementById('moreThemeToggle');
+  if (moreThemeBtn) moreThemeBtn.textContent = t === 'dark' ? '🌙' : '☀️';
+  localStorage.setItem('chandamap-theme', t);
+}
 setTheme(localStorage.getItem('chandamap-theme') || 'dark');
-themeToggle.addEventListener('click', () => setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+if (themeToggle) {
+  themeToggle.addEventListener('click', () => setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+}
 
 // ===== AUTH =====
 const overlay = document.getElementById('adminAuthOverlay');
@@ -391,7 +399,7 @@ const searchInput = document.getElementById('adminSearch');
 if (searchInput) {
   searchInput.addEventListener('input', (e) => {
     currentSearch = e.target.value.toLowerCase();
-    renderTable();
+    renderReports();
   });
 }
 
@@ -399,7 +407,7 @@ const dateFilter = document.getElementById('dateFilter');
 if (dateFilter) {
   dateFilter.addEventListener('change', (e) => {
     currentDateFilter = e.target.value;
-    renderTable();
+    renderReports();
   });
 }
 
@@ -514,3 +522,46 @@ function showToast(msg, err = false) {
   t.style.borderColor = err ? 'var(--danger-red)' : 'var(--accent)';
   t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 4000);
 }
+
+// ===== MOBILE BOTTOM NAV WIRING =====
+function closeMobileMore() {
+  document.getElementById('morePanel')?.classList.remove('active');
+  document.getElementById('morePanelBackdrop')?.classList.remove('active');
+  document.querySelector('#moreTabBtn')?.classList.remove('active');
+}
+
+document.getElementById('moreTabBtn')?.addEventListener('click', () => {
+  const panel = document.getElementById('morePanel');
+  const backdrop = document.getElementById('morePanelBackdrop');
+  const btn = document.getElementById('moreTabBtn');
+  const isOpen = panel?.classList.contains('active');
+  if (isOpen) {
+    closeMobileMore();
+  } else {
+    panel?.classList.add('active');
+    backdrop?.classList.add('active');
+    btn?.classList.add('active');
+  }
+});
+
+document.getElementById('morePanelBackdrop')?.addEventListener('click', closeMobileMore);
+
+// Sync theme button emoji on load
+const savedTheme = localStorage.getItem('chandamap-theme') || 'dark';
+const moreThemeBtn = document.getElementById('moreThemeToggle');
+if (moreThemeBtn) moreThemeBtn.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+
+// Wire mobile morePanel search input
+const moreSearchInput = document.getElementById('moreSearchInput');
+if (moreSearchInput) {
+  moreSearchInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const q = moreSearchInput.value.trim();
+      if (q) {
+        window.location.href = `index.html?search=${encodeURIComponent(q)}#map`;
+      }
+    }
+  });
+}
+

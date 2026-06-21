@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="icon" type="image/png" href="hero-map.png">
+    <script>
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('chandamap-theme') || 'dark');
+    </script>
 </head>
 
 <body>
@@ -155,11 +158,16 @@
         <div class="more-divider"></div>
         <div class="more-footer-row">
             <span class="more-section-title">THEME</span>
-            <button class="theme-toggle-more" id="moreThemeToggle" onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark')">🌙</button>
+            <button class="theme-toggle-more" id="moreThemeToggle">🌙</button>
         </div>
     </div>
 
     <script>
+        // Sync theme button emoji on load
+        const savedTheme = localStorage.getItem('chandamap-theme') || 'dark';
+        const moreThemeBtn = document.getElementById('moreThemeToggle');
+        if (moreThemeBtn) moreThemeBtn.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+
         function closeMobileMore() {
             document.getElementById('morePanel')?.classList.remove('active');
             document.getElementById('morePanelBackdrop')?.classList.remove('active');
@@ -181,6 +189,29 @@
         });
 
         document.getElementById('morePanelBackdrop')?.addEventListener('click', closeMobileMore);
+
+        document.getElementById('moreThemeToggle')?.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('chandamap-theme', newTheme);
+            const toggleBtn = document.getElementById('moreThemeToggle');
+            if (toggleBtn) toggleBtn.textContent = newTheme === 'dark' ? '🌙' : '☀️';
+        });
+
+        // Wire mobile morePanel search input
+        const moreSearchInput = document.getElementById('moreSearchInput');
+        if (moreSearchInput) {
+            moreSearchInput.addEventListener('keydown', e => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const q = moreSearchInput.value.trim();
+                    if (q) {
+                        window.location.href = `index.html?search=${encodeURIComponent(q)}#map`;
+                    }
+                }
+            });
+        }
 
         function showSatirePopup() {
             const popup = document.getElementById('satirePopup');

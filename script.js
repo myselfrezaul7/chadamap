@@ -816,7 +816,120 @@ document.querySelectorAll('#reportForm input, #reportForm select, #reportForm te
     el.addEventListener('change', saveDraft);
 });
 
-window.addEventListener('load', loadDraft);
+window.addEventListener('load', () => {
+    loadDraft();
+    checkUrlParams();
+});
+
+// ===== GENERATE SHARE CARD =====
+window.generateShareCard = async function (name, rate, type) {
+    const container = document.createElement('div');
+    // Ensure fixed width/position so the card is always perfectly laid out off-screen
+    container.style.position = 'fixed';
+    container.style.top = '-9999px';
+    container.style.left = '-9999px';
+    container.style.width = '420px';
+    container.style.padding = '30px';
+    container.style.background = '#111827';
+    container.style.zIndex = '-1';
+
+    const nowStr = new Date().toLocaleString('bn-BD', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+    container.innerHTML = `
+        <div style="font-family: 'Inter', sans-serif; text-align: center; color: #fff;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 24px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <svg width="24" height="24" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="40" height="40" rx="10" fill="#4a9b9b" />
+                        <text x="16.5" y="24" font-family="Inter,sans-serif" font-size="14" font-weight="800" fill="white">৳</text>
+                    </svg>
+                    <div style="font-size: 16px; font-weight: 800; color: #4a9b9b; letter-spacing: 2px;">CHADAMAP.VERCEL.APP</div>
+                </div>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=https://chadamap.vercel.app&color=4a9b9b&bgcolor=111827" style="border-radius: 4px; border: 2px solid rgba(74, 155, 155, 0.3);" />
+            </div>
+            
+            <div style="font-size: 20px; font-weight: 800; color: #ff2d2d; margin-bottom: 8px; text-transform: uppercase;">🚨 লাইভ রোড-ট্যাক্স অ্যালার্ট</div>
+            <div style="font-size: 42px; font-weight: 900; margin-bottom: 12px; line-height:1.2;">📍 ${name}</div>
+            <div style="font-size: 18px; color: #9ca3af; margin-bottom: 32px; background: rgba(255,255,255,0.05); display:inline-block; padding:8px 16px; border-radius:20px;">
+                কালেক্টর: ${type} • <span>${nowStr}</span>
+            </div>
+            
+            <div style="background: radial-gradient(circle at center, rgba(255, 45, 45, 0.2) 0%, rgba(255, 45, 45, 0.05) 100%); padding: 24px; border-radius: 16px; border: 2px solid rgba(255, 45, 45, 0.5); box-shadow: inset 0 0 20px rgba(255, 45, 45, 0.1);">
+                <div style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #ff2d2d; margin-bottom: 8px;">বর্তমান রানিং রেট</div>
+                <div style="font-size: 56px; font-weight: 900; color: #fff; letter-spacing:-1px; text-shadow: 0 0 10px rgba(255, 45, 45, 0.5);">${rate}</div>
+            </div>
+            <div style="margin-top: 32px; font-size: 12px; color: #6b7280; opacity: 0.8;">এই কার্ড অটোমেটিক জেনারেট করা হয়েছে। বাস্তব ডেটার উপর ভিত্তি করে স্যাটায়ার।</div>
+        </div>
+    `;
+    document.body.appendChild(container);
+
+    showToast("কার্ড তৈরি হচ্ছে...", false);
+
+    try {
+        const canvas = await html2canvas(container, { backgroundColor: '#111827', scale: 2, useCORS: true });
+        container.remove();
+
+        const dataUrl = canvas.toDataURL('image/png');
+
+        // Convert base64 to Blob for native sharing
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
+        const file = new File([blob], `chanda_alert_${name.replace(/\s+/g, '_')}.png`, { type: 'image/png' });
+
+        const triggerDownload = (url, n) => {
+            const link = document.createElement('a');
+            link.download = `chanda_alert_${n.replace(/\s+/g, '_')}.png`;
+            link.href = url;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast(`'${n}' এর অ্যালার্ট কার্ড ডাউনলোড হয়েছে!`, false);
+        };
+
+        const triggerFallback = async (b, url, n) => {
+            try {
+                if (navigator.clipboard && window.ClipboardItem) {
+                    await navigator.clipboard.write([new ClipboardItem({ 'image/png': b })]);
+                    showToast(`কার্ড ক্লিপবোর্ডে কপি হয়েছে!`, false);
+                } else {
+                    triggerDownload(url, n);
+                }
+            } catch (e) {
+                triggerDownload(url, n);
+            }
+        };
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share({
+                    title: 'Chanda Map Alert',
+                    text: `Road Tax Alert for ${name}!`,
+                    files: [file]
+                });
+                showToast(`অ্যালার্ট কার্ড শেয়ার করা হয়েছে!`, false);
+            } catch (e) {
+                if (e.name !== 'AbortError') triggerFallback(blob, dataUrl, name);
+            }
+        } else {
+            triggerFallback(blob, dataUrl, name);
+        }
+    } catch (err) {
+        console.error("Card generation failed", err);
+        showToast("❌ কার্ড তৈরিতে সমস্যা হয়েছে।", true);
+        if (container.parentNode) container.remove();
+    }
+};
+// ===== SCROLL PROGRESS BAR =====
+window.addEventListener('scroll', () => {
+    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    if (height > 0) {
+        document.getElementById('scrollProgress').style.width = (winScroll / height) * 100 + '%';
+    }
+
+    // Parallax
+    const heroImage = document.getElementById('heroImage');
+});
 
 // ===== GENERATE SHARE CARD =====
 window.generateShareCard = async function (name, rate, type) {
@@ -934,6 +1047,11 @@ window.addEventListener('scroll', () => {
 window.resetFormView = function () {
     document.getElementById('formSuccessMsg').style.display = 'none';
     document.getElementById('reportForm').style.display = 'block';
+    const btn = document.getElementById('submitBtn');
+    if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '📤 রিপোর্ট জমা দিন';
+    }
 };
 
 // ===== TOAST NOTIFICATIONS =====
@@ -1174,3 +1292,67 @@ document.querySelectorAll('.bottom-tab[data-tab]').forEach(tab => {
 document.getElementById('moreThemeToggle')?.addEventListener('click', () => {
     document.getElementById('themeToggle')?.click();
 });
+
+// Explicitly bind global search and fly functions to window
+window.searchLocation = searchLocation;
+window.flyToUnknownSpot = flyToUnknownSpot;
+window.flyToSpot = flyToSpot;
+
+// URL parameter parsing for deep linking
+function checkUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    const lat = parseFloat(params.get('lat'));
+    const lng = parseFloat(params.get('lng'));
+    const name = params.get('name');
+    if (!isNaN(lat) && !isNaN(lng)) {
+        setTimeout(() => {
+            const match = allMapSpots.find(s => Math.abs(s.lat - lat) < 0.0001 && Math.abs(s.lng - lng) < 0.0001);
+            if (match) {
+                flyToSpot(lat, lng, name || match.name);
+                // Also open the popup after flight
+                setTimeout(() => {
+                    markersClusterGroup.eachLayer(layer => {
+                        const spotLatlng = layer.getLatLng();
+                        if (Math.abs(spotLatlng.lat - lat) < 0.0001 && Math.abs(spotLatlng.lng - lng) < 0.0001) {
+                            layer.openPopup();
+                        }
+                    });
+                }, 1300);
+            } else {
+                flyToUnknownSpot(lat, lng, name || 'চিহ্নিত স্থান');
+            }
+        }, 500);
+    }
+
+    const searchParam = params.get('search');
+    if (searchParam) {
+        setTimeout(() => {
+            const mapSearch = document.getElementById('mapSearchInput');
+            if (mapSearch) {
+                mapSearch.value = searchParam;
+                searchLocation();
+            }
+        }, 600);
+    }
+}
+
+// Wire mobile morePanel search input
+const moreSearchInput = document.getElementById('moreSearchInput');
+if (moreSearchInput) {
+    moreSearchInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const q = moreSearchInput.value.trim();
+            if (q) {
+                const mapSearch = document.getElementById('mapSearchInput');
+                if (mapSearch) {
+                    mapSearch.value = q;
+                    searchLocation();
+                    closeMobileMore();
+                } else {
+                    window.location.href = `index.html?search=${encodeURIComponent(q)}#map`;
+                }
+            }
+        }
+    });
+}
