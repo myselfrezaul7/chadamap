@@ -4493,4 +4493,27 @@ html[data-theme="light"] .more-panel {
         padding: 14px;
         font-weight: 500;
     }
+
+    /* Mobile Toast & Map Control Collisions */
+    .toast-container {
+        bottom: 84px !important;
+        left: 16px !important;
+        right: 16px !important;
+        max-width: 480px;
+        margin: 0 auto;
+    }
+    .leaflet-bottom {
+        padding-bottom: 76px !important;
+    }
+
+    html[data-theme="light"] .mobile-hero-overlay-actions button {
+        background: rgba(255, 255, 255, 0.9) !important;
+        color: #0f172a !important;
+        border-color: rgba(0, 0, 0, 0.15) !important;
+    }
+    html[data-theme="light"] .btn-google {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #0f172a !important;
+    }
 }

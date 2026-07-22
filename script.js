@@ -45,7 +45,13 @@ navLinks.querySelectorAll('a').forEach(l => l.addEventListener('click', () => { 
 
 // Smooth scroll
 document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => { const t = document.querySelector(a.getAttribute('href')); if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); } });
+    a.addEventListener('click', e => { 
+        const targetId = a.getAttribute('href');
+        if (targetId && targetId !== '#' && targetId.length > 1) {
+            const t = document.querySelector(targetId); 
+            if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); } 
+        }
+    });
 });
 
 // ===== LEAFLET MAP =====

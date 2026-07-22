@@ -7,5 +7,9 @@ service cloud.firestore {
       allow update, delete: if request.auth != null
         && request.auth.token.email == 'chadamap7@gmail.com';
     }
+    match /spot_votes/{spotId} {
+      allow read: if true;
+      allow write: if true;
+    }
   }
 }

@@ -188,11 +188,123 @@
         </div>
     </section>
 
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav" id="mobileBottomNav">
+        <a href="index.html#map" class="nav-tab">
+            <div class="nav-tab-icon">🗺️</div>
+            <span class="nav-tab-label">ম্যাপ</span>
+        </a>
+        <a href="reports.html" class="nav-tab">
+            <div class="nav-tab-icon">📋</div>
+            <span class="nav-tab-label">রিপোর্ট</span>
+        </a>
+        <a href="index.html#report" class="nav-tab">
+            <div class="nav-tab-icon">🚨</div>
+            <span class="nav-tab-label">জমা দিন</span>
+        </a>
+        <a href="privacy.html" class="nav-tab active">
+            <div class="nav-tab-icon">🔒</div>
+            <span class="nav-tab-label">প্রাইভেসি</span>
+        </a>
+        <button class="nav-tab" id="moreTabBtn">
+            <div class="nav-tab-icon">⚙️</div>
+            <span class="nav-tab-label">আরও</span>
+        </button>
+    </nav>
+
+    <!-- Mobile More Panel -->
+    <div class="more-panel-backdrop" id="morePanelBackdrop"></div>
+    <div class="more-panel" id="morePanel">
+        <div class="more-panel-handle"></div>
+        <div class="more-search-box">
+            <div class="more-search-icon">🔍</div>
+            <input type="text" id="moreSearchInput" placeholder="এলাকা সার্চ করুন..." autocomplete="off">
+        </div>
+        <div class="more-section">
+            <h4 class="more-section-title">QUICK LINKS</h4>
+            <a href="index.html#map" class="more-link" onclick="closeMobileMore()">
+                <div class="more-icon" style="background:rgba(255,193,7,0.1);color:#ffc107;">🗺️</div>
+                লাইভ ম্যাপ
+            </a>
+            <a href="reports.html" class="more-link" onclick="closeMobileMore()">
+                <div class="more-icon" style="background:rgba(57,255,20,0.1);color:#39ff14;">📋</div>
+                সকল রিপোর্ট
+            </a>
+            <a href="enterprise.html" class="more-link" onclick="closeMobileMore()">
+                <div class="more-icon" style="background:rgba(255,45,45,0.1);color:#ff2d2d;">🏢</div>
+                এন্টারপ্রাইজ
+            </a>
+            <a href="career.html" class="more-link" onclick="closeMobileMore()">
+                <div class="more-icon" style="background:rgba(236,72,153,0.1);color:#ec4899;">💼</div>
+                ক্যারিয়ার
+            </a>
+            <a href="privacy.html" class="more-link active" onclick="closeMobileMore()">
+                <div class="more-icon" style="background:rgba(99,102,241,0.1);color:#6366f1;">🔒</div>
+                প্রাইভেসি পলিসি
+            </a>
+            <a href="admin.html" class="more-link" onclick="closeMobileMore()">
+                <div class="more-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;">🔐</div>
+                অ্যাডমিন প্যানেল
+            </a>
+        </div>
+        <div class="more-divider"></div>
+        <div class="more-footer-row">
+            <span class="more-section-title">THEME</span>
+            <button class="theme-toggle-more" id="moreThemeToggle">🌙</button>
+        </div>
+    </div>
+
     <script>
         const t = document.getElementById('themeToggle'), h = document.documentElement;
-        function s(v) { h.setAttribute('data-theme', v); t.textContent = v === 'dark' ? '🌙' : '☀️'; localStorage.setItem('chandamap-theme', v) }
+        function s(v) { 
+            h.setAttribute('data-theme', v); 
+            if (t) t.textContent = v === 'dark' ? '🌙' : '☀️'; 
+            const m = document.getElementById('moreThemeToggle');
+            if (m) m.textContent = v === 'dark' ? '🌙' : '☀️';
+            localStorage.setItem('chandamap-theme', v); 
+        }
         s(localStorage.getItem('chandamap-theme') || 'dark');
-        t.addEventListener('click', () => s(h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+        if (t) t.addEventListener('click', () => s(h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+
+        function closeMobileMore() {
+            document.getElementById('morePanel')?.classList.remove('active');
+            document.getElementById('morePanelBackdrop')?.classList.remove('active');
+            document.querySelector('#moreTabBtn')?.classList.remove('active');
+        }
+
+        document.getElementById('moreTabBtn')?.addEventListener('click', () => {
+            const panel = document.getElementById('morePanel');
+            const backdrop = document.getElementById('morePanelBackdrop');
+            const btn = document.getElementById('moreTabBtn');
+            const isOpen = panel?.classList.contains('active');
+            if (isOpen) {
+                closeMobileMore();
+            } else {
+                panel?.classList.add('active');
+                backdrop?.classList.add('active');
+                btn?.classList.add('active');
+            }
+        });
+
+        document.getElementById('morePanelBackdrop')?.addEventListener('click', closeMobileMore);
+
+        document.getElementById('moreThemeToggle')?.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            s(currentTheme === 'dark' ? 'light' : 'dark');
+        });
+
+        const moreSearchInput = document.getElementById('moreSearchInput');
+        if (moreSearchInput) {
+            moreSearchInput.addEventListener('keydown', e => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const q = moreSearchInput.value.trim();
+                    if (q) {
+                        window.location.href = `index.html?search=${encodeURIComponent(q)}#map`;
+                    }
+                }
+            });
+        }
     </script>
 </body>
 

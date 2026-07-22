@@ -65,15 +65,19 @@ function updateKPIs() {
   const t = allReports.length, p = allReports.filter(r => r.status === 'pending').length;
   const a = allReports.filter(r => r.status === 'approved').length, j = allReports.filter(r => r.status === 'rejected').length;
 
-  const now = new Date().getTime() / 1000;
-  const todayReports = allReports.filter(r => r.createdAt && (now - r.createdAt.seconds) <= 86400);
+  const nowSec = new Date().getTime() / 1000;
+  const todayReports = allReports.filter(r => {
+    const sec = r.createdAt ? (r.createdAt.seconds || (r.createdAt / 1000)) : 0;
+    return sec > 0 && (nowSec - sec) <= 86400;
+  });
 
   const convertBnToEn = str => String(str).replace(/[০-৯]/g, d => '০১২৩৪৫৬৭৮৯'.indexOf(d));
   const highestRateToday = todayReports.reduce((max, r) => {
     let val = 0;
     if (typeof r.currentRate === 'string') {
-      const matches = String(r.currentRate).match(/[০-৯\d]+/g);
-      if (matches) val = Math.max(...matches.map(m => parseInt(convertBnToEn(m)) || 0));
+      const sanitized = convertBnToEn(r.currentRate).replace(/,/g, '');
+      const matches = sanitized.match(/\d+/g);
+      if (matches) val = Math.max(...matches.map(m => parseInt(m, 10) || 0));
     } else {
       val = r.currentRate || 0;
     }
@@ -94,8 +98,8 @@ function updateKPIs() {
   // Last Updated text
   const lastUpdatedEl = document.getElementById('lastUpdatedText');
   if (lastUpdatedEl) {
-    const now = new Date();
-    lastUpdatedEl.textContent = `সর্বশেষ আপডেট: ${now.toLocaleString('bn-BD', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+    const nowDate = new Date();
+    lastUpdatedEl.textContent = `সর্বশেষ আপডেট: ${nowDate.toLocaleString('bn-BD', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
   }
 
   updateChart(p, a, j);
@@ -364,6 +368,7 @@ document.getElementById('bulkApproveBtn')?.addEventListener('click', async () =>
     showToast(`${selectedIds.size} টি রিপোর্ট অ্যাপ্রুভ করা হয়েছে!`);
     selectedIds.clear();
     updateBulkUI();
+    renderReports();
   } catch (err) {
     showToast('❌ bulk action failed', true);
   }
@@ -380,6 +385,7 @@ document.getElementById('bulkRejectBtn')?.addEventListener('click', async () => 
     showToast(`${selectedIds.size} টি রিপোর্ট রিজেক্ট করা হয়েছে!`);
     selectedIds.clear();
     updateBulkUI();
+    renderReports();
   } catch (err) {
     showToast('❌ bulk action failed', true);
   }
@@ -415,19 +421,19 @@ if (dateFilter) {
 window.approveReport = async function (id, e) {
   if (e) e.stopPropagation();
   if (!confirm('অ্যাপ্রুভ করতে চান?')) return;
-  try { await db.collection('reports').doc(id).update({ status: 'approved' }); showToast('✅ অ্যাপ্রুভড!'); } catch (e) { showToast('❌ ' + e.message, true); }
+  try { await db.collection('reports').doc(id).update({ status: 'approved' }); showToast('✅ অ্যাপ্রুভড!'); selectedIds.delete(id); updateBulkUI(); } catch (e) { showToast('❌ ' + e.message, true); }
   renderReports();
 }
 window.rejectReport = async function (id, e) {
   if (e) e.stopPropagation();
   if (!confirm('রিজেক্ট করতে চান?')) return;
-  try { await db.collection('reports').doc(id).update({ status: 'rejected' }); showToast('❌ রিজেক্টেড!'); } catch (e) { showToast('❌ ' + e.message, true); }
+  try { await db.collection('reports').doc(id).update({ status: 'rejected' }); showToast('❌ রিজেক্টেড!'); selectedIds.delete(id); updateBulkUI(); } catch (e) { showToast('❌ ' + e.message, true); }
   renderReports();
 }
 window.deleteReport = async function (id, e) {
   if (e) e.stopPropagation();
   if (!confirm('ডিলিট করতে চান?')) return;
-  try { await db.collection('reports').doc(id).delete(); showToast('🗑️ ডিলিটেড!'); } catch (e) { showToast('❌ ' + e.message, true); }
+  try { await db.collection('reports').doc(id).delete(); showToast('🗑️ ডিলিটেড!'); selectedIds.delete(id); updateBulkUI(); } catch (e) { showToast('❌ ' + e.message, true); }
   renderReports();
 }
 
